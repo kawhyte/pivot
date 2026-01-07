@@ -49,6 +49,9 @@ export const PATH_METADATA = {
 export type PathId = typeof PATH_IDS[keyof typeof PATH_IDS];
 
 interface QuestState {
+  // User ID for database persistence
+  userId: number | null;
+
   // Active path being played (null = in vault view)
   activePath: PathId | null;
 
@@ -68,16 +71,19 @@ interface QuestState {
   hasSeenIntro: boolean;
 
   // Actions
+  setUserId: (id: number) => void;
   setActivePath: (pathId: PathId | null) => void;
-  addKey: (pathId: PathId) => void;
+  addKey: (pathId: PathId) => Promise<void>;
   setUnlockedPaths: (paths: PathId[]) => void;
-  updatePathLevel: (pathId: PathId, level: number) => void;
+  updatePathLevel: (pathId: PathId, level: number) => Promise<void>;
+  hydrateFromDatabase: (completedPaths: PathId[]) => void;
   checkVaultStatus: () => void;
   setHasSeenIntro: (value: boolean) => void;
   resetQuest: () => void;
 }
 
 const initialState = {
+  userId: null,
   activePath: null,
   keysCollected: [],
   unlockedPaths: [],
@@ -95,22 +101,60 @@ export const useQuestStore = create<QuestState>()(
     (set, get) => ({
       ...initialState,
 
+      setUserId: (id) => set({ userId: id }),
+
       setActivePath: (pathId) => set({ activePath: pathId }),
 
-      addKey: (pathId) => {
+      addKey: async (pathId) => {
+        // OPTIMISTIC: Update local state immediately
         set((state) => {
           const newKeys = [...state.keysCollected, pathId];
           return { keysCollected: newKeys };
         });
         get().checkVaultStatus();
+
+        // BACKGROUND: Sync to database asynchronously
+        const { userId } = get();
+        if (userId) {
+          try {
+            const { syncPathCompletion } = await import('@/app/actions/quest');
+            await syncPathCompletion(userId, pathId);
+          } catch (error) {
+            console.error('Failed to sync key collection:', error);
+          }
+        }
       },
 
       setUnlockedPaths: (paths) => set({ unlockedPaths: paths }),
 
-      updatePathLevel: (pathId, level) => {
+      updatePathLevel: async (pathId, level) => {
+        // OPTIMISTIC: Update local state immediately
         set((state) => ({
           pathLevels: { ...state.pathLevels, [pathId]: level },
         }));
+
+        // BACKGROUND: Sync to database
+        const { userId } = get();
+        if (userId) {
+          try {
+            const { syncPathLevel } = await import('@/app/actions/quest');
+            await syncPathLevel(userId, pathId, level);
+          } catch (error) {
+            console.error('Failed to sync path level:', error);
+          }
+        }
+      },
+
+      hydrateFromDatabase: (completedPaths) => {
+        // Merge database state with local state
+        // Database is source of truth for completed paths
+        const currentKeys = get().keysCollected;
+        const mergedKeys = Array.from(
+          new Set([...currentKeys, ...completedPaths])
+        ) as PathId[];
+
+        set({ keysCollected: mergedKeys });
+        get().checkVaultStatus();
       },
 
       checkVaultStatus: () => {

@@ -13,7 +13,8 @@ if (!connectionString) {
 }
 
 // Create postgres connection
-const client = postgres(connectionString);
+// Using prepare: false for compatibility with serverless/edge runtime
+const client = postgres(connectionString, { prepare: false });
 
 // Create drizzle instance with schema
 export const db = drizzle(client, { schema });

@@ -1,4 +1,4 @@
-import { pgTable, serial, text, boolean, timestamp, integer } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, boolean, timestamp, integer, uniqueIndex } from 'drizzle-orm/pg-core';
 
 /**
  * Users table - stores secret code for access control
@@ -21,7 +21,9 @@ export const questProgress = pgTable('quest_progress', {
   currentLevel: integer('current_level').default(1).notNull(), // Which puzzle in the path
   completedAt: timestamp('completed_at'),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+}, (table) => ({
+  userPathIdx: uniqueIndex('user_path_idx').on(table.userId, table.pathId),
+}));
 
 /**
  * TypeScript types inferred from schema
