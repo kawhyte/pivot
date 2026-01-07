@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { KeyRound, Sparkles, HelpCircle } from 'lucide-react';
+import { KeyRound, Sparkles, HelpCircle, Share2, Check } from 'lucide-react';
 import { useQuestStore, PATH_IDS, PATH_METADATA } from '@/store/useQuestStore';
 import { getUnlockedPaths } from '@/lib/daily-drop';
 import { KeySlot } from '@/components/KeySlot';
@@ -14,10 +14,12 @@ const VaultHub = () => {
   const router = useRouter();
   const hasTriggeredConfetti = useRef(false);
   const [showInstructions, setShowInstructions] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const {
     keysCollected,
     isVaultUnlocked,
     hasSeenIntro,
+    userId,
     setActivePath,
     setUnlockedPaths,
   } = useQuestStore();
@@ -68,6 +70,25 @@ const VaultHub = () => {
   const handlePathClick = (pathId: typeof PATH_IDS[keyof typeof PATH_IDS]) => {
     setActivePath(pathId);
     router.push(`/quest/${pathId}`);
+  };
+
+  const handleShareProgress = async () => {
+    if (!userId) return;
+
+    // Generate shareable URL with userId parameter
+    const shareUrl = `${window.location.origin}?userId=${userId}`;
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setLinkCopied(true);
+
+      // Reset after 2 seconds
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy link:', error);
+      // Fallback: show alert with URL
+      alert(`Copy this link to continue on another device:\n\n${shareUrl}`);
+    }
   };
 
   // Show welcome screen if user hasn't seen intro yet OR if they clicked instructions
@@ -201,13 +222,32 @@ const VaultHub = () => {
             <p className="text-xs text-zinc-500">
               A birthday quest made with love
             </p>
-            <button
-              onClick={() => setShowInstructions(true)}
-              className="flex items-center gap-1 rounded-full bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-200 active:bg-zinc-300"
-            >
-              <HelpCircle className="h-3.5 w-3.5" />
-              How to Play
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleShareProgress}
+                disabled={!userId}
+                className="flex items-center gap-1 rounded-full bg-purple-100 px-3 py-1.5 text-xs font-medium text-purple-700 transition-colors hover:bg-purple-200 active:bg-purple-300 disabled:opacity-50"
+              >
+                {linkCopied ? (
+                  <>
+                    <Check className="h-3.5 w-3.5" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="h-3.5 w-3.5" />
+                    Share Progress
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => setShowInstructions(true)}
+                className="flex items-center gap-1 rounded-full bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-200 active:bg-zinc-300"
+              >
+                <HelpCircle className="h-3.5 w-3.5" />
+                How to Play
+              </button>
+            </div>
           </div>
         </div>
       </footer>

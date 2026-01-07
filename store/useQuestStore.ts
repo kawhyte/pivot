@@ -170,6 +170,8 @@ export const useQuestStore = create<QuestState>()(
     {
       name: 'birthday-quest-storage',
       storage: createJSONStorage(() => localStorage),
+      // Only persist userId - everything else comes from database
+      partialize: (state) => ({ userId: state.userId }),
     }
   )
 );
