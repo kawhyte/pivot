@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { KeyRound, Sparkles } from 'lucide-react';
 import { useQuestStore, PATH_IDS, PATH_METADATA } from '@/store/useQuestStore';
@@ -8,6 +9,7 @@ import { getUnlockedPaths } from '@/lib/daily-drop';
 import { KeySlot } from '@/components/KeySlot';
 
 const VaultHub = () => {
+  const router = useRouter();
   const {
     keysCollected,
     isVaultUnlocked,
@@ -23,8 +25,7 @@ const VaultHub = () => {
 
   const handlePathClick = (pathId: typeof PATH_IDS[keyof typeof PATH_IDS]) => {
     setActivePath(pathId);
-    // TODO: Navigate to quest page when implemented in Phase 3
-    console.log(`Starting path: ${PATH_METADATA[pathId].name}`);
+    router.push(`/quest/${pathId}`);
   };
 
   return (
