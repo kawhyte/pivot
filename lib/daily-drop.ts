@@ -6,7 +6,7 @@ import { PATH_IDS, type PathId } from '@/store/useQuestStore';
  * This is the birthday date when the quest begins
  * Currently set to Jan 6 for testing (all paths unlocked)
  */
-export const START_DATE = new Date('2026-01-06T00:00:00');
+export const START_DATE = new Date('2026-01-05T00:00:00');
 
 /**
  * Daily Drop Schedule

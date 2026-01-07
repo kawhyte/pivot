@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import confetti from 'canvas-confetti';
 import { KeyRound, Sparkles } from 'lucide-react';
 import { useQuestStore, PATH_IDS, PATH_METADATA } from '@/store/useQuestStore';
 import { getUnlockedPaths } from '@/lib/daily-drop';
@@ -10,6 +11,7 @@ import { KeySlot } from '@/components/KeySlot';
 
 const VaultHub = () => {
   const router = useRouter();
+  const hasTriggeredConfetti = useRef(false);
   const {
     keysCollected,
     isVaultUnlocked,
@@ -22,6 +24,43 @@ const VaultHub = () => {
     const unlocked = getUnlockedPaths();
     setUnlockedPaths(unlocked);
   }, [setUnlockedPaths]);
+
+  // Fire confetti when vault is unlocked
+  useEffect(() => {
+    if (isVaultUnlocked && !hasTriggeredConfetti.current) {
+      hasTriggeredConfetti.current = true;
+
+      // Delay slightly to let UI update
+      setTimeout(() => {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#10b981', '#34d399', '#6ee7b7'],
+        });
+
+        setTimeout(() => {
+          confetti({
+            particleCount: 80,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0, y: 0.7 },
+            colors: ['#10b981', '#34d399', '#6ee7b7'],
+          });
+        }, 250);
+
+        setTimeout(() => {
+          confetti({
+            particleCount: 80,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1, y: 0.7 },
+            colors: ['#10b981', '#34d399', '#6ee7b7'],
+          });
+        }, 500);
+      }, 300);
+    }
+  }, [isVaultUnlocked]);
 
   const handlePathClick = (pathId: typeof PATH_IDS[keyof typeof PATH_IDS]) => {
     setActivePath(pathId);
@@ -131,7 +170,10 @@ const VaultHub = () => {
                 <p className="mb-6 text-sm text-emerald-50">
                   You've collected all 3 keys. Ready to see your surprise?
                 </p>
-                <button className="rounded-full bg-white px-8 py-3 font-semibold text-emerald-600 transition-transform hover:scale-105 active:scale-95">
+                <button
+                  onClick={() => router.push('/vault')}
+                  className="rounded-full bg-white px-8 py-3 font-semibold text-emerald-600 transition-transform hover:scale-105 active:scale-95"
+                >
                   Open Vault
                 </button>
               </div>
