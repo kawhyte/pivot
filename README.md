@@ -1,36 +1,140 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Birthday Quest - The Vault 🎁
 
-## Getting Started
+A beautiful, interactive PWA puzzle game built for a special birthday surprise. Players collect 3 keys by completing daily quests across three themed paths.
 
-First, run the development server:
+## Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **UI**: React 19, Tailwind CSS v4
+- **Animations**: Framer Motion
+- **State**: Zustand with localStorage persistence
+- **Database**: PostgreSQL with Drizzle ORM
+- **Icons**: Lucide React
+
+## Project Structure
+
+```
+pivot/
+├── app/
+│   ├── layout.tsx          # Root layout with metadata
+│   └── page.tsx            # Vault Hub (main dashboard)
+├── components/
+│   └── KeySlot.tsx         # Animated key slot component
+├── db/
+│   ├── schema.ts           # Drizzle schema definitions
+│   └── index.ts            # Database connection
+├── lib/
+│   └── daily-drop.ts       # Daily unlock logic utilities
+└── store/
+    └── useQuestStore.ts    # Zustand global state
+```
+
+## Setup Instructions
+
+### 1. Install Dependencies
+
+```bash
+# Core dependencies
+npm install drizzle-orm postgres zustand framer-motion canvas-confetti lucide-react date-fns
+
+# Dev dependencies
+npm install -D drizzle-kit @types/canvas-confetti
+```
+
+### 2. Configure Environment
+
+Create a `.env.local` file (copy from `.env.example`):
+
+```bash
+cp .env.example .env.local
+```
+
+Edit `.env.local` and add your PostgreSQL connection string:
+
+```env
+DATABASE_URL="postgresql://username:password@host:port/database"
+SECRET_ACCESS_KEY="birthday2026"
+```
+
+### 3. Set Up Database
+
+Generate and push the schema to your database:
+
+```bash
+npm run db:push
+```
+
+Or generate migrations:
+
+```bash
+npm run db:generate
+npm run db:migrate
+```
+
+### 4. Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit `http://localhost:3000` to see The Vault!
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features Implemented (Phase 1 & 2)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+✅ **Database Schema**
+- Users table with secret code authentication
+- Quest progress tracking for all 3 paths
 
-## Learn More
+✅ **State Management**
+- Zustand store with localStorage persistence
+- Path unlocking, key collection, and level tracking
 
-To learn more about Next.js, take a look at the following resources:
+✅ **Daily Drop System**
+- Time-based path unlocking (Jan 20, 21, 22)
+- Countdown timers for locked paths
+- Automatic unlock detection
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+✅ **Vault Hub UI**
+- Beautiful mobile-first design
+- 3 animated key slots with Framer Motion
+- Progress indicator (0/3 → 3/3)
+- Vault unlock celebration screen
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Configuration
 
-## Deploy on Vercel
+### Start Date
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The quest start date is set in `lib/daily-drop.ts`:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```typescript
+export const START_DATE = new Date('2026-01-20T00:00:00');
+```
+
+### Path Colors
+
+Colors are defined in `store/useQuestStore.ts` under `PATH_METADATA`:
+
+- **Pop Culture**: Purple `#6366f1` / Yellow `#fbbf24`
+- **Renaissance**: Emerald `#065f46` / Gold `#d4af37`
+- **Heart**: Crimson `#be123c` / Rose `#fb7185`
+
+## Next Steps (Phase 3+)
+
+- [ ] Implement Quest Engine (JSON-driven puzzle renderer)
+- [ ] Create path-specific puzzle content
+- [ ] Add secret URL authentication (`?key=birthday2026`)
+- [ ] Build the final Vault unlock experience with confetti
+- [ ] Add audio/haptic feedback
+- [ ] PWA manifest and service worker
+
+## Drizzle Studio
+
+View and edit your database visually:
+
+```bash
+npm run db:studio
+```
+
+---
+
+Made with love for a special birthday 💝
