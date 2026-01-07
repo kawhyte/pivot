@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
@@ -11,12 +11,13 @@ import { validateAnswer } from '@/lib/puzzle-validator';
 import { PuzzleRenderer } from '@/components/puzzles/PuzzleRenderer';
 
 interface QuestPageProps {
-  params: { pathId: string };
+  params: Promise<{ pathId: string }>;
 }
 
 const QuestPage = ({ params }: QuestPageProps) => {
   const router = useRouter();
-  const pathId = parseInt(params.pathId) as PathId;
+  const { pathId: pathIdString } = use(params);
+  const pathId = parseInt(pathIdString) as PathId;
 
   const { pathLevels, updatePathLevel, addKey, keysCollected } = useQuestStore();
 

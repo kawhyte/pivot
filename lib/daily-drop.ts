@@ -4,8 +4,9 @@ import { PATH_IDS, type PathId } from '@/store/useQuestStore';
 /**
  * START DATE: January 20, 2026
  * This is the birthday date when the quest begins
+ * Currently set to Jan 6 for testing (all paths unlocked)
  */
-export const START_DATE = new Date('2026-01-07T00:00:00');
+export const START_DATE = new Date('2026-01-06T00:00:00');
 
 /**
  * Daily Drop Schedule
