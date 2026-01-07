@@ -64,12 +64,16 @@ interface QuestState {
   // Is vault unlocked (all 3 keys collected)
   isVaultUnlocked: boolean;
 
+  // Has user seen the intro/welcome screen
+  hasSeenIntro: boolean;
+
   // Actions
   setActivePath: (pathId: PathId | null) => void;
   addKey: (pathId: PathId) => void;
   setUnlockedPaths: (paths: PathId[]) => void;
   updatePathLevel: (pathId: PathId, level: number) => void;
   checkVaultStatus: () => void;
+  setHasSeenIntro: (value: boolean) => void;
   resetQuest: () => void;
 }
 
@@ -83,6 +87,7 @@ const initialState = {
     [PATH_IDS.HEART]: 1,
   },
   isVaultUnlocked: false,
+  hasSeenIntro: false,
 };
 
 export const useQuestStore = create<QuestState>()(
@@ -113,6 +118,8 @@ export const useQuestStore = create<QuestState>()(
         const isUnlocked = keysCollected.length === 3;
         set({ isVaultUnlocked: isUnlocked });
       },
+
+      setHasSeenIntro: (value) => set({ hasSeenIntro: value }),
 
       resetQuest: () => set(initialState),
     }),

@@ -1,20 +1,23 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { KeyRound, Sparkles } from 'lucide-react';
+import { KeyRound, Sparkles, HelpCircle } from 'lucide-react';
 import { useQuestStore, PATH_IDS, PATH_METADATA } from '@/store/useQuestStore';
 import { getUnlockedPaths } from '@/lib/daily-drop';
 import { KeySlot } from '@/components/KeySlot';
+import { WelcomeScreen } from '@/components/WelcomeScreen';
 
 const VaultHub = () => {
   const router = useRouter();
   const hasTriggeredConfetti = useRef(false);
+  const [showInstructions, setShowInstructions] = useState(false);
   const {
     keysCollected,
     isVaultUnlocked,
+    hasSeenIntro,
     setActivePath,
     setUnlockedPaths,
   } = useQuestStore();
@@ -66,6 +69,15 @@ const VaultHub = () => {
     setActivePath(pathId);
     router.push(`/quest/${pathId}`);
   };
+
+  // Show welcome screen if user hasn't seen intro yet OR if they clicked instructions
+  if (!hasSeenIntro) {
+    return <WelcomeScreen />;
+  }
+
+  if (showInstructions) {
+    return <WelcomeScreen isRevisit onComplete={() => setShowInstructions(false)} />;
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-zinc-50 to-zinc-100">
@@ -184,10 +196,19 @@ const VaultHub = () => {
 
       {/* Footer */}
       <footer className="border-t border-zinc-200 bg-white/80 backdrop-blur-sm">
-        <div className="mx-auto max-w-md px-6 py-4 text-center">
-          <p className="text-xs text-zinc-500">
-            A birthday quest made with love
-          </p>
+        <div className="mx-auto max-w-md px-6 py-4">
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-zinc-500">
+              A birthday quest made with love
+            </p>
+            <button
+              onClick={() => setShowInstructions(true)}
+              className="flex items-center gap-1 rounded-full bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-200 active:bg-zinc-300"
+            >
+              <HelpCircle className="h-3.5 w-3.5" />
+              How to Play
+            </button>
+          </div>
         </div>
       </footer>
     </div>
