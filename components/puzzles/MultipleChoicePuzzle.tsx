@@ -7,11 +7,16 @@ import type { MultipleChoicePuzzle as MultipleChoicePuzzleType } from '@/types/p
 import { PuzzleContainer } from './PuzzleContainer';
 import { Button } from '@/components/ui/button';
 
+import type { PathId } from '@/store/useQuestStore';
+
 interface MultipleChoicePuzzleProps {
   puzzle: MultipleChoicePuzzleType;
   onSubmit: (answer: number) => void;
   showHint: boolean;
   isSubmitting: boolean;
+  pathId: PathId;
+  currentMistakes: number;
+  elapsedTime: number;
 }
 
 export const MultipleChoicePuzzle = ({
@@ -19,6 +24,9 @@ export const MultipleChoicePuzzle = ({
   onSubmit,
   showHint,
   isSubmitting,
+  pathId,
+  currentMistakes,
+  elapsedTime,
 }: MultipleChoicePuzzleProps) => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
@@ -33,6 +41,9 @@ export const MultipleChoicePuzzle = ({
       hint={puzzle.hint}
       showHint={showHint}
       difficulty={puzzle.difficulty}
+      pathId={pathId}
+      currentMistakes={currentMistakes}
+      elapsedTime={elapsedTime}
     >
       <div className="space-y-3">
         {puzzle.options.map((option, index) => {

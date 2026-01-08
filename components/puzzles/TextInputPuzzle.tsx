@@ -7,6 +7,7 @@ import type { TextInputPuzzle as TextInputPuzzleType, ValidationResult } from '@
 import { PuzzleContainer } from './PuzzleContainer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import type { PathId } from '@/store/useQuestStore';
 
 interface TextInputPuzzleProps {
   puzzle: TextInputPuzzleType;
@@ -14,6 +15,9 @@ interface TextInputPuzzleProps {
   showHint: boolean;
   isSubmitting: boolean;
   validationResult?: ValidationResult | null;
+  pathId: PathId;
+  currentMistakes: number;
+  elapsedTime: number;
 }
 
 export const TextInputPuzzle = ({
@@ -22,6 +26,9 @@ export const TextInputPuzzle = ({
   showHint,
   isSubmitting,
   validationResult,
+  pathId,
+  currentMistakes,
+  elapsedTime,
 }: TextInputPuzzleProps) => {
   const [answer, setAnswer] = useState('');
   const [shake, setShake] = useState(false);
@@ -54,6 +61,9 @@ export const TextInputPuzzle = ({
       hint={puzzle.hint}
       showHint={showHint}
       difficulty={puzzle.difficulty}
+      pathId={pathId}
+      currentMistakes={currentMistakes}
+      elapsedTime={elapsedTime}
     >
       <div className="space-y-4">
         {/* Text Input with Shake Animation */}

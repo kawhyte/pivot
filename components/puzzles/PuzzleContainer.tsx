@@ -4,12 +4,17 @@ import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { HelpCircle, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { AchievementStakes } from '@/components/quest/AchievementStakes';
+import type { PathId } from '@/store/useQuestStore';
 
 interface PuzzleContainerProps {
   question: string;
   hint?: string;
   showHint: boolean;
   difficulty: 'easy' | 'medium' | 'hard';
+  pathId: PathId;
+  currentMistakes: number;
+  elapsedTime: number;
   children: ReactNode;
 }
 
@@ -18,6 +23,9 @@ export const PuzzleContainer = ({
   hint,
   showHint,
   difficulty,
+  pathId,
+  currentMistakes,
+  elapsedTime,
   children,
 }: PuzzleContainerProps) => {
   const getDifficultyStyles = () => {
@@ -37,6 +45,13 @@ export const PuzzleContainer = ({
 
   return (
     <div className="mx-auto w-full max-w-lg">
+      {/* Achievement Stakes - Live Rewards Preview */}
+      <AchievementStakes
+        pathId={pathId}
+        currentMistakes={currentMistakes}
+        elapsedTime={elapsedTime}
+      />
+
       {/* Difficulty Badge */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}

@@ -1,6 +1,7 @@
 'use client';
 
 import type { Puzzle, ValidationResult } from '@/types/puzzle';
+import type { PathId } from '@/store/useQuestStore';
 import { MultipleChoicePuzzle } from './MultipleChoicePuzzle';
 import { TextInputPuzzle } from './TextInputPuzzle';
 import { ImageRevealPuzzle } from './ImageRevealPuzzle';
@@ -11,6 +12,9 @@ interface PuzzleRendererProps {
   showHint: boolean;
   isSubmitting: boolean;
   validationResult?: ValidationResult | null;
+  pathId: PathId;
+  currentMistakes: number;
+  elapsedTime: number;
 }
 
 export const PuzzleRenderer = ({
@@ -19,6 +23,9 @@ export const PuzzleRenderer = ({
   showHint,
   isSubmitting,
   validationResult,
+  pathId,
+  currentMistakes,
+  elapsedTime,
 }: PuzzleRendererProps) => {
   switch (puzzle.type) {
     case 'multiple-choice':
@@ -28,6 +35,9 @@ export const PuzzleRenderer = ({
           onSubmit={onSubmit as (answer: number) => void}
           showHint={showHint}
           isSubmitting={isSubmitting}
+          pathId={pathId}
+          currentMistakes={currentMistakes}
+          elapsedTime={elapsedTime}
         />
       );
 
@@ -39,6 +49,9 @@ export const PuzzleRenderer = ({
           showHint={showHint}
           isSubmitting={isSubmitting}
           validationResult={validationResult}
+          pathId={pathId}
+          currentMistakes={currentMistakes}
+          elapsedTime={elapsedTime}
         />
       );
 
@@ -50,6 +63,9 @@ export const PuzzleRenderer = ({
           showHint={showHint}
           isSubmitting={isSubmitting}
           validationResult={validationResult}
+          pathId={pathId}
+          currentMistakes={currentMistakes}
+          elapsedTime={elapsedTime}
         />
       );
 

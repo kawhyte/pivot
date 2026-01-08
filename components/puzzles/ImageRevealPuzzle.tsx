@@ -8,6 +8,7 @@ import type { ImageRevealPuzzle as ImageRevealPuzzleType, ValidationResult } fro
 import { PuzzleContainer } from './PuzzleContainer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import type { PathId } from '@/store/useQuestStore';
 
 interface ImageRevealPuzzleProps {
   puzzle: ImageRevealPuzzleType;
@@ -15,6 +16,9 @@ interface ImageRevealPuzzleProps {
   showHint: boolean;
   isSubmitting: boolean;
   validationResult?: ValidationResult | null;
+  pathId: PathId;
+  currentMistakes: number;
+  elapsedTime: number;
 }
 
 export const ImageRevealPuzzle = ({
@@ -23,6 +27,9 @@ export const ImageRevealPuzzle = ({
   showHint,
   isSubmitting,
   validationResult,
+  pathId,
+  currentMistakes,
+  elapsedTime,
 }: ImageRevealPuzzleProps) => {
   const [answer, setAnswer] = useState('');
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -56,6 +63,9 @@ export const ImageRevealPuzzle = ({
       hint={puzzle.hint}
       showHint={showHint}
       difficulty={puzzle.difficulty}
+      pathId={pathId}
+      currentMistakes={currentMistakes}
+      elapsedTime={elapsedTime}
     >
       <div className="space-y-6">
         {/* Image */}

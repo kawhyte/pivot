@@ -56,6 +56,11 @@ export interface PathStats {
   completedAt: number;        // timestamp
 }
 
+export interface CurrentRun {
+  mistakes: number;
+  startTime: number | null;
+}
+
 interface QuestState {
   // User ID for database persistence
   userId: number | null;
@@ -81,6 +86,9 @@ interface QuestState {
   // Has user seen the intro/welcome screen
   hasSeenIntro: boolean;
 
+  // Current run tracking for live achievement stakes
+  currentRun: CurrentRun;
+
   // Actions
   setUserId: (id: number) => void;
   setActivePath: (pathId: PathId | null) => void;
@@ -92,6 +100,9 @@ interface QuestState {
   hydrateFromDatabase: (completedPaths: PathId[]) => void;
   checkVaultStatus: () => void;
   setHasSeenIntro: (value: boolean) => void;
+  startNewRun: () => void;
+  recordMistake: () => void;
+  resetRun: () => void;
   resetQuest: () => void;
 }
 
@@ -108,6 +119,10 @@ const initialState = {
   pathStats: {},
   isVaultUnlocked: false,
   hasSeenIntro: false,
+  currentRun: {
+    mistakes: 0,
+    startTime: null,
+  },
 };
 
 export const useQuestStore = create<QuestState>()(
@@ -200,6 +215,33 @@ export const useQuestStore = create<QuestState>()(
       },
 
       setHasSeenIntro: (value) => set({ hasSeenIntro: value }),
+
+      startNewRun: () => {
+        set({
+          currentRun: {
+            mistakes: 0,
+            startTime: Date.now(),
+          },
+        });
+      },
+
+      recordMistake: () => {
+        set((state) => ({
+          currentRun: {
+            ...state.currentRun,
+            mistakes: state.currentRun.mistakes + 1,
+          },
+        }));
+      },
+
+      resetRun: () => {
+        set({
+          currentRun: {
+            mistakes: 0,
+            startTime: null,
+          },
+        });
+      },
 
       resetQuest: () => set(initialState),
     }),

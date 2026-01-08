@@ -10,6 +10,8 @@ import { getPuzzle, getTotalPuzzles } from '@/data/puzzles';
 import { validateAnswer } from '@/lib/puzzle-validator';
 import { PuzzleRenderer } from '@/components/puzzles/PuzzleRenderer';
 import { formatTime, calculateAccuracy, getThemedTitle } from '@/lib/themed-titles';
+import { getThemedAchievement } from '@/lib/achievements';
+import { PerformanceSummary } from '@/components/quest/PerformanceSummary';
 import type { ValidationResult } from '@/types/puzzle';
 
 interface QuestPageProps {
@@ -21,7 +23,17 @@ const QuestPage = ({ params }: QuestPageProps) => {
   const { pathId: pathIdString } = use(params);
   const pathId = parseInt(pathIdString) as PathId;
 
-  const { pathLevels, updatePathLevel, addKey, keysCollected, getPathStats } = useQuestStore();
+  const {
+    pathLevels,
+    updatePathLevel,
+    addKey,
+    keysCollected,
+    getPathStats,
+    startNewRun,
+    recordMistake,
+    resetRun,
+    currentRun,
+  } = useQuestStore();
 
   const [currentLevel, setCurrentLevel] = useState(pathLevels[pathId] || 1);
   const [showHint, setShowHint] = useState(false);
@@ -41,6 +53,14 @@ const QuestPage = ({ params }: QuestPageProps) => {
   const puzzle = getPuzzle(pathId, currentLevel - 1);
   const pathMeta = PATH_METADATA[pathId];
   const isPathCompleted = keysCollected.includes(pathId);
+
+  // Start a new run when path loads
+  useEffect(() => {
+    startNewRun();
+    return () => {
+      resetRun();
+    };
+  }, [pathId, startNewRun, resetRun]);
 
   // Redirect if path is invalid or already completed
   useEffect(() => {
@@ -166,6 +186,7 @@ const QuestPage = ({ params }: QuestPageProps) => {
     } else if (result.status === 'close') {
       // Track "close" as 0.5 mistakes
       setMistakesThisPath((prev) => prev + 0.5);
+      recordMistake(); // Update live achievement stakes
 
       // Don't show feedback for "close" - handled by puzzle component
       // User needs to fix their spelling
@@ -175,6 +196,7 @@ const QuestPage = ({ params }: QuestPageProps) => {
     } else {
       // Status is "incorrect" - track as 1.0 mistake
       setMistakesThisPath((prev) => prev + 1.0);
+      recordMistake(); // Update live achievement stakes
 
       setFeedback({ type: 'error', message: result.message });
       if (result.showHint) {
@@ -223,38 +245,13 @@ const QuestPage = ({ params }: QuestPageProps) => {
               {pathMeta.subtitle}
             </p>
 
-            {/* Performance Stats */}
+            {/* Performance Summary with Achievement */}
             {stats && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="mb-8 rounded-2xl bg-white p-6 shadow-sm"
-              >
-                <h2 className="mb-4 text-xl font-bold text-zinc-900">
-                  {stats.themedTitle}
-                </h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="flex items-center justify-center gap-1.5 text-sm text-zinc-600">
-                      <Clock className="h-4 w-4" />
-                      <span>Time</span>
-                    </div>
-                    <p className="mt-1 text-2xl font-bold text-zinc-900">
-                      {formatTime(stats.completionTime)}
-                    </p>
-                  </div>
-                  <div>
-                    <div className="flex items-center justify-center gap-1.5 text-sm text-zinc-600">
-                      <Sparkles className="h-4 w-4" />
-                      <span>Accuracy</span>
-                    </div>
-                    <p className="mt-1 text-2xl font-bold text-zinc-900">
-                      {stats.accuracy}%
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
+              <PerformanceSummary
+                achievement={getThemedAchievement(pathId, stats.accuracy, stats.completionTime)}
+                accuracy={stats.accuracy}
+                completionTime={stats.completionTime}
+              />
             )}
 
             <div
@@ -339,6 +336,9 @@ const QuestPage = ({ params }: QuestPageProps) => {
               showHint={showHint}
               isSubmitting={isSubmitting}
               validationResult={validationResult}
+              pathId={pathId}
+              currentMistakes={currentRun.mistakes}
+              elapsedTime={currentTime}
             />
           </motion.div>
         </AnimatePresence>
