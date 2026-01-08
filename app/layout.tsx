@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { QuestHydration } from "@/components/QuestHydration";
+import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
 
 const geistSans = Geist({
@@ -57,6 +58,7 @@ export default function RootLayout({
           <QuestHydration />
         </Suspense>
         {children}
+        <Toaster />
       </body>
     </html>
   );
