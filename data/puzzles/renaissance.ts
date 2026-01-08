@@ -18,6 +18,7 @@ export const renaissancePath: PathConfig = {
       correctAnswer: 2,
       successMessage: 'Correct! Named after the 35th U.S. President. ✈️',
       points: 10,
+    difficulty: 'easy',
     },
     {
       id: 'ren-7',
@@ -28,6 +29,7 @@ export const renaissancePath: PathConfig = {
       placeholder: 'Enter 3 letters...',
       successMessage: 'Bingo! LAX is one of the busiest in the world. 🌴',
       points: 10,
+    difficulty: 'easy',
     },
     {
       id: 'ren-8',
@@ -38,6 +40,7 @@ export const renaissancePath: PathConfig = {
       hint: 'It is Canada\'s most populous city.',
       successMessage: 'Correct! Welcome to Toronto Pearson! 🇨🇦',
       points: 15,
+    difficulty: 'easy',
     },
     {
       id: 'ren-9',
@@ -49,6 +52,7 @@ export const renaissancePath: PathConfig = {
       hint: 'It\'s located in the Windy City.',
       successMessage: 'Great job! Chicago O\'Hare was once the world\'s busiest. 🌬️',
       points: 20,
+    difficulty: 'medium',
     },
 
     // --- AIRPORT CODES: JAMAICA & JAPAN ---
@@ -60,6 +64,7 @@ export const renaissancePath: PathConfig = {
       correctAnswer: 1,
       successMessage: 'Yes! Sangster International (MBJ) is the gateway to the sun! 🏖️',
       points: 10,
+    difficulty: 'easy',
     },
     {
       id: 'ren-11',
@@ -71,6 +76,7 @@ export const renaissancePath: PathConfig = {
       hint: 'It is the closer of the two main Tokyo airports.',
       successMessage: 'Correct! HND is the primary base for domestic flights. 🇯🇵',
       points: 15,
+    difficulty: 'easy',
     },
     {
       id: 'ren-12',
@@ -82,6 +88,7 @@ export const renaissancePath: PathConfig = {
       acceptableAnswers: ['osaka', 'kobe'],
       successMessage: 'Kansai International! An engineering marvel in Osaka Bay. 🏗️',
       points: 25,
+    difficulty: 'medium',
     },
     {
       id: 'ren-13',
@@ -91,6 +98,7 @@ export const renaissancePath: PathConfig = {
       acceptableAnswers: ['kin'],
       successMessage: 'That’s right! KIN serves the capital city. 🇯🇲',
       points: 15,
+    difficulty: 'easy',
     },
 
     // --- AIRPORT CODES: EUROPE ---
@@ -102,6 +110,7 @@ export const renaissancePath: PathConfig = {
       correctAnswer: 0,
       successMessage: 'Spot on! London Heathrow is a global gateway. 🇬🇧',
       points: 10,
+    difficulty: 'easy',
     },
     {
       id: 'ren-15',
@@ -112,6 +121,7 @@ export const renaissancePath: PathConfig = {
       placeholder: 'Enter city name...',
       successMessage: 'Correct! Charles de Gaulle Airport in France. 🇫🇷',
       points: 15,
+    difficulty: 'easy',
     },
     {
       id: 'ren-16',
@@ -121,6 +131,7 @@ export const renaissancePath: PathConfig = {
       correctAnswer: 1,
       successMessage: 'Welcome to Amsterdam Schiphol! 🇳🇱',
       points: 15,
+    difficulty: 'easy',
     },
     {
       id: 'ren-17',
@@ -131,6 +142,7 @@ export const renaissancePath: PathConfig = {
       hint: 'It starts with "F".',
       successMessage: 'Perfect! Fitting for the Renaissance path! 🇮🇹',
       points: 25,
+    difficulty: 'medium',
     },
 
     // --- PLANE TYPES & AVIATION ---
@@ -144,6 +156,7 @@ export const renaissancePath: PathConfig = {
       acceptableAnswers: ['747', 'boeing 747'],
       successMessage: 'The legendary Boeing 747! 👑',
       points: 20,
+    difficulty: 'medium',
     },
     {
       id: 'ren-19',
@@ -154,6 +167,7 @@ export const renaissancePath: PathConfig = {
       hint: 'It is a full double-decker.',
       successMessage: 'Correct! The A380 is a double-decker giant. ✈️',
       points: 20,
+    difficulty: 'medium',
     },
     {
       id: 'ren-20',
@@ -163,6 +177,7 @@ export const renaissancePath: PathConfig = {
       acceptableAnswers: ['the concorde', 'concorde'],
       successMessage: 'The Concorde - faster than the speed of sound! 🚀',
       points: 25,
+    difficulty: 'medium',
     },
     {
       id: 'ren-21',
@@ -174,6 +189,7 @@ export const renaissancePath: PathConfig = {
       acceptableAnswers: ['a350', 'airbus a350'],
       successMessage: 'The Airbus A350! Sleek and efficient. 🦝',
       points: 30,
+    difficulty: 'hard',
     },
     {
       id: 'ren-22',
@@ -183,6 +199,7 @@ export const renaissancePath: PathConfig = {
       correctAnswer: 1,
       successMessage: 'The Dreamliner! Known for its composite wings and large windows. ☁️',
       points: 20,
+    difficulty: 'medium',
     },
 
     // --- GENERAL KNOWLEDGE (7 QUESTIONS) ---
@@ -194,6 +211,7 @@ export const renaissancePath: PathConfig = {
       correctAnswer: 1,
       successMessage: 'That’s one small step for man... 👨‍🚀',
       points: 10,
+    difficulty: 'easy',
     },
     {
       id: 'ren-24',
@@ -203,6 +221,7 @@ export const renaissancePath: PathConfig = {
       acceptableAnswers: ['paris'],
       successMessage: 'Correct! The City of Light. 🗼',
       points: 10,
+    difficulty: 'easy',
     },
     {
       id: 'ren-25',
@@ -212,6 +231,7 @@ export const renaissancePath: PathConfig = {
       correctAnswer: 3,
       successMessage: 'Correct! Russia spans 11 time zones. 🇷🇺',
       points: 15,
+    difficulty: 'easy',
     },
     {
       id: 'ren-26',
@@ -221,6 +241,7 @@ export const renaissancePath: PathConfig = {
       acceptableAnswers: ['yen', 'jpy'],
       successMessage: 'Perfect! The Yen (¥). 💴',
       points: 20,
+    difficulty: 'medium',
     },
     {
       id: 'ren-27',
@@ -230,6 +251,7 @@ export const renaissancePath: PathConfig = {
       correctAnswer: 2,
       successMessage: 'Correct! Alexander Fleming changed medicine forever. 💊',
       points: 25,
+    difficulty: 'medium',
     },
     {
       id: 'ren-28',
@@ -239,6 +261,7 @@ export const renaissancePath: PathConfig = {
       acceptableAnswers: ['the nile', 'nile river'],
       successMessage: 'Correct! The Nile flows through 11 countries. 🇪🇬',
       points: 20,
+    difficulty: 'medium',
     },
     {
       id: 'ren-29',
@@ -248,6 +271,7 @@ export const renaissancePath: PathConfig = {
       correctAnswer: 1,
       successMessage: 'Brilliant! You’re moving at the speed of light! ⚡',
       points: 30,
+    difficulty: 'hard',
     },
 
     // --- FINAL MIX (MEDIUM TO HARD) ---
@@ -259,6 +283,7 @@ export const renaissancePath: PathConfig = {
       acceptableAnswers: ['slc'],
       successMessage: 'Correct! SLC is a major delta hub. 🏔️',
       points: 20,
+    difficulty: 'medium',
     },
     {
       id: 'ren-31',
@@ -268,6 +293,7 @@ export const renaissancePath: PathConfig = {
       correctAnswer: 1,
       successMessage: '¡Muy bien! MAD is for Madrid Barajas. 🇪🇸',
       points: 15,
+    difficulty: 'easy',
     },
     {
       id: 'ren-32',
@@ -279,6 +305,7 @@ export const renaissancePath: PathConfig = {
       acceptableAnswers: ['concorde', 'the concorde'],
       successMessage: 'The iconic Concorde! ✈️',
       points: 30,
+    difficulty: 'hard',
     },
     {
       id: 'ren-33',
@@ -288,6 +315,7 @@ export const renaissancePath: PathConfig = {
       correctAnswer: 2,
       successMessage: 'Correct! NRT is the main international hub for Tokyo. 🇯🇵',
       points: 15,
+    difficulty: 'easy',
     },
     {
       id: 'ren-34',
@@ -297,6 +325,7 @@ export const renaissancePath: PathConfig = {
       acceptableAnswers: ['newark', 'newark nj'],
       successMessage: 'Yes! Newark Liberty International. 🗽',
       points: 20,
+    difficulty: 'medium',
     },
     {
       id: 'ren-35',
@@ -307,6 +336,7 @@ export const renaissancePath: PathConfig = {
       hint: 'It has engines mounted on the rear of the fuselage.',
       successMessage: 'The MD-80! A classic loud and fast "Mad Dog." 🐕✈️',
       points: 35,
+    difficulty: 'hard',
     },
   ],
 };

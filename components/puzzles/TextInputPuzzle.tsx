@@ -53,6 +53,7 @@ export const TextInputPuzzle = ({
       question={puzzle.question}
       hint={puzzle.hint}
       showHint={showHint}
+      difficulty={puzzle.difficulty}
     >
       <div className="space-y-4">
         {/* Text Input with Shake Animation */}

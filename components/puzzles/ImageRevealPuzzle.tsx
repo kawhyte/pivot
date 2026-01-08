@@ -55,6 +55,7 @@ export const ImageRevealPuzzle = ({
       question={puzzle.question}
       hint={puzzle.hint}
       showHint={showHint}
+      difficulty={puzzle.difficulty}
     >
       <div className="space-y-6">
         {/* Image */}

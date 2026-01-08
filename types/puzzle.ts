@@ -15,6 +15,7 @@ interface BasePuzzle {
   hint?: string;
   successMessage: string;
   points?: number;
+  difficulty: 'easy' | 'medium' | 'hard';
 }
 
 /**

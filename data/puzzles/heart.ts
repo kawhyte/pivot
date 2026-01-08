@@ -25,6 +25,7 @@ export const heartPath: PathConfig = {
       hint: 'It’s a play on our last name and a famous building!',
       successMessage: 'Correct! There is no place like #TheWhyteHouse with you. 🏠💻',
       points: 10,
+    difficulty: 'easy',
     },
     {
       id: 'heart-7',
@@ -35,6 +36,7 @@ export const heartPath: PathConfig = {
       hint: 'Think about the "Jumpman" or the "Swoosh."',
       successMessage: 'You got it! We really do have a "sole-mate" connection! 👟❤️',
       points: 10,
+    difficulty: 'easy',
     },
     {
       id: 'heart-8',
@@ -46,6 +48,7 @@ export const heartPath: PathConfig = {
       acceptableAnswers: ['inspo', 'inspiration', 'the inspo tab'],
       successMessage: 'Yes! You are my forever inspiration. 📱✨',
       points: 15,
+    difficulty: 'easy',
     },
 
     // --- MEDIUM: MILESTONES & MEMORIES ---
@@ -58,6 +61,7 @@ export const heartPath: PathConfig = {
       hint: 'I remember we had popcorn and you fell asleep halfway through...',
       successMessage: 'Perfect memory! Even if we didn\'t finish it, it was the best night. 🍿🎬',
       points: 20,
+    difficulty: 'medium',
     },
     {
       id: 'heart-10',
@@ -69,6 +73,7 @@ export const heartPath: PathConfig = {
       hint: 'It’s your favorite thing to eat on a Sunday evening.',
       successMessage: 'Seven-star rating from the best critic! Bon Appétit! 🍝🍷',
       points: 20,
+    difficulty: 'medium',
     },
     {
       id: 'heart-11',
@@ -80,6 +85,7 @@ export const heartPath: PathConfig = {
       acceptableAnswers: ['miami'],
       successMessage: 'I’d travel anywhere in the world as long as it’s with you. ✈️🌍',
       points: 25,
+    difficulty: 'medium',
     },
     {
       id: 'heart-12',
@@ -89,6 +95,7 @@ export const heartPath: PathConfig = {
       correctAnswer: 2, // Update to the real color
       successMessage: 'You remember! Just like those flowers, our love keeps blooming. 🌸',
       points: 15,
+    difficulty: 'easy',
     },
 
     // --- HARD: THE LITTLE DETAILS ---
@@ -102,6 +109,7 @@ export const heartPath: PathConfig = {
       hint: 'It was the start of our digital art journey.',
       successMessage: 'The Pixel Prince found his Princess that day! 🎨👑',
       points: 30,
+    difficulty: 'hard',
     },
     {
       id: 'heart-14',
@@ -113,6 +121,7 @@ export const heartPath: PathConfig = {
       acceptableAnswers: ['blue thread', 'something blue'],
       successMessage: 'Your attention to detail is why I love you! 💍🧵',
       points: 35,
+    difficulty: 'hard',
     },
     {
       id: 'heart-15',
@@ -123,6 +132,7 @@ export const heartPath: PathConfig = {
       hint: 'It was a very nervous moment...',
       successMessage: 'And I haven\'t stopped saying it since. ❤️',
       points: 20,
+    difficulty: 'medium',
     },
 
     // --- FUN & WARM: INSIDE JOKES ---
@@ -136,6 +146,7 @@ export const heartPath: PathConfig = {
       hint: 'The competitive chef and the funny data guy!',
       successMessage: 'Exactly! I’m so glad you’re my person. 💜☕',
       points: 15,
+    difficulty: 'easy',
     },
     {
       id: 'heart-17',
@@ -147,6 +158,7 @@ export const heartPath: PathConfig = {
       acceptableAnswers: ['jordans', 'jordan 1s'],
       successMessage: 'You looked incredible that night (and every night)! 👟🔥',
       points: 25,
+    difficulty: 'medium',
     },
     {
       id: 'heart-18',
@@ -156,6 +168,7 @@ export const heartPath: PathConfig = {
       correctAnswer: 1, // Update to your most lost item
       successMessage: 'Thank you for always being my "Internal GPS." 🧭❤️',
       points: 15,
+    difficulty: 'easy',
     },
     {
       id: 'heart-19',
@@ -166,6 +179,7 @@ export const heartPath: PathConfig = {
       placeholder: 'The secret signal...',
       successMessage: 'Let’s go home and watch Gilmore Girls instead! 🍍🏠',
       points: 20,
+    difficulty: 'medium',
     },
     {
       id: 'heart-20',
@@ -177,6 +191,7 @@ export const heartPath: PathConfig = {
       acceptableAnswers: ['the cliff', 'the park'],
       successMessage: 'The best "Yes" of my entire life. 💍😭',
       points: 35,
+    difficulty: 'hard',
     },
 
     // --- WRAPPING UP: FUTURE & FEELINGS ---
@@ -188,6 +203,7 @@ export const heartPath: PathConfig = {
       correctAnswer: 0, // Update to her dream trip
       successMessage: 'Pack your bags, because I’m making it happen! 🇯🇵✈️',
       points: 25,
+    difficulty: 'medium',
     },
     {
       id: 'heart-22',
@@ -198,6 +214,7 @@ export const heartPath: PathConfig = {
       placeholder: 'It’s something small but perfect...',
       successMessage: 'It truly is the highlight of my day. 😊☀️',
       points: 10,
+    difficulty: 'easy',
     },
     {
       id: 'heart-23',
@@ -209,6 +226,7 @@ export const heartPath: PathConfig = {
       acceptableAnswers: ['you', 'your wife'],
       successMessage: 'Always has been, always will be. ❤️',
       points: 50,
+    difficulty: 'hard',
     },
     {
       id: 'heart-24',
@@ -218,6 +236,7 @@ export const heartPath: PathConfig = {
       correctAnswer: 3,
       successMessage: 'Every day is a gift with you. 🎁❤️',
       points: 10,
+    difficulty: 'easy',
     },
     {
       id: 'heart-25',
@@ -228,6 +247,7 @@ export const heartPath: PathConfig = {
       placeholder: 'Complete the phrase...',
       successMessage: 'And even further than that. Happy Birthday, my love! 🌙✨',
       points: 10,
+    difficulty: 'easy',
     },
   ],
 };

@@ -2,12 +2,14 @@
 
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, Zap } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface PuzzleContainerProps {
   question: string;
   hint?: string;
   showHint: boolean;
+  difficulty: 'easy' | 'medium' | 'hard';
   children: ReactNode;
 }
 
@@ -15,14 +17,47 @@ export const PuzzleContainer = ({
   question,
   hint,
   showHint,
+  difficulty,
   children,
 }: PuzzleContainerProps) => {
+  const getDifficultyStyles = () => {
+    switch (difficulty) {
+      case 'easy':
+        return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+      case 'medium':
+        return 'bg-amber-100 text-amber-700 border-amber-200';
+      case 'hard':
+        return 'bg-rose-100 text-rose-700 border-rose-200';
+    }
+  };
+
+  const getDifficultyLabel = () => {
+    return difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+  };
+
   return (
     <div className="mx-auto w-full max-w-lg">
+      {/* Difficulty Badge */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+        className="mb-4 flex justify-center"
+      >
+        <Badge
+          variant="outline"
+          className={`flex items-center gap-1.5 px-3 py-1.5 border-2 ${getDifficultyStyles()}`}
+        >
+          <Zap className="h-3.5 w-3.5" />
+          <span className="text-xs font-semibold">{getDifficultyLabel()}</span>
+        </Badge>
+      </motion.div>
+
       {/* Question */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
         className="mb-8"
       >
         <h2 className="text-2xl font-bold leading-tight text-zinc-900">

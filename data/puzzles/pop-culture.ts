@@ -18,6 +18,7 @@ export const popCulturePath: PathConfig = {
       correctAnswer: 2,
       successMessage: 'Ten legendary seasons! 📺',
       points: 10,
+      difficulty: 'easy',
     },
     {
       id: 'pop-7',
@@ -29,6 +30,7 @@ export const popCulturePath: PathConfig = {
       hint: 'He often carries one in his "man bag."',
       successMessage: 'Correct! Joey doesn\'t share food! 🥪',
       points: 10,
+      difficulty: 'easy',
     },
     {
       id: 'pop-8',
@@ -40,6 +42,7 @@ export const popCulturePath: PathConfig = {
       acceptableAnswers: ['monica', 'monica geller'],
       successMessage: 'You know your decor! It was on Monica\'s door. 🖼️',
       points: 15,
+    difficulty: 'easy',
     },
     
     // GILMORE GIRLS (EASY)
@@ -52,6 +55,7 @@ export const popCulturePath: PathConfig = {
       hint: 'He was the new kid from Chicago.',
       successMessage: 'Classic Dean Forester! 🚲',
       points: 10,
+    difficulty: 'easy',
     },
     {
       id: 'pop-10',
@@ -62,6 +66,7 @@ export const popCulturePath: PathConfig = {
       placeholder: 'Coffee, coffee, coffee!',
       successMessage: 'No cell phones allowed, but coffee is always served! ☕',
       points: 10,
+    difficulty: 'easy',
     },
     {
       id: 'pop-11',
@@ -73,6 +78,7 @@ export const popCulturePath: PathConfig = {
       acceptableAnswers: ['the gazebo', 'stars hollow gazebo'],
       successMessage: 'The Stars Hollow Gazebo - a town icon! 🏛️',
       points: 15,
+    difficulty: 'easy',
     },
 
     // FRIENDS (MEDIUM)
@@ -85,6 +91,7 @@ export const popCulturePath: PathConfig = {
       hint: 'It\'s a bit of an old-fashioned name.',
       successMessage: 'Yes, Chandler Muriel Bing! 👔',
       points: 20,
+    difficulty: 'medium',
     },
     {
       id: 'pop-13',
@@ -95,6 +102,7 @@ export const popCulturePath: PathConfig = {
       placeholder: 'I\'m your part-Jewish friend...',
       successMessage: 'The Holiday Armadillo is here! 🐢',
       points: 20,
+    difficulty: 'medium',
     },
     {
       id: 'pop-14',
@@ -106,6 +114,7 @@ export const popCulturePath: PathConfig = {
       acceptableAnswers: ['hugsy', 'hugsy the penguin'],
       successMessage: 'Aww, you found Hugsy! 🐧',
       points: 25,
+    difficulty: 'medium',
     },
 
     // GILMORE GIRLS (MEDIUM)
@@ -118,6 +127,7 @@ export const popCulturePath: PathConfig = {
       hint: 'Her grandfather Richard is a proud alumnus.',
       successMessage: 'Bulldogs, Bulldogs, bow wow wow! Eli Yale! 🎓',
       points: 20,
+    difficulty: 'medium',
     },
     {
       id: 'pop-16',
@@ -128,6 +138,7 @@ export const popCulturePath: PathConfig = {
       placeholder: 'He has a cat named Kirk too...',
       successMessage: 'Classic Kirk! Whether it\'s swan delivery or mail, he does it all. 🏃‍♂️',
       points: 20,
+    difficulty: 'medium',
     },
     {
       id: 'pop-17',
@@ -139,6 +150,7 @@ export const popCulturePath: PathConfig = {
       acceptableAnswers: ['paul anka', 'real paul anka'],
       successMessage: 'The dog who is afraid of peas! 🐕',
       points: 25,
+    difficulty: 'medium',
     },
 
     // FRIENDS (HARD)
@@ -151,6 +163,7 @@ export const popCulturePath: PathConfig = {
       hint: 'He was Elizabeth\'s father and dated Rachel.',
       successMessage: 'Correct! He’s just a "neat guy." 💪',
       points: 30,
+    difficulty: 'hard',
     },
     {
       id: 'pop-19',
@@ -161,6 +174,7 @@ export const popCulturePath: PathConfig = {
       placeholder: 'She lives in a beach house...',
       successMessage: 'Yes, Phoebe Sr.! Like mother, like daughter. 🐚',
       points: 30,
+    difficulty: 'hard',
     },
     {
       id: 'pop-20',
@@ -172,6 +186,7 @@ export const popCulturePath: PathConfig = {
       acceptableAnswers: ['gladys'],
       successMessage: 'You aren\'t scared of Gladys? Monica was! 🎨',
       points: 35,
+    difficulty: 'hard',
     },
 
     // GILMORE GIRLS (HARD)
@@ -184,6 +199,7 @@ export const popCulturePath: PathConfig = {
       hint: 'She is an only child of Mrs. Kim.',
       successMessage: 'Correct! She is the only one in the Kim household. 🥁',
       points: 30,
+    difficulty: 'hard',
     },
     {
       id: 'pop-22',
@@ -194,6 +210,7 @@ export const popCulturePath: PathConfig = {
       placeholder: 'An anagram of the producer\'s name...',
       successMessage: 'Hep Alien! Ready to rock! 🎸',
       points: 30,
+    difficulty: 'hard',
     },
     {
       id: 'pop-23',
@@ -205,6 +222,7 @@ export const popCulturePath: PathConfig = {
       acceptableAnswers: ['lukes', 'lukes diner', 'luke\'s diner'],
       successMessage: 'Luke really hates cell phones at the counter! 📵',
       points: 35,
+    difficulty: 'hard',
     },
 
     // MIXED TRIVIA (CHALLENGING)
@@ -217,6 +235,7 @@ export const popCulturePath: PathConfig = {
       hint: 'Even his best friends don\'t really know...',
       successMessage: 'You’re better than Rachel and Monica—you actually know what he does! 📊',
       points: 25,
+    difficulty: 'medium',
     },
     {
       id: 'pop-25',
@@ -227,6 +246,7 @@ export const popCulturePath: PathConfig = {
       placeholder: 'In Omnia Paratus...',
       successMessage: 'In Omnia Paratus! 🌂',
       points: 30,
+    difficulty: 'hard',
     },
     {
       id: 'pop-26',
@@ -238,6 +258,7 @@ export const popCulturePath: PathConfig = {
       acceptableAnswers: ['the geller cup', 'geller cup'],
       successMessage: 'The Geller Cup! Monica has been hiding it for years. 🏆',
       points: 35,
+    difficulty: 'hard',
     },
     {
       id: 'pop-27',
@@ -248,6 +269,7 @@ export const popCulturePath: PathConfig = {
       hint: 'Think about the nicknames...',
       successMessage: 'Tricky! Digger was actually Jason\'s nickname. 🕵️‍♂️',
       points: 30,
+    difficulty: 'hard',
     },
     {
       id: 'pop-28',
@@ -258,6 +280,7 @@ export const popCulturePath: PathConfig = {
       placeholder: 'The man with hair as bright as the sun...',
       successMessage: 'Gunther Central Perk! ☀️',
       points: 15,
+    difficulty: 'easy',
     },
     {
       id: 'pop-29',
@@ -269,6 +292,7 @@ export const popCulturePath: PathConfig = {
       acceptableAnswers: ['six', '6'],
       successMessage: 'Only 6? Must be a slow morning! ☕',
       points: 25,
+    difficulty: 'medium',
     },
     {
       id: 'pop-30',
@@ -278,6 +302,7 @@ export const popCulturePath: PathConfig = {
       correctAnswer: 1,
       successMessage: 'She got off the plane! ✈️',
       points: 15,
+    difficulty: 'easy',
     },
     {
       id: 'pop-31',
@@ -288,6 +313,7 @@ export const popCulturePath: PathConfig = {
       placeholder: 'He sings all the town news...',
       successMessage: 'The soundtrack of Stars Hollow! 🎸',
       points: 20,
+    difficulty: 'medium',
     },
     {
       id: 'pop-32',
@@ -299,6 +325,7 @@ export const popCulturePath: PathConfig = {
       acceptableAnswers: ['yellow'],
       successMessage: 'Bright like a sunflower! 🌻',
       points: 20,
+    difficulty: 'medium',
     },
     {
       id: 'pop-33',
@@ -308,6 +335,7 @@ export const popCulturePath: PathConfig = {
       correctAnswer: 0,
       successMessage: 'Jack (after her dad) and Erica (after the mom)! 👶👶',
       points: 20,
+    difficulty: 'medium',
     },
     {
       id: 'pop-34',
@@ -318,6 +346,7 @@ export const popCulturePath: PathConfig = {
       placeholder: 'Watch out for the hay...',
       successMessage: 'The Spring Fling! Don\'t get lost in the maze. 🌾',
       points: 30,
+    difficulty: 'hard',
     },
     {
       id: 'pop-35',
@@ -329,6 +358,7 @@ export const popCulturePath: PathConfig = {
       acceptableAnswers: ['a vulture', 'vulture'],
       successMessage: 'It really did look like a giant bird of prey! 🎓',
       points: 35,
+    difficulty: 'hard',
     }
   ],
 };
