@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import type { MultipleChoicePuzzle as MultipleChoicePuzzleType } from '@/types/puzzle';
 import { PuzzleContainer } from './PuzzleContainer';
+import { Button } from '@/components/ui/button';
 
 interface MultipleChoicePuzzleProps {
   puzzle: MultipleChoicePuzzleType;
@@ -87,22 +88,20 @@ export const MultipleChoicePuzzle = ({
       </div>
 
       {/* Submit Button */}
-      <motion.button
-        onClick={handleSubmit}
-        disabled={selectedOption === null || isSubmitting}
+      <motion.div
+        className="mt-6"
         whileHover={selectedOption !== null && !isSubmitting ? { scale: 1.02 } : undefined}
         whileTap={selectedOption !== null && !isSubmitting ? { scale: 0.98 } : undefined}
-        className={`
-          mt-6 w-full rounded-full py-4 font-semibold transition-all
-          ${
-            selectedOption !== null && !isSubmitting
-              ? 'bg-zinc-900 text-white hover:bg-zinc-800'
-              : 'cursor-not-allowed bg-zinc-200 text-zinc-400'
-          }
-        `}
       >
-        {isSubmitting ? 'Checking...' : 'Submit Answer'}
-      </motion.button>
+        <Button
+          onClick={handleSubmit}
+          disabled={selectedOption === null || isSubmitting}
+          className="w-full rounded-full py-6 text-base font-semibold"
+          size="lg"
+        >
+          {isSubmitting ? 'Checking...' : 'Submit Answer'}
+        </Button>
+      </motion.div>
     </PuzzleContainer>
   );
 };

@@ -196,3 +196,27 @@ export async function fetchAllProgress() {
     return [];
   }
 }
+
+/**
+ * Resets all progress for a specific user (admin function)
+ * Deletes all questProgress records associated with the userId
+ */
+export async function resetUserProgress(
+  userId: number
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    await db.delete(questProgress).where(eq(questProgress.userId, userId));
+
+    // Revalidate both admin and home page caches
+    revalidatePath('/admin');
+    revalidatePath('/');
+
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to reset user progress:', error);
+    return {
+      success: false,
+      error: 'Failed to reset progress. Please try again.',
+    };
+  }
+}

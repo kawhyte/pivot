@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import type { ImageRevealPuzzle as ImageRevealPuzzleType } from '@/types/puzzle';
 import { PuzzleContainer } from './PuzzleContainer';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 interface ImageRevealPuzzleProps {
   puzzle: ImageRevealPuzzleType;
@@ -63,38 +65,30 @@ export const ImageRevealPuzzle = ({
         </motion.div>
 
         {/* Text Input */}
-        <input
+        <Input
           type="text"
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Type your answer..."
           disabled={isSubmitting}
-          className={`
-            w-full rounded-xl border-2 border-zinc-200 bg-white px-6 py-4
-            text-base font-medium text-zinc-900 placeholder:text-zinc-400
-            transition-all focus:border-zinc-900 focus:outline-none focus:ring-4 focus:ring-zinc-100
-            ${isSubmitting ? 'cursor-not-allowed opacity-50' : ''}
-          `}
+          className="h-12 rounded-xl border-2 px-6 text-base"
         />
 
         {/* Submit Button */}
-        <motion.button
-          onClick={handleSubmit}
-          disabled={answer.trim() === '' || isSubmitting}
+        <motion.div
           whileHover={answer.trim() !== '' && !isSubmitting ? { scale: 1.02 } : undefined}
           whileTap={answer.trim() !== '' && !isSubmitting ? { scale: 0.98 } : undefined}
-          className={`
-            w-full rounded-full py-4 font-semibold transition-all
-            ${
-              answer.trim() !== '' && !isSubmitting
-                ? 'bg-zinc-900 text-white hover:bg-zinc-800'
-                : 'cursor-not-allowed bg-zinc-200 text-zinc-400'
-            }
-          `}
         >
-          {isSubmitting ? 'Checking...' : 'Submit Answer'}
-        </motion.button>
+          <Button
+            onClick={handleSubmit}
+            disabled={answer.trim() === '' || isSubmitting}
+            className="w-full rounded-full py-6 text-base font-semibold"
+            size="lg"
+          >
+            {isSubmitting ? 'Checking...' : 'Submit Answer'}
+          </Button>
+        </motion.div>
       </div>
     </PuzzleContainer>
   );

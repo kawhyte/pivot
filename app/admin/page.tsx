@@ -1,12 +1,16 @@
 import { fetchAllProgress } from '@/app/actions/quest';
-import { PATH_METADATA } from '@/store/useQuestStore';
-import { Clock, KeyRound, Lock, Unlock } from 'lucide-react';
+import { Clock, KeyRound, Lock, Unlock, Tv, Palette, Heart, CheckCircle2, Timer, User, History, PartyPopper } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import ResetProgressButton from '@/components/admin/ResetProgressButton';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 
 const pathIcons = {
-  1: '🎬',
-  2: '🎨',
-  3: '❤️',
+  1: Tv,
+  2: Palette,
+  3: Heart,
 };
 
 const pathNames = {
@@ -18,7 +22,7 @@ const pathNames = {
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default async function AdminPage() {
+const AdminPage = async () => {
   const allProgress = await fetchAllProgress();
 
   // Calculate stats
@@ -50,8 +54,9 @@ export default async function AdminPage() {
         <div className="mx-auto max-w-6xl px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">
-                🔐 Quest Admin Dashboard
+              <h1 className="flex items-center gap-2 text-3xl font-bold tracking-tight">
+                <Lock className="h-8 w-8 text-amber-500" />
+                Quest Admin Dashboard
               </h1>
               <p className="mt-1 text-sm text-zinc-400">
                 Real-time progress monitoring
@@ -69,32 +74,32 @@ export default async function AdminPage() {
       <main className="mx-auto max-w-6xl px-6 py-8">
         {/* Overview Stats */}
         <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-6">
-            <div className="flex items-center gap-3">
+          <Card className="border-zinc-800 bg-zinc-950">
+            <CardContent className="flex items-center gap-4 p-6">
               <div className="rounded-full bg-purple-500/10 p-3">
-                <KeyRound className="h-6 w-6 text-purple-400" />
+                <User className="h-6 w-6 text-purple-400" />
               </div>
               <div>
-                <div className="text-sm text-zinc-400">Total Users</div>
-                <div className="text-3xl font-bold">{totalUsers}</div>
+                <p className="text-sm text-zinc-400">Total Users</p>
+                <p className="text-3xl font-bold">{totalUsers}</p>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-6">
-            <div className="flex items-center gap-3">
+          <Card className="border-zinc-800 bg-zinc-950">
+            <CardContent className="flex items-center gap-4 p-6">
               <div className="rounded-full bg-emerald-500/10 p-3">
                 <KeyRound className="h-6 w-6 text-emerald-400" />
               </div>
               <div>
-                <div className="text-sm text-zinc-400">Keys Collected</div>
-                <div className="text-3xl font-bold">{totalKeys} / {totalUsers * 3}</div>
+                <p className="text-sm text-zinc-400">Keys Collected</p>
+                <p className="text-3xl font-bold">{totalKeys} / {totalUsers * 3}</p>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-6">
-            <div className="flex items-center gap-3">
+          <Card className="border-zinc-800 bg-zinc-950">
+            <CardContent className="flex items-center gap-4 p-6">
               <div className="rounded-full bg-amber-500/10 p-3">
                 {totalKeys === totalUsers * 3 ? (
                   <Unlock className="h-6 w-6 text-amber-400" />
@@ -103,48 +108,64 @@ export default async function AdminPage() {
                 )}
               </div>
               <div>
-                <div className="text-sm text-zinc-400">Vault Status</div>
-                <div className="text-xl font-bold">
-                  {totalKeys === totalUsers * 3 ? '🎉 Unlocked' : '🔒 Locked'}
+                <p className="text-sm text-zinc-400">Vault Status</p>
+                <div className="flex items-center gap-2 text-xl font-bold">
+                  {totalKeys === totalUsers * 3 ? (
+                    <>
+                      <PartyPopper className="h-5 w-5 text-amber-400" />
+                      <span>Unlocked</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="h-5 w-5 text-zinc-500" />
+                      <span>Locked</span>
+                    </>
+                  )}
                 </div>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* User Progress Table */}
-        <div className="mb-8 rounded-lg border border-zinc-800 bg-zinc-950">
-          <div className="border-b border-zinc-800 px-6 py-4">
-            <h2 className="text-xl font-bold">👤 User Progress</h2>
-          </div>
+        <Card className="mb-8 border-zinc-800 bg-zinc-950">
+          <CardHeader className="border-b border-zinc-800">
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <User className="h-5 w-5" />
+              User Progress
+            </CardTitle>
+          </CardHeader>
 
-          <div className="overflow-x-auto">
+          <CardContent className="p-0">
             {allProgress.length === 0 ? (
               <div className="px-6 py-12 text-center text-zinc-500">
                 No users yet. Waiting for first visitor...
               </div>
             ) : (
-              <table className="w-full">
-                <thead className="border-b border-zinc-800 bg-zinc-900/50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">
+              <Table>
+                <TableHeader className="bg-zinc-900/50">
+                  <TableRow className="border-zinc-800 hover:bg-zinc-900/50">
+                    <TableHead className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                       User
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                    </TableHead>
+                    <TableHead className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                       Pop Culture
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                    </TableHead>
+                    <TableHead className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                       Renaissance
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                    </TableHead>
+                    <TableHead className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                       Heart
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                    </TableHead>
+                    <TableHead className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                       Progress
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-800">
+                    </TableHead>
+                    <TableHead className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                      Actions
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody className="divide-y divide-zinc-800">
                   {allProgress.map(({ user, progress }) => {
                     const path1 = progress.find((p) => p.pathId === 1);
                     const path2 = progress.find((p) => p.pathId === 2);
@@ -154,8 +175,8 @@ export default async function AdminPage() {
                     ).length;
 
                     return (
-                      <tr key={user.id} className="hover:bg-zinc-900/50">
-                        <td className="px-6 py-4">
+                      <TableRow key={user.id} className="border-zinc-800 hover:bg-zinc-900/50">
+                        <TableCell className="px-6 py-4">
                           <div className="font-mono text-sm">
                             User #{user.id}
                           </div>
@@ -165,18 +186,16 @@ export default async function AdminPage() {
                                 addSuffix: true,
                               })}
                           </div>
-                        </td>
+                        </TableCell>
 
                         {/* Path 1 */}
-                        <td className="px-6 py-4">
+                        <TableCell className="px-6 py-4">
                           {path1?.isCompleted ? (
                             <div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-lg">✅</span>
-                                <span className="text-sm font-medium text-emerald-400">
-                                  Complete
-                                </span>
-                              </div>
+                              <Badge variant="default" className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+                                <CheckCircle2 className="h-3 w-3" />
+                                Complete
+                              </Badge>
                               {path1.completedAt && (
                                 <div className="mt-1 text-xs text-zinc-500">
                                   {formatDistanceToNow(
@@ -187,32 +206,26 @@ export default async function AdminPage() {
                               )}
                             </div>
                           ) : path1 ? (
-                            <div className="flex items-center gap-2">
-                              <span className="text-lg">⏳</span>
-                              <span className="text-sm text-amber-400">
-                                Level {path1.currentLevel}/5
-                              </span>
-                            </div>
+                            <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-400">
+                              <Timer className="h-3 w-3" />
+                              Level {path1.currentLevel}/5
+                            </Badge>
                           ) : (
-                            <div className="flex items-center gap-2">
-                              <span className="text-lg">🔒</span>
-                              <span className="text-sm text-zinc-500">
-                                Locked
-                              </span>
-                            </div>
+                            <Badge variant="outline" className="border-zinc-700 bg-zinc-800/50 text-zinc-500">
+                              <Lock className="h-3 w-3" />
+                              Locked
+                            </Badge>
                           )}
-                        </td>
+                        </TableCell>
 
                         {/* Path 2 */}
-                        <td className="px-6 py-4">
+                        <TableCell className="px-6 py-4">
                           {path2?.isCompleted ? (
                             <div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-lg">✅</span>
-                                <span className="text-sm font-medium text-emerald-400">
-                                  Complete
-                                </span>
-                              </div>
+                              <Badge variant="default" className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+                                <CheckCircle2 className="h-3 w-3" />
+                                Complete
+                              </Badge>
                               {path2.completedAt && (
                                 <div className="mt-1 text-xs text-zinc-500">
                                   {formatDistanceToNow(
@@ -223,32 +236,26 @@ export default async function AdminPage() {
                               )}
                             </div>
                           ) : path2 ? (
-                            <div className="flex items-center gap-2">
-                              <span className="text-lg">⏳</span>
-                              <span className="text-sm text-amber-400">
-                                Level {path2.currentLevel}/5
-                              </span>
-                            </div>
+                            <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-400">
+                              <Timer className="h-3 w-3" />
+                              Level {path2.currentLevel}/5
+                            </Badge>
                           ) : (
-                            <div className="flex items-center gap-2">
-                              <span className="text-lg">🔒</span>
-                              <span className="text-sm text-zinc-500">
-                                Locked
-                              </span>
-                            </div>
+                            <Badge variant="outline" className="border-zinc-700 bg-zinc-800/50 text-zinc-500">
+                              <Lock className="h-3 w-3" />
+                              Locked
+                            </Badge>
                           )}
-                        </td>
+                        </TableCell>
 
                         {/* Path 3 */}
-                        <td className="px-6 py-4">
+                        <TableCell className="px-6 py-4">
                           {path3?.isCompleted ? (
                             <div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-lg">✅</span>
-                                <span className="text-sm font-medium text-emerald-400">
-                                  Complete
-                                </span>
-                              </div>
+                              <Badge variant="default" className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+                                <CheckCircle2 className="h-3 w-3" />
+                                Complete
+                              </Badge>
                               {path3.completedAt && (
                                 <div className="mt-1 text-xs text-zinc-500">
                                   {formatDistanceToNow(
@@ -259,89 +266,94 @@ export default async function AdminPage() {
                               )}
                             </div>
                           ) : path3 ? (
-                            <div className="flex items-center gap-2">
-                              <span className="text-lg">⏳</span>
-                              <span className="text-sm text-amber-400">
-                                Level {path3.currentLevel}/5
-                              </span>
-                            </div>
+                            <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-400">
+                              <Timer className="h-3 w-3" />
+                              Level {path3.currentLevel}/5
+                            </Badge>
                           ) : (
-                            <div className="flex items-center gap-2">
-                              <span className="text-lg">🔒</span>
-                              <span className="text-sm text-zinc-500">
-                                Locked
-                              </span>
-                            </div>
+                            <Badge variant="outline" className="border-zinc-700 bg-zinc-800/50 text-zinc-500">
+                              <Lock className="h-3 w-3" />
+                              Locked
+                            </Badge>
                           )}
-                        </td>
+                        </TableCell>
 
                         {/* Overall Progress */}
-                        <td className="px-6 py-4">
+                        <TableCell className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="h-2 w-24 overflow-hidden rounded-full bg-zinc-800">
-                              <div
-                                className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
-                                style={{
-                                  width: `${(completedCount / 3) * 100}%`,
-                                }}
-                              />
-                            </div>
+                            <Progress
+                              value={(completedCount / 3) * 100}
+                              className="h-2 w-24 bg-zinc-800"
+                            />
                             <span className="font-mono text-sm font-medium">
                               {completedCount}/3
                             </span>
                           </div>
-                        </td>
-                      </tr>
+                        </TableCell>
+
+                        {/* Actions */}
+                        <TableCell className="px-6 py-4">
+                          <ResetProgressButton userId={user.id} />
+                        </TableCell>
+                      </TableRow>
                     );
                   })}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             )}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Activity Timeline */}
-        <div className="rounded-lg border border-zinc-800 bg-zinc-950">
-          <div className="border-b border-zinc-800 px-6 py-4">
-            <h2 className="text-xl font-bold">📜 Activity Timeline</h2>
-            <p className="text-sm text-zinc-400">Most recent first</p>
-          </div>
+        <Card className="border-zinc-800 bg-zinc-950">
+          <CardHeader className="border-b border-zinc-800">
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <History className="h-5 w-5" />
+              Activity Timeline
+            </CardTitle>
+            <CardDescription className="text-zinc-400">Most recent first</CardDescription>
+          </CardHeader>
 
-          <div className="divide-y divide-zinc-800">
+          <CardContent className="divide-y divide-zinc-800 p-0">
             {allActivity.length === 0 ? (
               <div className="px-6 py-12 text-center text-zinc-500">
                 No activity yet
               </div>
             ) : (
-              allActivity.slice(0, 10).map((activity, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center gap-4 px-6 py-4 hover:bg-zinc-900/50"
-                >
-                  <div className="text-2xl">
-                    {pathIcons[activity.pathId as keyof typeof pathIcons]}
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-sm font-medium">
-                      {pathNames[activity.pathId as keyof typeof pathNames]}{' '}
-                      completed
+              allActivity.slice(0, 10).map((activity, idx) => {
+                const PathIcon = pathIcons[activity.pathId as keyof typeof pathIcons];
+                return (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-4 px-6 py-4 hover:bg-zinc-900/50"
+                  >
+                    <div className="rounded-full bg-zinc-800 p-2">
+                      <PathIcon className="h-5 w-5 text-zinc-400" />
                     </div>
-                    <div className="text-xs text-zinc-500">
-                      User #{activity.userId}
+                    <div className="flex-1">
+                      <div className="text-sm font-medium">
+                        {pathNames[activity.pathId as keyof typeof pathNames]}{' '}
+                        completed
+                      </div>
+                      <div className="text-xs text-zinc-500">
+                        User #{activity.userId}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-zinc-500">
+                      <Clock className="h-3 w-3" />
+                      {formatDistanceToNow(new Date(activity.completedAt), {
+                        addSuffix: true,
+                      })}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-zinc-500">
-                    <Clock className="h-3 w-3" />
-                    {formatDistanceToNow(new Date(activity.completedAt), {
-                      addSuffix: true,
-                    })}
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
-}
+};
+
+export default AdminPage;

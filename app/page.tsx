@@ -9,6 +9,8 @@ import { useQuestStore, PATH_IDS, PATH_METADATA } from '@/store/useQuestStore';
 import { getUnlockedPaths } from '@/lib/daily-drop';
 import { KeySlot } from '@/components/KeySlot';
 import { WelcomeScreen } from '@/components/WelcomeScreen';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 
 const VaultHub = () => {
   const router = useRouter();
@@ -142,16 +144,10 @@ const VaultHub = () => {
                   {keysCollected.length} / 3
                 </span>
               </div>
-              <div className="h-3 overflow-hidden rounded-full bg-zinc-100">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600"
-                  initial={{ width: 0 }}
-                  animate={{
-                    width: `${(keysCollected.length / 3) * 100}%`,
-                  }}
-                  transition={{ duration: 0.6, ease: 'easeOut' }}
-                />
-              </div>
+              <Progress
+                value={(keysCollected.length / 3) * 100}
+                className="h-3"
+              />
             </div>
           </motion.div>
 
@@ -203,12 +199,13 @@ const VaultHub = () => {
                 <p className="mb-6 text-sm text-emerald-50">
                   You've collected all 3 keys. Ready to see your surprise?
                 </p>
-                <button
+                <Button
                   onClick={() => router.push('/vault')}
-                  className="rounded-full bg-white px-8 py-3 font-semibold text-emerald-600 transition-transform hover:scale-105 active:scale-95"
+                  className="rounded-full bg-white px-8 py-3 font-semibold text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
+                  size="lg"
                 >
                   Open Vault
-                </button>
+                </Button>
               </div>
             </motion.div>
           )}
@@ -223,10 +220,12 @@ const VaultHub = () => {
               A birthday quest made with love
             </p>
             <div className="flex items-center gap-2">
-              <button
+              <Button
                 onClick={handleShareProgress}
                 disabled={!userId}
-                className="flex items-center gap-1 rounded-full bg-purple-100 px-3 py-1.5 text-xs font-medium text-purple-700 transition-colors hover:bg-purple-200 active:bg-purple-300 disabled:opacity-50"
+                variant="outline"
+                size="sm"
+                className="gap-1 rounded-full bg-purple-100 border-purple-200 text-xs font-medium text-purple-700 hover:bg-purple-200 active:bg-purple-300"
               >
                 {linkCopied ? (
                   <>
@@ -239,14 +238,16 @@ const VaultHub = () => {
                     Share Progress
                   </>
                 )}
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setShowInstructions(true)}
-                className="flex items-center gap-1 rounded-full bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-200 active:bg-zinc-300"
+                variant="outline"
+                size="sm"
+                className="gap-1 rounded-full bg-zinc-100 border-zinc-200 text-xs font-medium text-zinc-700 hover:bg-zinc-200 active:bg-zinc-300"
               >
                 <HelpCircle className="h-3.5 w-3.5" />
                 How to Play
-              </button>
+              </Button>
             </div>
           </div>
         </div>
