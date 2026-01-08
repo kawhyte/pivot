@@ -96,7 +96,7 @@ export const MultipleChoicePuzzle = ({
         <Button
           onClick={handleSubmit}
           disabled={selectedOption === null || isSubmitting}
-          className="w-full rounded-full py-6 text-base font-semibold"
+          className="w-full rounded-full bg-zinc-900 py-6 text-base font-semibold text-white hover:bg-zinc-800 disabled:bg-zinc-300 disabled:text-zinc-500"
           size="lg"
         >
           {isSubmitting ? 'Checking...' : 'Submit Answer'}

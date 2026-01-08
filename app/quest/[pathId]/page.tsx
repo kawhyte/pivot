@@ -9,6 +9,7 @@ import { useQuestStore, PATH_METADATA, type PathId } from '@/store/useQuestStore
 import { getPuzzle, getTotalPuzzles } from '@/data/puzzles';
 import { validateAnswer } from '@/lib/puzzle-validator';
 import { PuzzleRenderer } from '@/components/puzzles/PuzzleRenderer';
+import type { ValidationResult } from '@/types/puzzle';
 
 interface QuestPageProps {
   params: Promise<{ pathId: string }>;
@@ -25,6 +26,7 @@ const QuestPage = ({ params }: QuestPageProps) => {
   const [showHint, setShowHint] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [showCompletion, setShowCompletion] = useState(false);
 
   const totalPuzzles = getTotalPuzzles(pathId);
@@ -81,8 +83,9 @@ const QuestPage = ({ params }: QuestPageProps) => {
     await new Promise((resolve) => setTimeout(resolve, 600));
 
     const result = validateAnswer(puzzle, answer);
+    setValidationResult(result);
 
-    if (result.isCorrect) {
+    if (result.status === 'correct') {
       setFeedback({ type: 'success', message: result.message });
       fireConfetti();
 
@@ -100,10 +103,18 @@ const QuestPage = ({ params }: QuestPageProps) => {
           setCurrentLevel(nextLevel);
           updatePathLevel(pathId, nextLevel);
           setFeedback(null);
+          setValidationResult(null);
           setShowHint(false);
         }, 1500);
       }
+    } else if (result.status === 'close') {
+      // Don't show feedback for "close" - handled by puzzle component
+      // User needs to fix their spelling
+      if (result.showHint) {
+        setTimeout(() => setShowHint(true), 500);
+      }
     } else {
+      // Status is "incorrect"
       setFeedback({ type: 'error', message: result.message });
       if (result.showHint) {
         setTimeout(() => setShowHint(true), 500);
@@ -225,6 +236,7 @@ const QuestPage = ({ params }: QuestPageProps) => {
               onSubmit={handleSubmit}
               showHint={showHint}
               isSubmitting={isSubmitting}
+              validationResult={validationResult}
             />
           </motion.div>
         </AnimatePresence>

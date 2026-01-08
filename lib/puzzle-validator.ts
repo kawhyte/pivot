@@ -8,6 +8,77 @@ const normalizeText = (text: string): string => {
 };
 
 /**
+ * Calculates Levenshtein distance between two strings
+ * Returns the minimum number of single-character edits needed
+ */
+const calculateLevenshteinDistance = (a: string, b: string): number => {
+  const matrix: number[][] = [];
+
+  // Initialize first column and row
+  for (let i = 0; i <= b.length; i++) {
+    matrix[i] = [i];
+  }
+  for (let j = 0; j <= a.length; j++) {
+    matrix[0][j] = j;
+  }
+
+  // Fill in the rest of the matrix
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1, // substitution
+          matrix[i][j - 1] + 1,     // insertion
+          matrix[i - 1][j] + 1      // deletion
+        );
+      }
+    }
+  }
+
+  return matrix[b.length][a.length];
+};
+
+/**
+ * Determines if two strings are similar based on edit distance thresholds
+ */
+const getAnswerSimilarity = (
+  userAnswer: string,
+  correctAnswer: string
+): { status: 'correct' | 'close' | 'incorrect'; distance: number } => {
+  const normalizedUser = normalizeText(userAnswer);
+  const normalizedCorrect = normalizeText(correctAnswer);
+
+  const distance = calculateLevenshteinDistance(normalizedUser, normalizedCorrect);
+
+  // Exact match
+  if (distance === 0) {
+    return { status: 'correct', distance };
+  }
+
+  // Scaled threshold based on answer length
+  const answerLength = normalizedCorrect.length;
+  let threshold = 0;
+
+  if (answerLength <= 3) {
+    threshold = 1;
+  } else if (answerLength <= 8) {
+    threshold = 2;
+  } else {
+    threshold = 3;
+  }
+
+  // Close match
+  if (distance <= threshold) {
+    return { status: 'close', distance };
+  }
+
+  // Not close enough
+  return { status: 'incorrect', distance };
+};
+
+/**
  * Validates a multiple choice answer
  */
 const validateMultipleChoice = (
@@ -18,6 +89,7 @@ const validateMultipleChoice = (
 
   return {
     isCorrect,
+    status: isCorrect ? 'correct' : 'incorrect',
     message: isCorrect ? puzzle.successMessage : 'Not quite! Try again.',
     showHint: !isCorrect && !!puzzle.hint,
   };
@@ -30,35 +102,54 @@ const validateTextInput = (
   puzzle: Extract<Puzzle, { type: 'text-input' | 'image-reveal' }>,
   userAnswer: string
 ): ValidationResult => {
-  const normalizedUserAnswer = normalizeText(userAnswer);
-  const normalizedCorrectAnswer = normalizeText(puzzle.correctAnswer);
+  // Build list of all acceptable answers
+  const allAcceptableAnswers = [
+    puzzle.correctAnswer,
+    ...(puzzle.acceptableAnswers || []),
+  ];
 
-  // Check main answer
-  if (normalizedUserAnswer === normalizedCorrectAnswer) {
-    return {
-      isCorrect: true,
-      message: puzzle.successMessage,
-    };
-  }
+  // Track best match across all acceptable answers
+  let bestMatch: { status: 'correct' | 'close' | 'incorrect'; distance: number } = {
+    status: 'incorrect',
+    distance: Infinity,
+  };
 
-  // Check acceptable alternatives
-  if (puzzle.acceptableAnswers) {
-    const isAcceptable = puzzle.acceptableAnswers.some(
-      (answer) => normalizeText(answer) === normalizedUserAnswer
-    );
+  for (const acceptableAnswer of allAcceptableAnswers) {
+    const similarity = getAnswerSimilarity(userAnswer, acceptableAnswer);
 
-    if (isAcceptable) {
+    // If we find an exact match, return immediately
+    if (similarity.status === 'correct') {
       return {
         isCorrect: true,
+        status: 'correct',
         message: puzzle.successMessage,
+        distance: 0,
       };
     }
+
+    // Track the closest match
+    if (similarity.distance < bestMatch.distance) {
+      bestMatch = similarity;
+    }
+  }
+
+  // Return result based on best match
+  if (bestMatch.status === 'close') {
+    return {
+      isCorrect: false,
+      status: 'close',
+      message: 'Almost there! Check your spelling',
+      showHint: false,
+      distance: bestMatch.distance,
+    };
   }
 
   return {
     isCorrect: false,
+    status: 'incorrect',
     message: 'Not quite! Try again.',
     showHint: !!puzzle.hint,
+    distance: bestMatch.distance,
   };
 };
 

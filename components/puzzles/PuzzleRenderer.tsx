@@ -1,6 +1,6 @@
 'use client';
 
-import type { Puzzle } from '@/types/puzzle';
+import type { Puzzle, ValidationResult } from '@/types/puzzle';
 import { MultipleChoicePuzzle } from './MultipleChoicePuzzle';
 import { TextInputPuzzle } from './TextInputPuzzle';
 import { ImageRevealPuzzle } from './ImageRevealPuzzle';
@@ -10,6 +10,7 @@ interface PuzzleRendererProps {
   onSubmit: (answer: string | number) => void;
   showHint: boolean;
   isSubmitting: boolean;
+  validationResult?: ValidationResult | null;
 }
 
 export const PuzzleRenderer = ({
@@ -17,6 +18,7 @@ export const PuzzleRenderer = ({
   onSubmit,
   showHint,
   isSubmitting,
+  validationResult,
 }: PuzzleRendererProps) => {
   switch (puzzle.type) {
     case 'multiple-choice':
@@ -36,6 +38,7 @@ export const PuzzleRenderer = ({
           onSubmit={onSubmit as (answer: string) => void}
           showHint={showHint}
           isSubmitting={isSubmitting}
+          validationResult={validationResult}
         />
       );
 
@@ -46,6 +49,7 @@ export const PuzzleRenderer = ({
           onSubmit={onSubmit as (answer: string) => void}
           showHint={showHint}
           isSubmitting={isSubmitting}
+          validationResult={validationResult}
         />
       );
 

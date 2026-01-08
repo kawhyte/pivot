@@ -69,6 +69,8 @@ export interface PathConfig {
  */
 export interface ValidationResult {
   isCorrect: boolean;
+  status: 'correct' | 'close' | 'incorrect';
   message: string;
   showHint?: boolean;
+  distance?: number; // Edit distance for analytics/debugging
 }
