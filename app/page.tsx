@@ -24,6 +24,7 @@ const VaultHub = () => {
     userId,
     setActivePath,
     setUnlockedPaths,
+    getPathStats,
   } = useQuestStore();
 
   // Update unlocked paths based on current date
@@ -157,16 +158,19 @@ const VaultHub = () => {
               pathId={PATH_IDS.POP_CULTURE}
               isCollected={keysCollected.includes(PATH_IDS.POP_CULTURE)}
               onClick={() => handlePathClick(PATH_IDS.POP_CULTURE)}
+              stats={getPathStats(PATH_IDS.POP_CULTURE)}
             />
             <KeySlot
               pathId={PATH_IDS.RENAISSANCE}
               isCollected={keysCollected.includes(PATH_IDS.RENAISSANCE)}
               onClick={() => handlePathClick(PATH_IDS.RENAISSANCE)}
+              stats={getPathStats(PATH_IDS.RENAISSANCE)}
             />
             <KeySlot
               pathId={PATH_IDS.HEART}
               isCollected={keysCollected.includes(PATH_IDS.HEART)}
               onClick={() => handlePathClick(PATH_IDS.HEART)}
+              stats={getPathStats(PATH_IDS.HEART)}
             />
           </div>
 

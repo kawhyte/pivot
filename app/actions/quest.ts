@@ -26,12 +26,18 @@ export async function createUser(): Promise<number> {
 }
 
 /**
- * Syncs path completion to the database
+ * Syncs path completion to the database with performance stats
  * Uses upsert pattern to handle duplicate entries
  */
 export async function syncPathCompletion(
   userId: number,
-  pathId: number
+  pathId: number,
+  stats?: {
+    timeTaken: number;
+    accuracy: number;
+    mistakes: number;
+    themedTitle: string;
+  }
 ): Promise<void> {
   try {
     // Check if record exists
@@ -46,15 +52,23 @@ export async function syncPathCompletion(
       )
       .limit(1);
 
+    const updateData = {
+      isCompleted: true,
+      completedAt: new Date(),
+      updatedAt: new Date(),
+      ...(stats && {
+        timeTaken: stats.timeTaken,
+        accuracy: stats.accuracy,
+        mistakes: Math.round(stats.mistakes * 10), // Store as integer (mistakes * 10)
+        themedTitle: stats.themedTitle,
+      }),
+    };
+
     if (existing.length > 0) {
       // Update existing record
       await db
         .update(questProgress)
-        .set({
-          isCompleted: true,
-          completedAt: new Date(),
-          updatedAt: new Date(),
-        })
+        .set(updateData)
         .where(
           and(
             eq(questProgress.userId, userId),
@@ -66,9 +80,7 @@ export async function syncPathCompletion(
       await db.insert(questProgress).values({
         userId,
         pathId,
-        isCompleted: true,
-        completedAt: new Date(),
-        updatedAt: new Date(),
+        ...updateData,
       });
     }
 

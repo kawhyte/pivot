@@ -48,6 +48,14 @@ export const PATH_METADATA = {
 
 export type PathId = typeof PATH_IDS[keyof typeof PATH_IDS];
 
+export interface PathStats {
+  completionTime: number;     // milliseconds
+  accuracy: number;           // 0-100
+  mistakes: number;           // 0.5 for close, 1.0 for incorrect
+  themedTitle: string;        // "Monica Approved 🧹"
+  completedAt: number;        // timestamp
+}
+
 interface QuestState {
   // User ID for database persistence
   userId: number | null;
@@ -64,6 +72,9 @@ interface QuestState {
   // Current level within each path
   pathLevels: Record<PathId, number>;
 
+  // Performance stats for each completed path
+  pathStats: Partial<Record<PathId, PathStats>>;
+
   // Is vault unlocked (all 3 keys collected)
   isVaultUnlocked: boolean;
 
@@ -73,9 +84,11 @@ interface QuestState {
   // Actions
   setUserId: (id: number) => void;
   setActivePath: (pathId: PathId | null) => void;
-  addKey: (pathId: PathId) => Promise<void>;
+  addKey: (pathId: PathId, stats?: PathStats) => Promise<void>;
   setUnlockedPaths: (paths: PathId[]) => void;
   updatePathLevel: (pathId: PathId, level: number) => Promise<void>;
+  setPathStats: (pathId: PathId, stats: PathStats) => void;
+  getPathStats: (pathId: PathId) => PathStats | undefined;
   hydrateFromDatabase: (completedPaths: PathId[]) => void;
   checkVaultStatus: () => void;
   setHasSeenIntro: (value: boolean) => void;
@@ -92,6 +105,7 @@ const initialState = {
     [PATH_IDS.RENAISSANCE]: 1,
     [PATH_IDS.HEART]: 1,
   },
+  pathStats: {},
   isVaultUnlocked: false,
   hasSeenIntro: false,
 };
@@ -105,11 +119,18 @@ export const useQuestStore = create<QuestState>()(
 
       setActivePath: (pathId) => set({ activePath: pathId }),
 
-      addKey: async (pathId) => {
+      addKey: async (pathId, stats) => {
         // OPTIMISTIC: Update local state immediately
         set((state) => {
           const newKeys = [...state.keysCollected, pathId];
-          return { keysCollected: newKeys };
+          const updates: Partial<QuestState> = { keysCollected: newKeys };
+
+          // If stats provided, store them
+          if (stats) {
+            updates.pathStats = { ...state.pathStats, [pathId]: stats };
+          }
+
+          return updates;
         });
         get().checkVaultStatus();
 
@@ -118,7 +139,12 @@ export const useQuestStore = create<QuestState>()(
         if (userId) {
           try {
             const { syncPathCompletion } = await import('@/app/actions/quest');
-            await syncPathCompletion(userId, pathId);
+            await syncPathCompletion(userId, pathId, stats ? {
+              timeTaken: stats.completionTime,
+              accuracy: stats.accuracy,
+              mistakes: stats.mistakes,
+              themedTitle: stats.themedTitle,
+            } : undefined);
           } catch (error) {
             console.error('Failed to sync key collection:', error);
           }
@@ -143,6 +169,16 @@ export const useQuestStore = create<QuestState>()(
             console.error('Failed to sync path level:', error);
           }
         }
+      },
+
+      setPathStats: (pathId, stats) => {
+        set((state) => ({
+          pathStats: { ...state.pathStats, [pathId]: stats },
+        }));
+      },
+
+      getPathStats: (pathId) => {
+        return get().pathStats[pathId];
       },
 
       hydrateFromDatabase: (completedPaths) => {

@@ -1,14 +1,15 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { ArrowLeft, Trophy, Sparkles } from 'lucide-react';
+import { ArrowLeft, Trophy, Sparkles, Clock } from 'lucide-react';
 import { useQuestStore, PATH_METADATA, type PathId } from '@/store/useQuestStore';
 import { getPuzzle, getTotalPuzzles } from '@/data/puzzles';
 import { validateAnswer } from '@/lib/puzzle-validator';
 import { PuzzleRenderer } from '@/components/puzzles/PuzzleRenderer';
+import { formatTime, calculateAccuracy, getThemedTitle } from '@/lib/themed-titles';
 import type { ValidationResult } from '@/types/puzzle';
 
 interface QuestPageProps {
@@ -20,7 +21,7 @@ const QuestPage = ({ params }: QuestPageProps) => {
   const { pathId: pathIdString } = use(params);
   const pathId = parseInt(pathIdString) as PathId;
 
-  const { pathLevels, updatePathLevel, addKey, keysCollected } = useQuestStore();
+  const { pathLevels, updatePathLevel, addKey, keysCollected, getPathStats } = useQuestStore();
 
   const [currentLevel, setCurrentLevel] = useState(pathLevels[pathId] || 1);
   const [showHint, setShowHint] = useState(false);
@@ -28,6 +29,13 @@ const QuestPage = ({ params }: QuestPageProps) => {
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [showCompletion, setShowCompletion] = useState(false);
+
+  // Timer & performance tracking
+  const [startTime, setStartTime] = useState<number>(Date.now());
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
+  const [currentTime, setCurrentTime] = useState<number>(0); // For live display
+  const [mistakesThisPath, setMistakesThisPath] = useState<number>(0);
+  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const totalPuzzles = getTotalPuzzles(pathId);
   const puzzle = getPuzzle(pathId, currentLevel - 1);
@@ -40,6 +48,41 @@ const QuestPage = ({ params }: QuestPageProps) => {
       router.push('/');
     }
   }, [puzzle, isPathCompleted, router]);
+
+  // Timer: Update current time every second
+  useEffect(() => {
+    timerIntervalRef.current = setInterval(() => {
+      setCurrentTime(elapsedTime + (Date.now() - startTime));
+    }, 1000);
+
+    return () => {
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+      }
+    };
+  }, [startTime, elapsedTime]);
+
+  // Visibility: Pause timer when tab is hidden
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Pause timer
+        setElapsedTime((prev) => prev + (Date.now() - startTime));
+        if (timerIntervalRef.current) {
+          clearInterval(timerIntervalRef.current);
+        }
+      } else {
+        // Resume timer
+        setStartTime(Date.now());
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [startTime]);
 
   // Fire confetti
   const fireConfetti = () => {
@@ -91,9 +134,22 @@ const QuestPage = ({ params }: QuestPageProps) => {
 
       // Check if path is complete
       if (currentLevel >= totalPuzzles) {
+        // Stop timer and calculate stats
+        const finalTime = elapsedTime + (Date.now() - startTime);
+        const accuracy = calculateAccuracy(totalPuzzles, mistakesThisPath);
+        const themedTitle = getThemedTitle(pathId, accuracy);
+
+        const stats = {
+          completionTime: finalTime,
+          accuracy,
+          mistakes: mistakesThisPath,
+          themedTitle,
+          completedAt: Date.now(),
+        };
+
         setTimeout(() => {
           setShowCompletion(true);
-          addKey(pathId);
+          addKey(pathId, stats);
           updatePathLevel(pathId, totalPuzzles);
         }, 1500);
       } else {
@@ -108,13 +164,18 @@ const QuestPage = ({ params }: QuestPageProps) => {
         }, 1500);
       }
     } else if (result.status === 'close') {
+      // Track "close" as 0.5 mistakes
+      setMistakesThisPath((prev) => prev + 0.5);
+
       // Don't show feedback for "close" - handled by puzzle component
       // User needs to fix their spelling
       if (result.showHint) {
         setTimeout(() => setShowHint(true), 500);
       }
     } else {
-      // Status is "incorrect"
+      // Status is "incorrect" - track as 1.0 mistake
+      setMistakesThisPath((prev) => prev + 1.0);
+
       setFeedback({ type: 'error', message: result.message });
       if (result.showHint) {
         setTimeout(() => setShowHint(true), 500);
@@ -130,6 +191,8 @@ const QuestPage = ({ params }: QuestPageProps) => {
 
   // Path completion screen
   if (showCompletion || isPathCompleted) {
+    const stats = getPathStats(pathId);
+
     return (
       <div className="flex min-h-screen flex-col bg-gradient-to-br from-zinc-50 to-zinc-100">
         <div className="flex flex-1 items-center justify-center px-6">
@@ -159,6 +222,40 @@ const QuestPage = ({ params }: QuestPageProps) => {
             <p className="mb-8 text-sm text-zinc-600">
               {pathMeta.subtitle}
             </p>
+
+            {/* Performance Stats */}
+            {stats && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="mb-8 rounded-2xl bg-white p-6 shadow-sm"
+              >
+                <h2 className="mb-4 text-xl font-bold text-zinc-900">
+                  {stats.themedTitle}
+                </h2>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="flex items-center justify-center gap-1.5 text-sm text-zinc-600">
+                      <Clock className="h-4 w-4" />
+                      <span>Time</span>
+                    </div>
+                    <p className="mt-1 text-2xl font-bold text-zinc-900">
+                      {formatTime(stats.completionTime)}
+                    </p>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-center gap-1.5 text-sm text-zinc-600">
+                      <Sparkles className="h-4 w-4" />
+                      <span>Accuracy</span>
+                    </div>
+                    <p className="mt-1 text-2xl font-bold text-zinc-900">
+                      {stats.accuracy}%
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
             <div
               className="mx-auto mb-8 w-32 h-32 rounded-full flex items-center justify-center"
@@ -201,7 +298,12 @@ const QuestPage = ({ params }: QuestPageProps) => {
               Back to Vault
             </button>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5 text-sm font-medium text-zinc-600">
+                <Clock className="h-4 w-4" />
+                <span>{formatTime(currentTime)}</span>
+              </div>
+              <div className="h-4 w-px bg-zinc-300" />
               <span className="text-sm font-medium text-zinc-600">
                 {currentLevel} / {totalPuzzles}
               </span>

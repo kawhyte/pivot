@@ -21,6 +21,11 @@ export const questProgress = pgTable('quest_progress', {
   currentLevel: integer('current_level').default(1).notNull(), // Which puzzle in the path
   completedAt: timestamp('completed_at'),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  // Performance tracking
+  timeTaken: integer('time_taken'), // milliseconds
+  accuracy: integer('accuracy'), // 0-100
+  mistakes: integer('mistakes'), // Total mistakes (0.5 for close, 1.0 for incorrect, stored as mistakes * 10)
+  themedTitle: text('themed_title'), // "Monica Approved 🧹", etc.
 }, (table) => ({
   userPathIdx: uniqueIndex('user_path_idx').on(table.userId, table.pathId),
 }));
