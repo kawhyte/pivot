@@ -171,6 +171,7 @@ export const validateAnswer = (
     default:
       return {
         isCorrect: false,
+        status: 'incorrect',
         message: 'Unknown puzzle type',
       };
   }

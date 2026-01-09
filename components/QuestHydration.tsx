@@ -51,7 +51,7 @@ export const QuestHydration = () => {
       if (activeUserId) {
         try {
           const completedPaths = await fetchUserProgress(activeUserId);
-          hydrateFromDatabase(completedPaths);
+          hydrateFromDatabase(completedPaths as any);
         } catch (error) {
           console.error('Failed to hydrate from database:', error);
         }

@@ -75,3 +75,25 @@ export interface ValidationResult {
   showHint?: boolean;
   distance?: number; // Edit distance for analytics/debugging
 }
+
+/**
+ * Path Progress - Non-linear navigation tracking
+ * Replaces the linear "currentLevel" model
+ */
+export interface PathProgress {
+  completedIds: string[];      // Puzzle IDs answered correctly
+  skippedIds: string[];         // Puzzle IDs skipped (can return later)
+  mistakes: number;             // Running mistake count (0.5 for close, 1.0 for wrong)
+  startTime: number | null;     // Session start timestamp
+  bestTime?: number;            // Personal best completion time
+}
+
+/**
+ * Themed Bonus Coupon for perfect runs
+ */
+export interface Coupon {
+  id: string;
+  title: string;
+  description: string;
+  theme: string;                // e.g., "friends", "gilmore", "travel", "personal"
+}

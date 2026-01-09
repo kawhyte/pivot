@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import type { PathProgress } from '@/types/puzzle';
+import { getPathPuzzles, getTotalPuzzles, TARGET_SCORES } from '@/data/puzzles';
 
 /**
  * Path IDs mapping
@@ -74,8 +76,11 @@ interface QuestState {
   // Unlocked paths based on daily drops
   unlockedPaths: PathId[];
 
-  // Current level within each path
-  pathLevels: Record<PathId, number>;
+  // Non-linear progress tracking per path (replaces pathLevels)
+  pathProgress: Record<PathId, PathProgress>;
+
+  // Currently viewing puzzle (for non-linear navigation)
+  currentPuzzleId: string | null;
 
   // Performance stats for each completed path
   pathStats: Partial<Record<PathId, PathStats>>;
@@ -94,9 +99,15 @@ interface QuestState {
   setActivePath: (pathId: PathId | null) => void;
   addKey: (pathId: PathId, stats?: PathStats) => Promise<void>;
   setUnlockedPaths: (paths: PathId[]) => void;
-  updatePathLevel: (pathId: PathId, level: number) => Promise<void>;
+  setCurrentPuzzle: (puzzleId: string | null) => void;
+  submitAnswer: (pathId: PathId, puzzleId: string, isCorrect: boolean, mistakeWeight?: number) => Promise<void>;
+  skipPuzzle: (pathId: PathId, puzzleId: string) => void;
   setPathStats: (pathId: PathId, stats: PathStats) => void;
   getPathStats: (pathId: PathId) => PathStats | undefined;
+  getPathScore: (pathId: PathId) => number;
+  isPerfectRun: (pathId: PathId) => boolean;
+  isPathUnlocked: (pathId: PathId) => boolean;
+  getNextUnsolvedPuzzle: (pathId: PathId) => string | null;
   hydrateFromDatabase: (completedPaths: PathId[]) => void;
   checkVaultStatus: () => void;
   setHasSeenIntro: (value: boolean) => void;
@@ -111,11 +122,27 @@ const initialState = {
   activePath: null,
   keysCollected: [],
   unlockedPaths: [],
-  pathLevels: {
-    [PATH_IDS.POP_CULTURE]: 1,
-    [PATH_IDS.RENAISSANCE]: 1,
-    [PATH_IDS.HEART]: 1,
+  pathProgress: {
+    [PATH_IDS.POP_CULTURE]: {
+      completedIds: [],
+      skippedIds: [],
+      mistakes: 0,
+      startTime: null,
+    },
+    [PATH_IDS.RENAISSANCE]: {
+      completedIds: [],
+      skippedIds: [],
+      mistakes: 0,
+      startTime: null,
+    },
+    [PATH_IDS.HEART]: {
+      completedIds: [],
+      skippedIds: [],
+      mistakes: 0,
+      startTime: null,
+    },
   },
+  currentPuzzleId: null,
   pathStats: {},
   isVaultUnlocked: false,
   hasSeenIntro: false,
@@ -168,22 +195,90 @@ export const useQuestStore = create<QuestState>()(
 
       setUnlockedPaths: (paths) => set({ unlockedPaths: paths }),
 
-      updatePathLevel: async (pathId, level) => {
-        // OPTIMISTIC: Update local state immediately
-        set((state) => ({
-          pathLevels: { ...state.pathLevels, [pathId]: level },
-        }));
+      setCurrentPuzzle: (puzzleId) => set({ currentPuzzleId: puzzleId }),
 
-        // BACKGROUND: Sync to database
-        const { userId } = get();
-        if (userId) {
-          try {
-            const { syncPathLevel } = await import('@/app/actions/quest');
-            await syncPathLevel(userId, pathId, level);
-          } catch (error) {
-            console.error('Failed to sync path level:', error);
+      submitAnswer: async (pathId, puzzleId, isCorrect, mistakeWeight = 1.0) => {
+        // Update progress in store
+        set((state) => {
+          const progress = { ...state.pathProgress[pathId] };
+
+          if (isCorrect) {
+            // Add to completed, remove from skipped
+            if (!progress.completedIds.includes(puzzleId)) {
+              progress.completedIds.push(puzzleId);
+            }
+            progress.skippedIds = progress.skippedIds.filter((id) => id !== puzzleId);
+          } else {
+            // Increment mistakes (0.5 for "close", 1.0 for "incorrect")
+            progress.mistakes += mistakeWeight;
           }
+
+          return {
+            pathProgress: { ...state.pathProgress, [pathId]: progress },
+          };
+        });
+
+        // Check if key should be unlocked
+        const score = get().getPathScore(pathId);
+        const threshold = TARGET_SCORES[pathId];
+        if (score >= threshold && !get().keysCollected.includes(pathId)) {
+          // Auto-unlock key!
+          await get().addKey(pathId);
         }
+      },
+
+      skipPuzzle: (pathId, puzzleId) => {
+        set((state) => {
+          const progress = { ...state.pathProgress[pathId] };
+
+          // Only add to skipped if not already completed
+          if (
+            !progress.completedIds.includes(puzzleId) &&
+            !progress.skippedIds.includes(puzzleId)
+          ) {
+            progress.skippedIds.push(puzzleId);
+          }
+
+          return {
+            pathProgress: { ...state.pathProgress, [pathId]: progress },
+          };
+        });
+      },
+
+      getPathScore: (pathId) => {
+        const progress = get().pathProgress[pathId];
+        const pathConfig = getPathPuzzles(pathId);
+        if (!pathConfig) return 0;
+
+        return progress.completedIds.reduce((total, puzzleId) => {
+          const puzzle = pathConfig.puzzles.find((p) => p.id === puzzleId);
+          return total + (puzzle?.points || 0);
+        }, 0);
+      },
+
+      isPerfectRun: (pathId) => {
+        const progress = get().pathProgress[pathId];
+        const totalPuzzles = getTotalPuzzles(pathId);
+        return progress.completedIds.length === totalPuzzles && progress.mistakes === 0;
+      },
+
+      isPathUnlocked: (pathId) => {
+        const score = get().getPathScore(pathId);
+        const threshold = TARGET_SCORES[pathId];
+        return score >= threshold;
+      },
+
+      getNextUnsolvedPuzzle: (pathId) => {
+        const progress = get().pathProgress[pathId];
+        const pathConfig = getPathPuzzles(pathId);
+        if (!pathConfig) return null;
+
+        // Find first puzzle that's neither completed nor skipped
+        const unsolved = pathConfig.puzzles.find(
+          (p) => !progress.completedIds.includes(p.id) && !progress.skippedIds.includes(p.id)
+        );
+
+        return unsolved?.id || null;
       },
 
       setPathStats: (pathId, stats) => {
@@ -243,13 +338,64 @@ export const useQuestStore = create<QuestState>()(
         });
       },
 
-      resetQuest: () => set(initialState),
+      resetQuest: () => {
+        set(initialState);
+      },
     }),
     {
       name: 'birthday-quest-storage',
       storage: createJSONStorage(() => localStorage),
       // Only persist userId - everything else comes from database
       partialize: (state) => ({ userId: state.userId }),
+      // Migration: Convert old pathLevels to pathProgress
+      migrate: (persistedState: any, version: number) => {
+        if (version === 0) {
+          // Legacy state with pathLevels
+          const newState = { ...persistedState };
+          if (persistedState.pathLevels && !persistedState.pathProgress) {
+            const pathProgress: Record<PathId, PathProgress> = {
+              [PATH_IDS.POP_CULTURE]: {
+                completedIds: [],
+                skippedIds: [],
+                mistakes: 0,
+                startTime: null,
+              },
+              [PATH_IDS.RENAISSANCE]: {
+                completedIds: [],
+                skippedIds: [],
+                mistakes: 0,
+                startTime: null,
+              },
+              [PATH_IDS.HEART]: {
+                completedIds: [],
+                skippedIds: [],
+                mistakes: 0,
+                startTime: null,
+              },
+            };
+
+            // Migrate level progression: mark puzzles as completed up to current level
+            for (const pathIdStr in persistedState.pathLevels) {
+              const pathId = Number(pathIdStr) as PathId;
+              const level = persistedState.pathLevels[pathId];
+              const pathConfig = getPathPuzzles(pathId);
+
+              if (pathConfig && level > 1) {
+                // Mark first (level - 1) puzzles as completed
+                for (let i = 0; i < Math.min(level - 1, pathConfig.puzzles.length); i++) {
+                  pathProgress[pathId].completedIds.push(pathConfig.puzzles[i].id);
+                }
+              }
+            }
+
+            newState.pathProgress = pathProgress;
+            delete newState.pathLevels;
+          }
+          return newState;
+        }
+        return persistedState;
+      },
+      version: 1,
     }
   )
 );

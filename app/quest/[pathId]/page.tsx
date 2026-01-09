@@ -6,9 +6,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { ArrowLeft, Trophy, Sparkles, Clock } from 'lucide-react';
 import { useQuestStore, PATH_METADATA, type PathId } from '@/store/useQuestStore';
-import { getPuzzle, getTotalPuzzles } from '@/data/puzzles';
+import { getPuzzleById, getTotalPuzzles, getRandomCoupon, TARGET_SCORES } from '@/data/puzzles';
 import { validateAnswer } from '@/lib/puzzle-validator';
 import { PuzzleRenderer } from '@/components/puzzles/PuzzleRenderer';
+import { QuestionNavigator } from '@/components/puzzles/QuestionNavigator';
 import { formatTime, calculateAccuracy, getThemedTitle } from '@/lib/themed-titles';
 import { getThemedAchievement } from '@/lib/achievements';
 import { PerformanceSummary } from '@/components/quest/PerformanceSummary';
@@ -24,35 +25,54 @@ const QuestPage = ({ params }: QuestPageProps) => {
   const pathId = parseInt(pathIdString) as PathId;
 
   const {
-    pathLevels,
-    updatePathLevel,
+    pathProgress,
+    currentPuzzleId,
+    setCurrentPuzzle,
+    submitAnswer,
+    skipPuzzle,
     addKey,
     keysCollected,
     getPathStats,
+    getPathScore,
+    isPerfectRun,
+    isPathUnlocked,
+    getNextUnsolvedPuzzle,
     startNewRun,
     recordMistake,
     resetRun,
     currentRun,
   } = useQuestStore();
 
-  const [currentLevel, setCurrentLevel] = useState(pathLevels[pathId] || 1);
   const [showHint, setShowHint] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [showCompletion, setShowCompletion] = useState(false);
+  const [keyJustUnlocked, setKeyJustUnlocked] = useState(false);
 
   // Timer & performance tracking
   const [startTime, setStartTime] = useState<number>(Date.now());
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0); // For live display
-  const [mistakesThisPath, setMistakesThisPath] = useState<number>(0);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const totalPuzzles = getTotalPuzzles(pathId);
-  const puzzle = getPuzzle(pathId, currentLevel - 1);
+  const puzzle = currentPuzzleId ? getPuzzleById(pathId, currentPuzzleId) : null;
   const pathMeta = PATH_METADATA[pathId];
   const isPathCompleted = keysCollected.includes(pathId);
+  const progress = pathProgress[pathId];
+  const currentScore = getPathScore(pathId);
+  const targetScore = TARGET_SCORES[pathId];
+
+  // Initialize: Set current puzzle to first unsolved
+  useEffect(() => {
+    if (!currentPuzzleId) {
+      const nextPuzzle = getNextUnsolvedPuzzle(pathId);
+      if (nextPuzzle) {
+        setCurrentPuzzle(nextPuzzle);
+      }
+    }
+  }, [pathId, currentPuzzleId, setCurrentPuzzle, getNextUnsolvedPuzzle]);
 
   // Start a new run when path loads
   useEffect(() => {
@@ -64,10 +84,16 @@ const QuestPage = ({ params }: QuestPageProps) => {
 
   // Redirect if path is invalid or already completed
   useEffect(() => {
-    if (!puzzle && !isPathCompleted) {
+    if (isPathCompleted) {
+      // Can stay on page to show completion screen
+      return;
+    }
+
+    if (!puzzle && currentPuzzleId) {
+      // If we have a puzzle ID but can't find the puzzle, redirect
       router.push('/');
     }
-  }, [puzzle, isPathCompleted, router]);
+  }, [puzzle, currentPuzzleId, isPathCompleted, router]);
 
   // Timer: Update current time every second
   useEffect(() => {
@@ -136,8 +162,26 @@ const QuestPage = ({ params }: QuestPageProps) => {
     }, 400);
   };
 
+  const handleNavigate = (puzzleId: string) => {
+    setCurrentPuzzle(puzzleId);
+    setFeedback(null);
+    setValidationResult(null);
+    setShowHint(false);
+  };
+
+  const handleSkip = () => {
+    if (!currentPuzzleId) return;
+    skipPuzzle(pathId, currentPuzzleId);
+
+    // Navigate to next unsolved
+    const nextPuzzle = getNextUnsolvedPuzzle(pathId);
+    if (nextPuzzle) {
+      handleNavigate(nextPuzzle);
+    }
+  };
+
   const handleSubmit = async (answer: string | number) => {
-    if (!puzzle || isSubmitting) return;
+    if (!puzzle || !currentPuzzleId || isSubmitting) return;
 
     setIsSubmitting(true);
     setFeedback(null);
@@ -152,50 +196,61 @@ const QuestPage = ({ params }: QuestPageProps) => {
       setFeedback({ type: 'success', message: result.message });
       fireConfetti();
 
-      // Check if path is complete
-      if (currentLevel >= totalPuzzles) {
-        // Stop timer and calculate stats
-        const finalTime = elapsedTime + (Date.now() - startTime);
-        const accuracy = calculateAccuracy(totalPuzzles, mistakesThisPath);
-        const themedTitle = getThemedTitle(pathId, accuracy);
+      // Submit correct answer to store
+      await submitAnswer(pathId, currentPuzzleId, true);
 
-        const stats = {
-          completionTime: finalTime,
-          accuracy,
-          mistakes: mistakesThisPath,
-          themedTitle,
-          completedAt: Date.now(),
-        };
+      // Check if key just unlocked (it auto-unlocks in submitAnswer at 81%)
+      const wasAlreadyUnlocked = keysCollected.includes(pathId);
+      const nowUnlocked = isPathUnlocked(pathId);
+      if (!wasAlreadyUnlocked && nowUnlocked) {
+        setKeyJustUnlocked(true);
+      }
 
-        setTimeout(() => {
+      // Check if all puzzles are now completed
+      const allCompleted = progress.completedIds.length + 1 === totalPuzzles;
+
+      setTimeout(() => {
+        if (allCompleted) {
+          // Show completion screen
+          const finalTime = elapsedTime + (Date.now() - startTime);
+          const accuracy = calculateAccuracy(totalPuzzles, progress.mistakes);
+          const themedTitle = getThemedTitle(pathId, accuracy);
+
+          const stats = {
+            completionTime: finalTime,
+            accuracy,
+            mistakes: progress.mistakes,
+            themedTitle,
+            completedAt: Date.now(),
+          };
+
           setShowCompletion(true);
-          addKey(pathId, stats);
-          updatePathLevel(pathId, totalPuzzles);
-        }, 1500);
-      } else {
-        // Move to next puzzle
-        setTimeout(() => {
-          const nextLevel = currentLevel + 1;
-          setCurrentLevel(nextLevel);
-          updatePathLevel(pathId, nextLevel);
+          if (!keysCollected.includes(pathId)) {
+            addKey(pathId, stats);
+          }
+        } else {
+          // Move to next unsolved puzzle
+          const nextPuzzle = getNextUnsolvedPuzzle(pathId);
+          if (nextPuzzle) {
+            handleNavigate(nextPuzzle);
+          }
           setFeedback(null);
           setValidationResult(null);
           setShowHint(false);
-        }, 1500);
-      }
+        }
+      }, 1500);
     } else if (result.status === 'close') {
       // Track "close" as 0.5 mistakes
-      setMistakesThisPath((prev) => prev + 0.5);
+      await submitAnswer(pathId, currentPuzzleId, false, 0.5);
       recordMistake(); // Update live achievement stakes
 
       // Don't show feedback for "close" - handled by puzzle component
-      // User needs to fix their spelling
       if (result.showHint) {
         setTimeout(() => setShowHint(true), 500);
       }
     } else {
       // Status is "incorrect" - track as 1.0 mistake
-      setMistakesThisPath((prev) => prev + 1.0);
+      await submitAnswer(pathId, currentPuzzleId, false, 1.0);
       recordMistake(); // Update live achievement stakes
 
       setFeedback({ type: 'error', message: result.message });
@@ -214,6 +269,8 @@ const QuestPage = ({ params }: QuestPageProps) => {
   // Path completion screen
   if (showCompletion || isPathCompleted) {
     const stats = getPathStats(pathId);
+    const isPerfect = isPerfectRun(pathId);
+    const bonusCoupon = isPerfect ? getRandomCoupon(pathId) : null;
 
     return (
       <div className="flex min-h-screen flex-col bg-gradient-to-br from-zinc-50 to-zinc-100">
@@ -252,6 +309,24 @@ const QuestPage = ({ params }: QuestPageProps) => {
                 accuracy={stats.accuracy}
                 completionTime={stats.completionTime}
               />
+            )}
+
+            {/* Perfect Run Bonus Coupon */}
+            {isPerfect && bonusCoupon && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.0 }}
+                className="my-8"
+              >
+                <p className="mb-4 text-sm font-semibold text-emerald-700">
+                  Perfect Run Bonus!
+                </p>
+                <div className="rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-6">
+                  <p className="text-lg font-bold text-emerald-900">{bonusCoupon.title}</p>
+                  <p className="mt-2 text-sm text-emerald-700">{bonusCoupon.description}</p>
+                </div>
+              </motion.div>
             )}
 
             <div
@@ -301,19 +376,22 @@ const QuestPage = ({ params }: QuestPageProps) => {
                 <span>{formatTime(currentTime)}</span>
               </div>
               <div className="h-4 w-px bg-zinc-300" />
-              <span className="text-sm font-medium text-zinc-600">
-                {currentLevel} / {totalPuzzles}
-              </span>
-              <div className="h-2 w-24 overflow-hidden rounded-full bg-zinc-200">
-                <motion.div
-                  className="h-full"
-                  style={{ background: pathMeta.colors.primary }}
-                  initial={{ width: 0 }}
-                  animate={{
-                    width: `${(currentLevel / totalPuzzles) * 100}%`,
-                  }}
-                  transition={{ duration: 0.5 }}
-                />
+              {/* Points Meter */}
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-zinc-600">
+                  {currentScore} / {targetScore} pts
+                </span>
+                <div className="h-2 w-24 overflow-hidden rounded-full bg-zinc-200">
+                  <motion.div
+                    className="h-full"
+                    style={{ background: pathMeta.colors.primary }}
+                    initial={{ width: 0 }}
+                    animate={{
+                      width: `${Math.min((currentScore / targetScore) * 100, 100)}%`,
+                    }}
+                    transition={{ duration: 0.5 }}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -322,6 +400,15 @@ const QuestPage = ({ params }: QuestPageProps) => {
 
       {/* Main Content */}
       <main className="flex flex-1 flex-col px-6 py-12">
+        {/* Question Navigator Grid */}
+        {currentPuzzleId && (
+          <QuestionNavigator
+            pathId={pathId}
+            currentPuzzleId={currentPuzzleId}
+            onNavigate={handleNavigate}
+          />
+        )}
+
         <AnimatePresence mode="wait">
           <motion.div
             key={puzzle.id}
@@ -340,6 +427,23 @@ const QuestPage = ({ params }: QuestPageProps) => {
               currentMistakes={currentRun.mistakes}
               elapsedTime={currentTime}
             />
+
+            {/* Skip Button */}
+            {!isSubmitting && currentPuzzleId && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="mx-auto mt-4 w-full max-w-lg"
+              >
+                <button
+                  onClick={handleSkip}
+                  className="w-full text-center text-sm text-zinc-500 hover:text-zinc-700 transition-colors"
+                >
+                  Skip for Now →
+                </button>
+              </motion.div>
+            )}
           </motion.div>
         </AnimatePresence>
 
