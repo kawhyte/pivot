@@ -1,6 +1,6 @@
 import type { PathConfig, Puzzle, Coupon } from '@/types/puzzle';
-import type { PathId } from '@/store/useQuestStore';
-import { PATH_IDS } from '@/store/useQuestStore';
+import type { PathId } from '@/lib/paths';
+import { PATH_IDS } from '@/lib/paths';
 import { popCulturePath } from './pop-culture';
 import { renaissancePath } from './renaissance';
 import { heartPath } from './heart';

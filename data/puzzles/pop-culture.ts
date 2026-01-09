@@ -1,5 +1,5 @@
 import type { PathConfig } from '@/types/puzzle';
-import { PATH_IDS } from '@/store/useQuestStore';
+import { PATH_IDS } from '@/lib/paths';
 
 /**
  * Pop Culture Path - Friends & Gilmore Girls Themed Puzzles

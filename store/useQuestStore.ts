@@ -1,16 +1,13 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { PathProgress } from '@/types/puzzle';
+import type { PathId } from '@/lib/paths';
+import { PATH_IDS } from '@/lib/paths';
 import { getPathPuzzles, getTotalPuzzles, TARGET_SCORES } from '@/data/puzzles';
 
-/**
- * Path IDs mapping
- */
-export const PATH_IDS = {
-  POP_CULTURE: 1,
-  RENAISSANCE: 2,
-  HEART: 3,
-} as const;
+// Re-export PATH_IDS and PathId for convenience (backward compatibility)
+export { PATH_IDS };
+export type { PathId };
 
 /**
  * Path metadata with colors
@@ -47,8 +44,6 @@ export const PATH_METADATA = {
     unlockDay: 3, // Day 3 of the quest
   },
 } as const;
-
-export type PathId = typeof PATH_IDS[keyof typeof PATH_IDS];
 
 export interface PathStats {
   completionTime: number;     // milliseconds
