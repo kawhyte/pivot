@@ -6,15 +6,14 @@ import { renaissancePath } from './renaissance';
 import { heartPath } from './heart';
 
 /**
- * Point-based unlock thresholds (81% of total points)
- * Pop Culture: 690 total → 558 needed
- * Renaissance: 565 total → 457 needed
- * Heart: 415 total → 336 needed
+ * Point-based unlock thresholds
+ * These are minimum point targets to unlock keys
+ * Easy=1pt, Medium=2pts, Hard=3pts per puzzle
  */
 export const TARGET_SCORES: Record<PathId, number> = {
-  [PATH_IDS.POP_CULTURE]: 558,
-  [PATH_IDS.RENAISSANCE]: 457,
-  [PATH_IDS.HEART]: 336,
+  [PATH_IDS.POP_CULTURE]: 53,
+  [PATH_IDS.RENAISSANCE]: 44,
+  [PATH_IDS.HEART]: 32,
 } as const;
 
 /**

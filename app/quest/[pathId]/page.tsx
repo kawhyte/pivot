@@ -4,7 +4,7 @@ import { use, useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { ArrowLeft, Trophy, Sparkles, Clock } from 'lucide-react';
+import { ArrowLeft, Trophy, Sparkles, Clock, Flag } from 'lucide-react';
 import { useQuestStore, PATH_METADATA, type PathId } from '@/store/useQuestStore';
 import { getPuzzleById, getTotalPuzzles, getRandomCoupon, TARGET_SCORES } from '@/data/puzzles';
 import { validateAnswer } from '@/lib/puzzle-validator';
@@ -13,6 +13,8 @@ import { QuestionNavigator } from '@/components/puzzles/QuestionNavigator';
 import { formatTime, calculateAccuracy, getThemedTitle } from '@/lib/themed-titles';
 import { getThemedAchievement } from '@/lib/achievements';
 import { PerformanceSummary } from '@/components/quest/PerformanceSummary';
+import { KeyUnlockedToast } from '@/components/quest/KeyUnlockedToast';
+import { BonusCoupon } from '@/components/puzzles/BonusCoupon';
 import type { ValidationResult } from '@/types/puzzle';
 
 interface QuestPageProps {
@@ -48,7 +50,7 @@ const QuestPage = ({ params }: QuestPageProps) => {
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [showCompletion, setShowCompletion] = useState(false);
-  const [keyJustUnlocked, setKeyJustUnlocked] = useState(false);
+  const [showKeyUnlockedToast, setShowKeyUnlockedToast] = useState(false);
 
   // Timer & performance tracking
   const [startTime, setStartTime] = useState<number>(Date.now());
@@ -199,19 +201,19 @@ const QuestPage = ({ params }: QuestPageProps) => {
       // Submit correct answer to store
       await submitAnswer(pathId, currentPuzzleId, true);
 
-      // Check if key just unlocked (it auto-unlocks in submitAnswer at 81%)
+      // Check if key just unlocked (score >= targetScore)
       const wasAlreadyUnlocked = keysCollected.includes(pathId);
-      const nowUnlocked = isPathUnlocked(pathId);
-      if (!wasAlreadyUnlocked && nowUnlocked) {
-        setKeyJustUnlocked(true);
+      const isNowUnlocked = getPathScore(pathId) >= targetScore;
+      if (!wasAlreadyUnlocked && isNowUnlocked) {
+        setShowKeyUnlockedToast(true);
       }
 
-      // Check if all puzzles are now completed
+      // Check if all puzzles are now completed (Perfect Run scenario)
       const allCompleted = progress.completedIds.length + 1 === totalPuzzles;
 
       setTimeout(() => {
         if (allCompleted) {
-          // Show completion screen
+          // Show completion screen - Perfect Run Bonus applies here
           const finalTime = elapsedTime + (Date.now() - startTime);
           const accuracy = calculateAccuracy(totalPuzzles, progress.mistakes);
           const themedTitle = getThemedTitle(pathId, accuracy);
@@ -229,7 +231,7 @@ const QuestPage = ({ params }: QuestPageProps) => {
             addKey(pathId, stats);
           }
         } else {
-          // Move to next unsolved puzzle
+          // Move to next unsolved puzzle - do NOT auto-complete
           const nextPuzzle = getNextUnsolvedPuzzle(pathId);
           if (nextPuzzle) {
             handleNavigate(nextPuzzle);
@@ -265,6 +267,30 @@ const QuestPage = ({ params }: QuestPageProps) => {
   const handleBackToVault = () => {
     router.push('/');
   };
+
+  const handleFinishAndClaim = () => {
+    // Calculate final stats
+    const finalTime = elapsedTime + (Date.now() - startTime);
+    const accuracy = calculateAccuracy(totalPuzzles, progress.mistakes);
+    const themedTitle = getThemedTitle(pathId, accuracy);
+
+    const stats = {
+      completionTime: finalTime,
+      accuracy,
+      mistakes: progress.mistakes,
+      themedTitle,
+      completedAt: Date.now(),
+    };
+
+    // Show completion screen and add key
+    setShowCompletion(true);
+    if (!keysCollected.includes(pathId)) {
+      addKey(pathId, stats);
+    }
+  };
+
+  // Determine if we can show the Finish & Claim Key button
+  const canClaimKey = currentScore >= targetScore && !isPathCompleted;
 
   // Path completion screen
   if (showCompletion || isPathCompleted) {
@@ -313,20 +339,7 @@ const QuestPage = ({ params }: QuestPageProps) => {
 
             {/* Perfect Run Bonus Coupon */}
             {isPerfect && bonusCoupon && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.0 }}
-                className="my-8"
-              >
-                <p className="mb-4 text-sm font-semibold text-emerald-700">
-                  Perfect Run Bonus!
-                </p>
-                <div className="rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-6">
-                  <p className="text-lg font-bold text-emerald-900">{bonusCoupon.title}</p>
-                  <p className="mt-2 text-sm text-emerald-700">{bonusCoupon.description}</p>
-                </div>
-              </motion.div>
+              <BonusCoupon coupon={bonusCoupon} pathId={pathId} />
             )}
 
             <div
@@ -361,7 +374,7 @@ const QuestPage = ({ params }: QuestPageProps) => {
       {/* Header */}
       <header className="border-b border-zinc-200 bg-white/80 backdrop-blur-sm">
         <div className="mx-auto max-w-3xl px-6 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
             <button
               onClick={handleBackToVault}
               className="flex items-center gap-2 text-sm font-medium text-zinc-700 hover:text-zinc-900"
@@ -393,10 +406,44 @@ const QuestPage = ({ params }: QuestPageProps) => {
                   />
                 </div>
               </div>
+
+              {/* Finish & Claim Key Button */}
+              {canClaimKey && (
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  onClick={handleFinishAndClaim}
+                  className="ml-2 rounded-full px-4 py-2 font-semibold text-white text-sm flex items-center gap-2 transition-all"
+                  style={{
+                    background: pathMeta.colors.primary,
+                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <motion.div
+                    animate={{ scale: [1, 1.15, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    <Flag className="h-4 w-4" />
+                  </motion.div>
+                  Finish & Claim Key
+                </motion.button>
+              )}
             </div>
           </div>
         </div>
       </header>
+
+      {/* Key Unlocked Toast */}
+      <AnimatePresence>
+        {showKeyUnlockedToast && (
+          <KeyUnlockedToast
+            pathId={pathId}
+            onDismiss={() => setShowKeyUnlockedToast(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Main Content */}
       <main className="flex flex-1 flex-col px-6 py-12">
