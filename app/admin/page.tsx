@@ -28,15 +28,15 @@ const AdminPage = async () => {
   // Calculate stats
   const totalUsers = allProgress.length;
   const totalKeys = allProgress.reduce(
-    (sum, { progress }) => sum + progress.filter((p) => p.isCompleted).length,
+    (sum, { progress }) => sum + progress.filter((p: any) => p.isCompleted).length,
     0
   );
 
   // Get all activity sorted by time
   const allActivity = allProgress.flatMap(({ user, progress }) =>
     progress
-      .filter((p) => p.completedAt)
-      .map((p) => ({
+      .filter((p: any) => p.completedAt)
+      .map((p: any) => ({
         userId: user.id,
         pathId: p.pathId,
         completedAt: p.completedAt!,
@@ -167,11 +167,11 @@ const AdminPage = async () => {
                 </TableHeader>
                 <TableBody className="divide-y divide-zinc-800">
                   {allProgress.map(({ user, progress }) => {
-                    const path1 = progress.find((p) => p.pathId === 1);
-                    const path2 = progress.find((p) => p.pathId === 2);
-                    const path3 = progress.find((p) => p.pathId === 3);
+                    const path1 = progress.find((p: any) => p.pathId === 1);
+                    const path2 = progress.find((p: any) => p.pathId === 2);
+                    const path3 = progress.find((p: any) => p.pathId === 3);
                     const completedCount = progress.filter(
-                      (p) => p.isCompleted
+                      (p: any) => p.isCompleted
                     ).length;
 
                     return (

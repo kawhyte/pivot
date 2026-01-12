@@ -59,6 +59,12 @@ export interface CurrentRun {
 }
 
 interface QuestState {
+  // Authentication state
+  isAuthenticated: boolean;
+  agentName: string;
+  agentRole: string;
+  agentId: number | null;
+
   // User ID for database persistence
   userId: number | null;
 
@@ -90,6 +96,7 @@ interface QuestState {
   currentRun: CurrentRun;
 
   // Actions
+  setAuthentication: (isAuthenticated: boolean, agentName: string, agentRole: string, agentId: number) => void;
   setUserId: (id: number) => void;
   setActivePath: (pathId: PathId | null) => void;
   addKey: (pathId: PathId, stats?: PathStats) => Promise<void>;
@@ -113,6 +120,10 @@ interface QuestState {
 }
 
 const initialState = {
+  isAuthenticated: false,
+  agentName: '',
+  agentRole: '',
+  agentId: null,
   userId: null,
   activePath: null,
   keysCollected: [],
@@ -151,6 +162,9 @@ export const useQuestStore = create<QuestState>()(
   persist(
     (set, get) => ({
       ...initialState,
+
+      setAuthentication: (isAuthenticated, agentName, agentRole, agentId) =>
+        set({ isAuthenticated, agentName, agentRole, agentId, userId: agentId }),
 
       setUserId: (id) => set({ userId: id }),
 
@@ -340,8 +354,14 @@ export const useQuestStore = create<QuestState>()(
     {
       name: 'birthday-quest-storage',
       storage: createJSONStorage(() => localStorage),
-      // Only persist userId - everything else comes from database
-      partialize: (state) => ({ userId: state.userId }),
+      // Persist authentication state and userId
+      partialize: (state) => ({
+        isAuthenticated: state.isAuthenticated,
+        agentName: state.agentName,
+        agentRole: state.agentRole,
+        agentId: state.agentId,
+        userId: state.userId,
+      }),
       // Migration: Convert old pathLevels to pathProgress
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {

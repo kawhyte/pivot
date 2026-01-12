@@ -173,7 +173,7 @@ export async function fetchUserProgress(userId: number): Promise<number[]> {
         )
       );
 
-    return progress.map((p) => p.pathId);
+    return progress.map((p: { pathId: number }) => p.pathId);
   } catch (error) {
     console.error('Failed to fetch user progress:', error);
     return [];
@@ -207,7 +207,7 @@ export async function fetchAllProgress() {
     const allUsers = await db.select().from(users);
 
     const progressData = await Promise.all(
-      allUsers.map(async (user) => {
+      allUsers.map(async (user: typeof users.$inferSelect) => {
         const progress = await db
           .select()
           .from(questProgress)
