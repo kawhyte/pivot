@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Gift, Sparkles } from 'lucide-react';
+import { Gift, Sparkles, Star, Trophy, Target } from 'lucide-react';
 
 interface CountdownProps {
   targetDate: Date;
@@ -82,7 +82,7 @@ export const QuestCountdown = ({ targetDate, onComplete }: CountdownProps) => {
         initial={{ opacity: 1 }}
         animate={{ opacity: 0, scale: 1.2 }}
         transition={{ duration: 1.5 }}
-        className="flex min-h-screen items-center justify-center bg-gradient-to-br from-festive-cream via-festive-peach/30 to-festive-cream"
+        className="flex min-h-screen items-center justify-center bg-warm-cream"
       >
         <motion.div
           animate={{
@@ -91,14 +91,14 @@ export const QuestCountdown = ({ targetDate, onComplete }: CountdownProps) => {
           }}
           transition={{ duration: 1.5 }}
         >
-          <Gift className="h-32 w-32 text-festive-coral" />
+          <Gift className="h-32 w-32 text-starbucks-green" />
         </motion.div>
       </motion.div>
     );
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-festive-cream via-festive-peach/30 to-festive-cream px-6 py-12 relative overflow-hidden">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-warm-cream px-6 py-12 relative overflow-hidden">
       {/* Floating Decorations */}
       <motion.div
         className="absolute top-10 left-10"
@@ -112,7 +112,7 @@ export const QuestCountdown = ({ targetDate, onComplete }: CountdownProps) => {
           ease: 'easeInOut',
         }}
       >
-        <Sparkles className="h-12 w-12 text-festive-gold opacity-30" />
+        <Sparkles className="h-12 w-12 text-celebration-gold opacity-30" />
       </motion.div>
 
       <motion.div
@@ -128,72 +128,184 @@ export const QuestCountdown = ({ targetDate, onComplete }: CountdownProps) => {
           delay: 1,
         }}
       >
-        <Gift className="h-16 w-16 text-festive-coral opacity-20" />
+        <Gift className="h-16 w-16 text-celebration-pink opacity-20" />
       </motion.div>
 
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-12 text-center relative z-10"
-      >
+      <div className="max-w-4xl w-full relative z-10">
+        {/* PLACEHOLDER 1: Birthday Hero Photo - Polaroid Frame */}
         <motion.div
-          animate={{
-            y: [0, -10, 0],
-            rotate: [0, 5, -5, 0],
+          initial={{ opacity: 0, scale: 0.8, rotate: -3 }}
+          animate={{ opacity: 1, scale: 1, rotate: 3 }}
+          transition={{
+            duration: 0.6,
+            type: 'spring',
+            stiffness: 300,
+            damping: 20
           }}
-          transition={{ duration: 3, repeat: Infinity }}
-          className="mb-6 flex justify-center"
+          className="mb-12 flex justify-center"
         >
-          <Gift className="h-20 w-20 text-festive-coral" strokeWidth={2} />
+          <div
+            className="bg-white p-5 shadow-2xl hand-drawn-border border-starbucks-green relative"
+            style={{ transform: 'rotate(3deg)' }}
+          >
+            <div className="w-72 h-72 bg-gray-200 flex items-center justify-center relative overflow-hidden">
+              {/* Placeholder for Birthday Hero Photo */}
+              <div className="absolute inset-0 bg-gradient-to-br from-celebration-pink/20 to-celebration-gold/20" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Star className="h-20 w-20 text-starbucks-green/30" strokeWidth={1} />
+              </div>
+              <p className="relative text-center font-accent text-deep-brown/50 text-base px-4 z-10">
+                [Birthday Hero Photo]
+              </p>
+            </div>
+            <p className="mt-4 text-center font-accent text-deep-brown/70 text-base leading-relaxed">
+              The Adventure Begins...
+            </p>
+          </div>
         </motion.div>
-        <h1 className="text-4xl font-display text-festive-brown mb-3">
-          Your Quest Begins Soon!
-        </h1>
-        <p className="font-accent text-lg text-festive-brown/70">
-          A birthday adventure awaits
-        </p>
-      </motion.div>
 
-      {/* Countdown Display - Festive Ornaments */}
-      <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 sm:gap-8 relative z-10">
-        <CountdownUnit
-          label="Days"
-          value={timeLeft.days}
-          prevValue={prevTimeLeft?.days}
-          color="festive-coral"
-        />
-        <CountdownUnit
-          label="Hours"
-          value={timeLeft.hours}
-          prevValue={prevTimeLeft?.hours}
-          color="festive-gold"
-        />
-        <CountdownUnit
-          label="Minutes"
-          value={timeLeft.minutes}
-          prevValue={prevTimeLeft?.minutes}
-          color="festive-green"
-        />
-        <CountdownUnit
-          label="Seconds"
-          value={timeLeft.seconds}
-          prevValue={prevTimeLeft?.seconds}
-          color="festive-coral"
-        />
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8 text-center"
+        >
+          <h1 className="text-4xl md:text-5xl font-display leading-tight text-starbucks-green mb-3">
+            Your Quest Begins Soon!
+          </h1>
+          <p className="font-accent text-xl text-deep-brown/70">
+            A birthday adventure awaits
+          </p>
+        </motion.div>
+
+        {/* Countdown Display */}
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 sm:gap-8 mb-12 justify-items-center">
+          <CountdownUnit
+            label="Days"
+            value={timeLeft.days}
+            prevValue={prevTimeLeft?.days}
+            color="starbucks-green"
+          />
+          <CountdownUnit
+            label="Hours"
+            value={timeLeft.hours}
+            prevValue={prevTimeLeft?.hours}
+            color="celebration-gold"
+          />
+          <CountdownUnit
+            label="Minutes"
+            value={timeLeft.minutes}
+            prevValue={prevTimeLeft?.minutes}
+            color="celebration-pink"
+          />
+          <CountdownUnit
+            label="Seconds"
+            value={timeLeft.seconds}
+            prevValue={prevTimeLeft?.seconds}
+            color="starbucks-green"
+          />
+        </div>
+
+        {/* Mission Briefing Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-soft-white p-8 shadow-xl hand-drawn-border border-starbucks-green relative"
+        >
+          {/* Decorative Corner Stars */}
+          <Star className="absolute top-3 right-3 h-6 w-6 text-celebration-gold/40" fill="currentColor" />
+          <Star className="absolute bottom-3 left-3 h-5 w-5 text-celebration-pink/40" fill="currentColor" />
+
+          <h2 className="text-2xl font-display text-starbucks-green mb-4 text-center">
+            🎯 Mission Briefing
+          </h2>
+
+          <div className="font-accent text-deep-brown/80 text-lg leading-relaxed space-y-4">
+            <p>
+              <strong className="text-starbucks-green">Your Mission:</strong> Complete 3 themed quest paths
+              to unlock the Grand Vault and reveal your birthday surprise!
+            </p>
+
+            <div className="grid md:grid-cols-3 gap-4 my-6">
+              <motion.div
+                className="hand-drawn-card bg-white p-4 border-2 border-celebration-pink"
+                whileHover={{ scale: 1.05, rotate: 2 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              >
+                <div className="text-center">
+                  <Trophy className="h-8 w-8 mx-auto mb-2 text-celebration-pink" />
+                  <h3 className="font-display text-sm text-deep-brown mb-1">Pop Culture</h3>
+                  <p className="text-xs text-deep-brown/60">TV, Movies & Fun</p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="hand-drawn-card bg-white p-4 border-2 border-celebration-gold"
+                whileHover={{ scale: 1.05, rotate: -2 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              >
+                <div className="text-center">
+                  <Star className="h-8 w-8 mx-auto mb-2 text-celebration-gold" fill="currentColor" />
+                  <h3 className="font-display text-sm text-deep-brown mb-1">Renaissance</h3>
+                  <p className="text-xs text-deep-brown/60">Knowledge & Facts</p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="hand-drawn-card bg-white p-4 border-2 border-starbucks-green"
+                whileHover={{ scale: 1.05, rotate: 2 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              >
+                <div className="text-center">
+                  <Gift className="h-8 w-8 mx-auto mb-2 text-starbucks-green" />
+                  <h3 className="font-display text-sm text-deep-brown mb-1">Heart</h3>
+                  <p className="text-xs text-deep-brown/60">Personal Memories</p>
+                </div>
+              </motion.div>
+            </div>
+
+            <div className="bg-celebration-gold/10 p-4 rounded-lg hand-drawn border-2 border-celebration-gold/30">
+              <p className="mb-2">
+                <Target className="inline h-5 w-5 mr-2 text-starbucks-green" />
+                <strong className="text-starbucks-green">Point System:</strong>
+              </p>
+              <ul className="ml-8 space-y-1 text-base">
+                <li>🟢 Easy Questions = <strong>1 point</strong></li>
+                <li>🟡 Medium Questions = <strong>2 points</strong></li>
+                <li>🔴 Hard Questions = <strong>3 points</strong></li>
+              </ul>
+            </div>
+
+            <div className="bg-celebration-pink/10 p-4 rounded-lg hand-drawn border-2 border-celebration-pink/30">
+              <p className="mb-2">
+                <Sparkles className="inline h-5 w-5 mr-2 text-celebration-pink" />
+                <strong className="text-starbucks-green">Perfect Run Bonus:</strong>
+              </p>
+              <p className="ml-8 text-base">
+                Answer <strong>every question correctly</strong> on your first try to unlock
+                a <strong className="text-celebration-pink">special bonus surprise!</strong> 🎁
+              </p>
+            </div>
+
+            <p className="text-center text-base pt-2">
+              Earn enough points on each path to collect your key and unlock the vault! ✨
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Footer */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-8 text-center"
+        >
+          <p className="font-accent text-deep-brown/60 text-lg">
+            Get ready for something special ✨
+          </p>
+        </motion.div>
       </div>
-
-      {/* Footer */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="mt-16 text-center relative z-10"
-      >
-        <p className="font-accent text-festive-brown/60">
-          Get ready for something special
-        </p>
-      </motion.div>
     </div>
   );
 };
@@ -212,9 +324,9 @@ const CountdownUnit = ({ label, value, prevValue, color }: CountdownUnitProps) =
 
   // Color mapping
   const colorClasses = {
-    'festive-coral': 'bg-festive-coral',
-    'festive-gold': 'bg-festive-gold',
-    'festive-green': 'bg-festive-green',
+    'starbucks-green': 'bg-starbucks-green',
+    'celebration-gold': 'bg-celebration-gold',
+    'celebration-pink': 'bg-celebration-pink',
   };
 
   return (
@@ -232,7 +344,7 @@ const CountdownUnit = ({ label, value, prevValue, color }: CountdownUnitProps) =
         className="relative"
       >
         {/* Ornament String */}
-        <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-1 h-6 bg-festive-brown/30 rounded-full" />
+        <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-1 h-6 bg-deep-brown/30 rounded-full" />
 
         {/* Ornament Ball */}
         <div
@@ -255,8 +367,8 @@ const CountdownUnit = ({ label, value, prevValue, color }: CountdownUnitProps) =
                   exit={{ y: 40, opacity: 0, rotate: 20 }}
                   transition={{
                     type: 'spring',
-                    stiffness: 200,
-                    damping: 25,
+                    stiffness: 300,
+                    damping: 20,
                   }}
                   className="text-4xl font-display text-white sm:text-5xl font-bold"
                   style={{
@@ -278,7 +390,7 @@ const CountdownUnit = ({ label, value, prevValue, color }: CountdownUnitProps) =
       </motion.div>
 
       {/* Label */}
-      <p className="mt-4 font-accent text-sm text-festive-brown/70">
+      <p className="mt-4 font-accent text-sm text-deep-brown/70">
         {label}
       </p>
     </div>

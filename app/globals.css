@@ -49,45 +49,45 @@
 
 :root {
   --radius: 0.625rem;
-  /* Festive Warm Palette */
-  --festive-cream: #FFF8F0;
-  --festive-peach: #FFE5D9;
-  --festive-coral: #FF6B6B;
-  --festive-gold: #FFD700;
-  --festive-brown: #8B4513;
-  --festive-green: #2E7D32;
+  /* Starbucks For Life Palette - High Contrast */
+  --starbucks-green: #006241;
+  --warm-cream: #F5F5F5;
+  --celebration-pink: #F9A8D4;
+  --celebration-gold: #FBBF24;
+  --deep-brown: #1F2937;
+  --soft-white: #FAFAFA;
 
-  --background: var(--festive-cream);
-  --foreground: var(--festive-brown);
-  --card: #FFFFFF;
-  --card-foreground: var(--festive-brown);
-  --popover: #FFFFFF;
-  --popover-foreground: var(--festive-brown);
-  --primary: var(--festive-coral);
+  --background: var(--warm-cream);
+  --foreground: var(--deep-brown);
+  --card: var(--soft-white);
+  --card-foreground: var(--deep-brown);
+  --popover: var(--soft-white);
+  --popover-foreground: var(--deep-brown);
+  --primary: var(--starbucks-green);
   --primary-foreground: #FFFFFF;
-  --secondary: var(--festive-peach);
-  --secondary-foreground: var(--festive-brown);
-  --muted: var(--festive-peach);
-  --muted-foreground: #A0826D;
-  --accent: var(--festive-gold);
-  --accent-foreground: var(--festive-brown);
-  --destructive: #D32F2F;
-  --border: #E8D5C4;
-  --input: #E8D5C4;
-  --ring: var(--festive-coral);
-  --chart-1: var(--festive-coral);
-  --chart-2: var(--festive-gold);
-  --chart-3: var(--festive-green);
-  --chart-4: #FF9800;
-  --chart-5: #9C27B0;
-  --sidebar: #FFFFFF;
-  --sidebar-foreground: var(--festive-brown);
-  --sidebar-primary: var(--festive-coral);
+  --secondary: var(--celebration-pink);
+  --secondary-foreground: var(--deep-brown);
+  --muted: #E5E7EB;
+  --muted-foreground: #6B7280;
+  --accent: var(--celebration-gold);
+  --accent-foreground: var(--deep-brown);
+  --destructive: #DC2626;
+  --border: #D1D5DB;
+  --input: #D1D5DB;
+  --ring: var(--starbucks-green);
+  --chart-1: var(--starbucks-green);
+  --chart-2: var(--celebration-gold);
+  --chart-3: var(--celebration-pink);
+  --chart-4: #10B981;
+  --chart-5: #8B5CF6;
+  --sidebar: var(--soft-white);
+  --sidebar-foreground: var(--deep-brown);
+  --sidebar-primary: var(--starbucks-green);
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: var(--festive-peach);
-  --sidebar-accent-foreground: var(--festive-brown);
-  --sidebar-border: #E8D5C4;
-  --sidebar-ring: var(--festive-coral);
+  --sidebar-accent: var(--celebration-pink);
+  --sidebar-accent-foreground: var(--deep-brown);
+  --sidebar-border: #D1D5DB;
+  --sidebar-ring: var(--starbucks-green);
 }
 
 @layer base {
@@ -188,6 +188,109 @@
     border-radius: 245px 20px 235px 20px / 20px 235px 20px 245px;
     opacity: 0.3;
   }
+
+  /* HIGH-CONTRAST FORM ELEMENTS - ACCESSIBILITY PLUS */
+
+  /* Custom Checkbox */
+  input[type="checkbox"] {
+    appearance: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 3px solid var(--starbucks-green);
+    border-radius: 6px;
+    background-color: white;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  input[type="checkbox"]:checked {
+    background-color: var(--starbucks-green);
+    box-shadow: 0 0 0 4px var(--celebration-pink);
+    animation: checkPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+
+  input[type="checkbox"]:focus {
+    outline: 3px solid var(--starbucks-green);
+    outline-offset: 3px;
+  }
+
+  /* Custom Radio Button */
+  input[type="radio"] {
+    appearance: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 3px solid var(--starbucks-green);
+    border-radius: 50%;
+    background-color: white;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  input[type="radio"]:checked {
+    background-color: var(--starbucks-green);
+    box-shadow: 0 0 0 4px var(--celebration-pink);
+    animation: checkPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: white;
+  }
+
+  input[type="radio"]:focus {
+    outline: 3px solid var(--starbucks-green);
+    outline-offset: 3px;
+  }
+
+  /* Highlighter Effect - Selected Item Glow */
+  .selected-glow {
+    background: linear-gradient(
+      135deg,
+      rgba(249, 168, 212, 0.25) 0%,
+      rgba(251, 191, 36, 0.15) 100%
+    );
+    box-shadow:
+      0 0 20px rgba(249, 168, 212, 0.3),
+      inset 0 0 30px rgba(249, 168, 212, 0.1);
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+
+  /* Hand-Drawn Border with Enhanced Irregularity */
+  .hand-drawn-border {
+    border-radius: 248px 18px 232px 12px / 12px 232px 18px 248px;
+    border: 3px solid currentColor;
+    position: relative;
+  }
+
+  .hand-drawn-border::before {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border: 2px solid currentColor;
+    border-radius: 252px 15px 228px 20px / 20px 228px 15px 252px;
+    opacity: 0.2;
+    pointer-events: none;
+  }
 }
 
 @keyframes bounceGentle {
@@ -217,5 +320,30 @@
   }
   100% {
     transform: translate(50px, 50px);
+  }
+}
+
+@keyframes checkPop {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(249, 168, 212, 0.3),
+      inset 0 0 30px rgba(249, 168, 212, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(249, 168, 212, 0.5),
+      inset 0 0 40px rgba(249, 168, 212, 0.2);
   }
 }
