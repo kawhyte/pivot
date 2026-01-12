@@ -6,10 +6,23 @@ import { eq, and } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 
 /**
+ * Ensures database connection is available
+ * Throws helpful error if DATABASE_URL is not set
+ */
+function ensureDatabase() {
+  if (!db) {
+    throw new Error(
+      'Database connection not available. Please ensure DATABASE_URL environment variable is set in your Vercel project settings.'
+    );
+  }
+}
+
+/**
  * Creates a new user with a unique secret code
  * Returns the created user ID
  */
 export async function createUser(): Promise<number> {
+  ensureDatabase();
   try {
     const secretCode = `user_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
@@ -39,6 +52,7 @@ export async function syncPathCompletion(
     themedTitle: string;
   }
 ): Promise<void> {
+  ensureDatabase();
   try {
     // Check if record exists
     const existing = await db
@@ -100,6 +114,7 @@ export async function syncPathLevel(
   pathId: number,
   level: number
 ): Promise<void> {
+  ensureDatabase();
   try {
     const existing = await db
       .select()
@@ -144,6 +159,7 @@ export async function syncPathLevel(
  * Returns array of completed path IDs
  */
 export async function fetchUserProgress(userId: number): Promise<number[]> {
+  ensureDatabase();
   try {
     const progress = await db
       .select({
@@ -168,6 +184,7 @@ export async function fetchUserProgress(userId: number): Promise<number[]> {
  * Fetches detailed progress for a user (for admin dashboard)
  */
 export async function fetchDetailedProgress(userId: number) {
+  ensureDatabase();
   try {
     const progress = await db
       .select()
@@ -185,6 +202,7 @@ export async function fetchDetailedProgress(userId: number) {
  * Fetches all users and their progress (for admin dashboard)
  */
 export async function fetchAllProgress() {
+  ensureDatabase();
   try {
     const allUsers = await db.select().from(users);
 
@@ -216,6 +234,7 @@ export async function fetchAllProgress() {
 export async function resetUserProgress(
   userId: number
 ): Promise<{ success: boolean; error?: string }> {
+  ensureDatabase();
   try {
     await db.delete(questProgress).where(eq(questProgress.userId, userId));
 
