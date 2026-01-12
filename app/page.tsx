@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useQuestStore } from '@/store/useQuestStore';
 import { QuestCountdown } from '@/components/QuestCountdown';
-import { AccessTerminal } from '@/components/AccessTerminal';
+import { GiftBoxLogin } from '@/components/GiftBoxLogin';
 import { MISSION_START_DATE } from '@/lib/mission';
 
 const LandingPage = () => {
@@ -90,7 +90,7 @@ const LandingPage = () => {
     );
   }
 
-  // Show terminal for authentication
+  // Show gift box login for authentication
   if (showTerminal) {
     return (
       <motion.div
@@ -98,7 +98,7 @@ const LandingPage = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <AccessTerminal />
+        <GiftBoxLogin />
       </motion.div>
     );
   }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock } from 'lucide-react';
+import { Gift, Sparkles } from 'lucide-react';
 
 interface CountdownProps {
   targetDate: Date;
@@ -19,6 +19,7 @@ interface TimeLeft {
 export const QuestCountdown = ({ targetDate, onComplete }: CountdownProps) => {
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
   const [prevTimeLeft, setPrevTimeLeft] = useState<TimeLeft | null>(null);
+  const [isUnwrapping, setIsUnwrapping] = useState(false);
 
   useEffect(() => {
     const calculateTimeLeft = (): TimeLeft | null => {
@@ -44,7 +45,11 @@ export const QuestCountdown = ({ targetDate, onComplete }: CountdownProps) => {
     setPrevTimeLeft(initial);
 
     if (initial === null) {
-      onComplete();
+      // Trigger unwrap animation
+      setIsUnwrapping(true);
+      setTimeout(() => {
+        onComplete();
+      }, 1500);
       return;
     }
 
@@ -54,75 +59,127 @@ export const QuestCountdown = ({ targetDate, onComplete }: CountdownProps) => {
 
       if (newTimeLeft === null) {
         clearInterval(timer);
-        onComplete();
+        setIsUnwrapping(true);
+        setTimeout(() => {
+          onComplete();
+        }, 1500);
         return;
       }
 
-      setPrevTimeLeft(timeLeft);
-      setTimeLeft(newTimeLeft);
+      // Use functional setState to avoid dependency on timeLeft
+      setTimeLeft((currentTimeLeft) => {
+        setPrevTimeLeft(currentTimeLeft);
+        return newTimeLeft;
+      });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [targetDate, onComplete, timeLeft]);
+  }, [targetDate, onComplete]);
 
-  if (!timeLeft) {
-    return null;
+  if (!timeLeft || isUnwrapping) {
+    return (
+      <motion.div
+        initial={{ opacity: 1 }}
+        animate={{ opacity: 0, scale: 1.2 }}
+        transition={{ duration: 1.5 }}
+        className="flex min-h-screen items-center justify-center bg-gradient-to-br from-festive-cream via-festive-peach/30 to-festive-cream"
+      >
+        <motion.div
+          animate={{
+            rotate: [0, 10, -10, 10, 0],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{ duration: 1.5 }}
+        >
+          <Gift className="h-32 w-32 text-festive-coral" />
+        </motion.div>
+      </motion.div>
+    );
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-950 px-6 py-12 font-['JetBrains_Mono']">
-      {/* Scanline overlay */}
-      <div className="pointer-events-none absolute inset-0 z-10 opacity-10">
-        <div
-          className="h-full w-full"
-          style={{
-            backgroundImage: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 1px, transparent 1px, transparent 2px)',
-          }}
-        />
-      </div>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-festive-cream via-festive-peach/30 to-festive-cream px-6 py-12 relative overflow-hidden">
+      {/* Floating Decorations */}
+      <motion.div
+        className="absolute top-10 left-10"
+        animate={{
+          y: [0, -20, 0],
+          rotate: [0, 10, -10, 0],
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      >
+        <Sparkles className="h-12 w-12 text-festive-gold opacity-30" />
+      </motion.div>
+
+      <motion.div
+        className="absolute bottom-20 right-16"
+        animate={{
+          y: [0, -15, 0],
+          rotate: [0, -5, 5, 0],
+        }}
+        transition={{
+          duration: 5,
+          repeat: Infinity,
+          ease: 'easeInOut',
+          delay: 1,
+        }}
+      >
+        <Gift className="h-16 w-16 text-festive-coral opacity-20" />
+      </motion.div>
 
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-12 text-center"
+        className="mb-12 text-center relative z-10"
       >
         <motion.div
-          animate={{ opacity: [0.7, 1, 0.7] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="mb-4 flex justify-center"
+          animate={{
+            y: [0, -10, 0],
+            rotate: [0, 5, -5, 0],
+          }}
+          transition={{ duration: 3, repeat: Infinity }}
+          className="mb-6 flex justify-center"
         >
-          <Lock className="h-16 w-16 text-amber-500" strokeWidth={1.5} />
+          <Gift className="h-20 w-20 text-festive-coral" strokeWidth={2} />
         </motion.div>
-        <h1 className="text-2xl font-bold uppercase tracking-wider text-amber-500">
-          Secure Dataset: Locked
+        <h1 className="text-4xl font-display text-festive-brown mb-3">
+          Your Quest Begins Soon!
         </h1>
-        <p className="mt-2 text-sm font-mono text-zinc-500 uppercase tracking-widest">
-          Awaiting Mission Authorization
+        <p className="font-accent text-lg text-festive-brown/70">
+          A birthday adventure awaits
         </p>
       </motion.div>
 
-      {/* Countdown Display */}
-      <div className="grid grid-cols-4 gap-4 sm:gap-6">
+      {/* Countdown Display - Festive Ornaments */}
+      <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 sm:gap-8 relative z-10">
         <CountdownUnit
           label="Days"
           value={timeLeft.days}
           prevValue={prevTimeLeft?.days}
+          color="festive-coral"
         />
         <CountdownUnit
           label="Hours"
           value={timeLeft.hours}
           prevValue={prevTimeLeft?.hours}
+          color="festive-gold"
         />
         <CountdownUnit
           label="Minutes"
           value={timeLeft.minutes}
           prevValue={prevTimeLeft?.minutes}
+          color="festive-green"
         />
         <CountdownUnit
           label="Seconds"
           value={timeLeft.seconds}
           prevValue={prevTimeLeft?.seconds}
+          color="festive-coral"
         />
       </div>
 
@@ -131,10 +188,10 @@ export const QuestCountdown = ({ targetDate, onComplete }: CountdownProps) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="mt-12 text-center"
+        className="mt-16 text-center relative z-10"
       >
-        <p className="font-mono text-xs text-zinc-600 uppercase tracking-widest">
-          Terminal Access: Restricted
+        <p className="font-accent text-festive-brown/60">
+          Get ready for something special
         </p>
       </motion.div>
     </div>
@@ -145,47 +202,83 @@ interface CountdownUnitProps {
   label: string;
   value: number;
   prevValue?: number;
+  color: string;
 }
 
-const CountdownUnit = ({ label, value, prevValue }: CountdownUnitProps) => {
+const CountdownUnit = ({ label, value, prevValue, color }: CountdownUnitProps) => {
   const displayValue = value.toString().padStart(2, '0');
   const prevDisplayValue = prevValue?.toString().padStart(2, '0');
   const hasChanged = displayValue !== prevDisplayValue;
 
+  // Color mapping
+  const colorClasses = {
+    'festive-coral': 'bg-festive-coral',
+    'festive-gold': 'bg-festive-gold',
+    'festive-green': 'bg-festive-green',
+  };
+
   return (
     <div className="flex flex-col items-center">
-      {/* Value Container */}
-      <div className="relative h-20 w-16 overflow-hidden rounded-lg border border-amber-500/30 bg-zinc-900 shadow-lg sm:h-24 sm:w-20">
-        <div className="absolute inset-0 bg-gradient-to-b from-amber-500/5 to-transparent" />
+      {/* Ornament Container */}
+      <motion.div
+        animate={{
+          y: [0, -8, 0],
+        }}
+        transition={{
+          duration: 2 + Math.random(),
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+        className="relative"
+      >
+        {/* Ornament String */}
+        <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-1 h-6 bg-festive-brown/30 rounded-full" />
 
-        {/* Animated Digits */}
-        <div className="relative flex h-full items-center justify-center">
-          <AnimatePresence mode="popLayout">
-            {displayValue.split('').map((digit, index) => (
-              <motion.span
-                key={`${digit}-${value}-${index}`}
-                initial={hasChanged ? { y: -30, opacity: 0 } : false}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 30, opacity: 0 }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 300,
-                  damping: 30,
-                }}
-                className="text-3xl font-bold text-amber-500 sm:text-4xl"
-                style={{
-                  textShadow: '0 0 10px rgba(251, 191, 36, 0.3)',
-                }}
-              >
-                {digit}
-              </motion.span>
-            ))}
-          </AnimatePresence>
+        {/* Ornament Ball */}
+        <div
+          className={`hand-drawn-card ${colorClasses[color as keyof typeof colorClasses]} relative h-24 w-24 overflow-hidden shadow-xl flex items-center justify-center sm:h-28 sm:w-28 border-4 border-white/30`}
+        >
+          {/* Darker overlay for better contrast */}
+          <div className="absolute inset-0 bg-black/10" />
+
+          {/* Shine Effect */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/10" />
+
+          {/* Hand-written Digits */}
+          <div className="relative flex items-center justify-center z-10">
+            <AnimatePresence mode="popLayout">
+              {displayValue.split('').map((digit, index) => (
+                <motion.span
+                  key={`${digit}-${value}-${index}`}
+                  initial={hasChanged ? { y: -40, opacity: 0, rotate: -20 } : false}
+                  animate={{ y: 0, opacity: 1, rotate: 0 }}
+                  exit={{ y: 40, opacity: 0, rotate: 20 }}
+                  transition={{
+                    type: 'spring',
+                    stiffness: 200,
+                    damping: 25,
+                  }}
+                  className="text-4xl font-display text-white sm:text-5xl font-bold"
+                  style={{
+                    textShadow: '3px 3px 6px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 0, 0, 0.3), -1px -1px 2px rgba(0, 0, 0, 0.2)',
+                    WebkitTextStroke: '1px rgba(0, 0, 0, 0.3)',
+                    transform: `rotate(${Math.random() * 6 - 3}deg)`,
+                  }}
+                >
+                  {digit}
+                </motion.span>
+              ))}
+            </AnimatePresence>
+          </div>
+
+          {/* Decorative Dots */}
+          <div className="absolute top-2 right-2 w-2 h-2 bg-white/80 rounded-full shadow-md" />
+          <div className="absolute bottom-3 left-3 w-1.5 h-1.5 bg-white/70 rounded-full shadow-sm" />
         </div>
-      </div>
+      </motion.div>
 
       {/* Label */}
-      <p className="mt-2 font-mono text-xs uppercase tracking-wider text-zinc-500">
+      <p className="mt-4 font-accent text-sm text-festive-brown/70">
         {label}
       </p>
     </div>

@@ -68,26 +68,60 @@ export const ImageRevealPuzzle = ({
       elapsedTime={elapsedTime}
     >
       <div className="space-y-6">
-        {/* Image */}
+        {/* SVG Rough-Edge Mask Definition */}
+        <svg width="0" height="0" style={{ position: 'absolute' }}>
+          <defs>
+            <clipPath id="rough-edge-mask" clipPathUnits="objectBoundingBox">
+              <path
+                d="M 0.02,0.05
+                   C 0.01,0.02 0.05,0.01 0.08,0.01
+                   L 0.92,0.02
+                   C 0.95,0.02 0.98,0.04 0.99,0.07
+                   L 0.98,0.93
+                   C 0.98,0.96 0.95,0.99 0.92,0.99
+                   L 0.08,0.98
+                   C 0.05,0.98 0.02,0.96 0.01,0.93
+                   L 0.02,0.05 Z"
+                fill="white"
+              />
+            </clipPath>
+          </defs>
+        </svg>
+
+        {/* Image with Rough-Edge Mask & Wiggle Animation */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: imageLoaded ? 1 : 0, scale: imageLoaded ? 1 : 0.95 }}
-          transition={{ duration: 0.4 }}
-          className="relative aspect-video w-full overflow-hidden rounded-2xl bg-zinc-100"
+          animate={{
+            opacity: imageLoaded ? 1 : 0,
+            scale: imageLoaded ? 1 : 0.95,
+            rotate: imageLoaded ? [0, -2, 2, -1, 1, 0] : 0,
+          }}
+          transition={{
+            duration: imageLoaded ? 0.6 : 0.4,
+            rotate: { delay: 0.3, duration: 0.5 },
+          }}
+          className="relative aspect-video w-full overflow-visible"
         >
-          <Image
-            src={puzzle.imageUrl}
-            alt={puzzle.imageAlt}
-            fill
-            className="object-cover"
-            onLoad={() => setImageLoaded(true)}
-            priority
-          />
-          {!imageLoaded && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-zinc-200 border-t-zinc-900" />
-            </div>
-          )}
+          <div
+            className="relative w-full h-full hand-drawn-card bg-white p-2 shadow-lg"
+            style={{
+              clipPath: 'url(#rough-edge-mask)',
+            }}
+          >
+            <Image
+              src={puzzle.imageUrl}
+              alt={puzzle.imageAlt}
+              fill
+              className="object-cover"
+              onLoad={() => setImageLoaded(true)}
+              priority
+            />
+            {!imageLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center bg-festive-cream">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-festive-coral border-t-transparent" />
+              </div>
+            )}
+          </div>
         </motion.div>
 
         {/* Text Input with Shake Animation */}
@@ -104,7 +138,7 @@ export const ImageRevealPuzzle = ({
             onKeyPress={handleKeyPress}
             placeholder="Type your answer..."
             disabled={isSubmitting}
-            className="h-12 rounded-xl border-2 border-zinc-300 bg-white px-6 text-base text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900"
+            className="hand-drawn h-14 border-3 border-festive-brown/20 bg-white px-6 text-base text-festive-brown placeholder:text-festive-brown/40 focus:border-festive-coral focus:ring-4 focus:ring-festive-coral/20"
           />
         </motion.div>
 
@@ -116,10 +150,10 @@ export const ImageRevealPuzzle = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
-              className="flex items-center gap-2 rounded-xl border-2 border-amber-300 bg-amber-50 px-4 py-3"
+              className="hand-drawn-card flex items-center gap-3 border-2 border-amber-400 bg-amber-50 px-4 py-3"
             >
               <Lightbulb className="h-5 w-5 flex-shrink-0 text-amber-600" />
-              <p className="text-sm font-medium text-amber-700">
+              <p className="text-sm font-medium text-amber-800">
                 {validationResult.message}
               </p>
             </motion.div>
@@ -128,13 +162,13 @@ export const ImageRevealPuzzle = ({
 
         {/* Submit Button */}
         <motion.div
-          whileHover={answer.trim() !== '' && !isSubmitting ? { scale: 1.02 } : undefined}
+          whileHover={answer.trim() !== '' && !isSubmitting ? { scale: 1.02, rotate: 1 } : undefined}
           whileTap={answer.trim() !== '' && !isSubmitting ? { scale: 0.98 } : undefined}
         >
           <Button
             onClick={handleSubmit}
             disabled={answer.trim() === '' || isSubmitting}
-            className="w-full rounded-full bg-zinc-900 py-6 text-base font-semibold text-white hover:bg-zinc-800 disabled:bg-zinc-300 disabled:text-zinc-500"
+            className="hand-drawn w-full py-6 text-lg font-semibold text-white bg-festive-coral hover:bg-festive-coral/90 disabled:bg-festive-brown/30 disabled:text-festive-brown/60 shadow-md transition-all"
             size="lg"
           >
             {isSubmitting ? 'Checking...' : 'Submit Answer'}

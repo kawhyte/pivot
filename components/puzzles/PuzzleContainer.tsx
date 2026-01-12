@@ -31,11 +31,11 @@ export const PuzzleContainer = ({
   const getDifficultyStyles = () => {
     switch (difficulty) {
       case 'easy':
-        return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+        return 'bg-festive-green text-white border-festive-green';
       case 'medium':
-        return 'bg-amber-100 text-amber-700 border-amber-200';
+        return 'bg-festive-gold text-festive-brown border-festive-gold';
       case 'hard':
-        return 'bg-rose-100 text-rose-700 border-rose-200';
+        return 'bg-festive-coral text-white border-festive-coral';
     }
   };
 
@@ -61,10 +61,10 @@ export const PuzzleContainer = ({
       >
         <Badge
           variant="outline"
-          className={`flex items-center gap-1.5 px-3 py-1.5 border-2 ${getDifficultyStyles()}`}
+          className={`hand-drawn flex items-center gap-2 px-4 py-2 border-3 shadow-sm ${getDifficultyStyles()}`}
         >
-          <Zap className="h-3.5 w-3.5" />
-          <span className="text-xs font-semibold">{getDifficultyLabel()}</span>
+          <Zap className="h-4 w-4" />
+          <span className="text-sm font-semibold">{getDifficultyLabel()}</span>
         </Badge>
       </motion.div>
 
@@ -75,7 +75,7 @@ export const PuzzleContainer = ({
         transition={{ delay: 0.1 }}
         className="mb-8"
       >
-        <h2 className="text-2xl font-bold leading-tight text-zinc-900">
+        <h2 className="text-2xl font-display leading-tight text-festive-brown">
           {question}
         </h2>
       </motion.div>
@@ -97,11 +97,11 @@ export const PuzzleContainer = ({
           transition={{ duration: 0.3 }}
           className="mt-6 overflow-hidden"
         >
-          <div className="flex gap-3 rounded-xl bg-amber-50 p-4 border border-amber-200">
+          <div className="hand-drawn-card flex gap-3 bg-amber-50 p-5 border-2 border-amber-300">
             <HelpCircle className="h-5 w-5 flex-shrink-0 text-amber-600" />
             <div>
-              <p className="text-sm font-medium text-amber-900 mb-1">Hint</p>
-              <p className="text-sm text-amber-800">{hint}</p>
+              <p className="text-sm font-semibold text-amber-900 mb-1">Hint</p>
+              <p className="text-sm font-accent text-amber-800">{hint}</p>
             </div>
           </div>
         </motion.div>

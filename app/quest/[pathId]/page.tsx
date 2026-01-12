@@ -299,7 +299,7 @@ const QuestPage = ({ params }: QuestPageProps) => {
     const bonusCoupon = isPerfect ? getRandomCoupon(pathId) : null;
 
     return (
-      <div className="flex min-h-screen flex-col bg-gradient-to-br from-zinc-50 to-zinc-100">
+      <div className="flex min-h-screen flex-col bg-gradient-to-br from-festive-cream via-festive-peach/30 to-festive-cream">
         <div className="flex flex-1 items-center justify-center px-6">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -370,31 +370,33 @@ const QuestPage = ({ params }: QuestPageProps) => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-br from-zinc-50 to-zinc-100">
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-festive-cream via-festive-peach/20 to-festive-cream">
       {/* Header */}
-      <header className="border-b border-zinc-200 bg-white/80 backdrop-blur-sm">
+      <header className="border-b-2 border-festive-brown/10 bg-white/90 backdrop-blur-sm">
         <div className="mx-auto max-w-3xl px-6 py-4">
           <div className="flex items-center justify-between gap-4 flex-wrap">
-            <button
+            <motion.button
               onClick={handleBackToVault}
-              className="flex items-center gap-2 text-sm font-medium text-zinc-700 hover:text-zinc-900"
+              whileHover={{ scale: 1.05, x: -3 }}
+              whileTap={{ scale: 0.95 }}
+              className="hand-drawn-soft flex items-center gap-2 text-sm font-medium text-festive-brown bg-white px-3 py-2 border-2 border-festive-brown/20 hover:border-festive-coral/50 transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Vault
-            </button>
+            </motion.button>
 
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 text-sm font-medium text-zinc-600">
+              <div className="flex items-center gap-1.5 text-sm font-medium text-festive-brown">
                 <Clock className="h-4 w-4" />
                 <span>{formatTime(currentTime)}</span>
               </div>
-              <div className="h-4 w-px bg-zinc-300" />
+              <div className="h-4 w-px bg-festive-brown/20" />
               {/* Points Meter */}
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-zinc-600">
+                <span className="text-sm font-semibold text-festive-brown">
                   {currentScore} / {targetScore} pts
                 </span>
-                <div className="h-2 w-24 overflow-hidden rounded-full bg-zinc-200">
+                <div className="hand-drawn-soft h-2.5 w-24 overflow-hidden bg-festive-brown/10 relative">
                   <motion.div
                     className="h-full"
                     style={{ background: pathMeta.colors.primary }}
@@ -414,15 +416,16 @@ const QuestPage = ({ params }: QuestPageProps) => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   onClick={handleFinishAndClaim}
-                  className="ml-2 rounded-full px-4 py-2 font-semibold text-white text-sm flex items-center gap-2 transition-all"
+                  className="hand-drawn ml-2 px-5 py-2.5 font-semibold text-white text-sm flex items-center gap-2 shadow-md border-3"
                   style={{
                     background: pathMeta.colors.primary,
+                    borderColor: pathMeta.colors.primary,
                   }}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.08, rotate: 2 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <motion.div
-                    animate={{ scale: [1, 1.15, 1] }}
+                    animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
                   >
                     <Flag className="h-4 w-4" />

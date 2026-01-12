@@ -80,7 +80,7 @@ export const TextInputPuzzle = ({
             onKeyPress={handleKeyPress}
             placeholder={puzzle.placeholder || 'Type your answer...'}
             disabled={isSubmitting}
-            className="h-12 rounded-xl border-2 border-zinc-300 bg-white px-6 text-base text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900"
+            className="hand-drawn h-14 border-3 border-festive-brown/20 bg-white px-6 text-base text-festive-brown placeholder:text-festive-brown/40 focus:border-festive-coral focus:ring-4 focus:ring-festive-coral/20"
             autoFocus
           />
         </motion.div>
@@ -93,10 +93,10 @@ export const TextInputPuzzle = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
-              className="flex items-center gap-2 rounded-xl border-2 border-amber-300 bg-amber-50 px-4 py-3"
+              className="hand-drawn-card flex items-center gap-3 border-2 border-amber-400 bg-amber-50 px-4 py-3"
             >
               <Lightbulb className="h-5 w-5 flex-shrink-0 text-amber-600" />
-              <p className="text-sm font-medium text-amber-700">
+              <p className="text-sm font-medium text-amber-800">
                 {validationResult.message}
               </p>
             </motion.div>
@@ -105,13 +105,13 @@ export const TextInputPuzzle = ({
 
         {/* Submit Button */}
         <motion.div
-          whileHover={answer.trim() !== '' && !isSubmitting ? { scale: 1.02 } : undefined}
+          whileHover={answer.trim() !== '' && !isSubmitting ? { scale: 1.02, rotate: 1 } : undefined}
           whileTap={answer.trim() !== '' && !isSubmitting ? { scale: 0.98 } : undefined}
         >
           <Button
             onClick={handleSubmit}
             disabled={answer.trim() === '' || isSubmitting}
-            className="w-full rounded-full bg-zinc-900 py-6 text-base font-semibold text-white hover:bg-zinc-800 disabled:bg-zinc-300 disabled:text-zinc-500"
+            className="hand-drawn w-full py-6 text-lg font-semibold text-white bg-festive-coral hover:bg-festive-coral/90 disabled:bg-festive-brown/30 disabled:text-festive-brown/60 shadow-md transition-all"
             size="lg"
           >
             {isSubmitting ? 'Checking...' : 'Submit Answer'}

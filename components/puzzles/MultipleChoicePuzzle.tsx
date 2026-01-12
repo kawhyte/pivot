@@ -54,43 +54,43 @@ export const MultipleChoicePuzzle = ({
               key={index}
               onClick={() => setSelectedOption(index)}
               disabled={isSubmitting}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
+              whileHover={{ scale: 1.02, rotate: isSelected ? 0 : 0.5 }}
+              whileTap={{ scale: 0.98 }}
               className={`
-                relative w-full rounded-xl border-2 p-4 text-left transition-all
+                relative w-full hand-drawn-card border-3 p-5 text-left transition-all shadow-md
                 ${
                   isSelected
-                    ? 'border-zinc-900 bg-zinc-50'
-                    : 'border-zinc-200 bg-white hover:border-zinc-300 hover:bg-zinc-50'
+                    ? 'border-festive-coral bg-festive-peach'
+                    : 'border-festive-brown/20 bg-white hover:border-festive-coral/50 hover:bg-festive-cream'
                 }
                 ${isSubmitting ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
               `}
             >
-              <div className="flex items-center gap-3">
-                {/* Radio Circle */}
+              <div className="flex items-center gap-4">
+                {/* Radio Circle with Hand-Drawn Style */}
                 <div
                   className={`
-                    flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full border-2 transition-colors
+                    flex h-7 w-7 flex-shrink-0 items-center justify-center hand-drawn border-3 transition-colors
                     ${
                       isSelected
-                        ? 'border-zinc-900 bg-zinc-900'
-                        : 'border-zinc-300'
+                        ? 'border-festive-coral bg-festive-coral'
+                        : 'border-festive-brown/40 bg-white'
                     }
                   `}
                 >
                   {isSelected && (
                     <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
+                      initial={{ scale: 0, rotate: -90 }}
+                      animate={{ scale: 1, rotate: 0 }}
                       transition={{ type: 'spring', stiffness: 300 }}
                     >
-                      <Check className="h-4 w-4 text-white" strokeWidth={3} />
+                      <Check className="h-5 w-5 text-white" strokeWidth={3} />
                     </motion.div>
                   )}
                 </div>
 
                 {/* Option Text */}
-                <span className="text-base font-medium text-zinc-900">
+                <span className="text-base font-medium text-festive-brown">
                   {option}
                 </span>
               </div>
@@ -102,13 +102,13 @@ export const MultipleChoicePuzzle = ({
       {/* Submit Button */}
       <motion.div
         className="mt-6"
-        whileHover={selectedOption !== null && !isSubmitting ? { scale: 1.02 } : undefined}
+        whileHover={selectedOption !== null && !isSubmitting ? { scale: 1.02, rotate: 1 } : undefined}
         whileTap={selectedOption !== null && !isSubmitting ? { scale: 0.98 } : undefined}
       >
         <Button
           onClick={handleSubmit}
           disabled={selectedOption === null || isSubmitting}
-          className="w-full rounded-full bg-zinc-900 py-6 text-base font-semibold text-white hover:bg-zinc-800 disabled:bg-zinc-300 disabled:text-zinc-500"
+          className="hand-drawn w-full py-6 text-lg font-semibold text-white bg-festive-coral hover:bg-festive-coral/90 disabled:bg-festive-brown/30 disabled:text-festive-brown/60 shadow-md transition-all"
           size="lg"
         >
           {isSubmitting ? 'Checking...' : 'Submit Answer'}
