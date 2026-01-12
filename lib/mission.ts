@@ -1,8 +1,11 @@
 /**
- * MISSION START DATE: January 20, 2026 at 8:00 AM
+ * MISSION START DATE: Configured via NEXT_PUBLIC_MISSION_START_DATE environment variable
  * This is when the secure terminal unlocks
+ * Format: ISO 8601 string (e.g., '2026-01-20T08:00:00')
  */
-export const MISSION_START_DATE = new Date('2026-01-20T08:00:00');
+export const MISSION_START_DATE = new Date(
+  process.env.NEXT_PUBLIC_MISSION_START_DATE || '2026-01-20T08:00:00'
+);
 
 /**
  * Check if mission has started

@@ -12,7 +12,6 @@ const LandingPage = () => {
   const router = useRouter();
   const { isAuthenticated } = useQuestStore();
   const [isMissionActive, setIsMissionActive] = useState(false);
-  const [showTerminal, setShowTerminal] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
   // Handle client-side only rendering
@@ -27,11 +26,6 @@ const LandingPage = () => {
     const checkMissionStatus = () => {
       const isActive = Date.now() >= MISSION_START_DATE.getTime();
       setIsMissionActive(isActive);
-
-      // If mission is active, show terminal
-      if (isActive && !isAuthenticated) {
-        setShowTerminal(true);
-      }
     };
 
     checkMissionStatus();
@@ -40,7 +34,7 @@ const LandingPage = () => {
     const interval = setInterval(checkMissionStatus, 1000);
 
     return () => clearInterval(interval);
-  }, [isClient, isAuthenticated]);
+  }, [isClient]);
 
   // Redirect authenticated users to hub
   useEffect(() => {
@@ -83,31 +77,20 @@ const LandingPage = () => {
         targetDate={MISSION_START_DATE}
         onComplete={() => {
           setIsMissionActive(true);
-          // Smooth transition to terminal
-          setTimeout(() => setShowTerminal(true), 500);
         }}
       />
     );
   }
 
-  // Show gift box login for authentication
-  if (showTerminal) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <GiftBoxLogin />
-      </motion.div>
-    );
-  }
-
-  // Loading state while transitioning
+  // Show gift box login for authentication when mission is active
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-950">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-amber-500 border-t-transparent" />
-    </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <GiftBoxLogin />
+    </motion.div>
   );
 };
 
