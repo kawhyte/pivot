@@ -15,6 +15,8 @@ interface PuzzleRendererProps {
   pathId: PathId;
   currentMistakes: number;
   elapsedTime: number;
+  currentScore: number;
+  targetScore: number;
 }
 
 export const PuzzleRenderer = ({
@@ -26,6 +28,8 @@ export const PuzzleRenderer = ({
   pathId,
   currentMistakes,
   elapsedTime,
+  currentScore,
+  targetScore,
 }: PuzzleRendererProps) => {
   switch (puzzle.type) {
     case 'multiple-choice':
@@ -38,6 +42,8 @@ export const PuzzleRenderer = ({
           pathId={pathId}
           currentMistakes={currentMistakes}
           elapsedTime={elapsedTime}
+          currentScore={currentScore}
+          targetScore={targetScore}
         />
       );
 
@@ -52,6 +58,8 @@ export const PuzzleRenderer = ({
           pathId={pathId}
           currentMistakes={currentMistakes}
           elapsedTime={elapsedTime}
+          currentScore={currentScore}
+          targetScore={targetScore}
         />
       );
 
@@ -66,6 +74,8 @@ export const PuzzleRenderer = ({
           pathId={pathId}
           currentMistakes={currentMistakes}
           elapsedTime={elapsedTime}
+          currentScore={currentScore}
+          targetScore={targetScore}
         />
       );
 

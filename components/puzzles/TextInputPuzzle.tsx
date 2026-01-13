@@ -18,6 +18,8 @@ interface TextInputPuzzleProps {
   pathId: PathId;
   currentMistakes: number;
   elapsedTime: number;
+  currentScore: number;
+  targetScore: number;
 }
 
 export const TextInputPuzzle = ({
@@ -29,6 +31,8 @@ export const TextInputPuzzle = ({
   pathId,
   currentMistakes,
   elapsedTime,
+  currentScore,
+  targetScore,
 }: TextInputPuzzleProps) => {
   const [answer, setAnswer] = useState('');
   const [shake, setShake] = useState(false);
@@ -64,6 +68,8 @@ export const TextInputPuzzle = ({
       pathId={pathId}
       currentMistakes={currentMistakes}
       elapsedTime={elapsedTime}
+      currentScore={currentScore}
+      targetScore={targetScore}
     >
       <div className="space-y-4">
         {/* Text Input with Shake Animation */}

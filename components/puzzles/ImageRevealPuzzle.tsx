@@ -19,6 +19,8 @@ interface ImageRevealPuzzleProps {
   pathId: PathId;
   currentMistakes: number;
   elapsedTime: number;
+  currentScore: number;
+  targetScore: number;
 }
 
 export const ImageRevealPuzzle = ({
@@ -30,6 +32,8 @@ export const ImageRevealPuzzle = ({
   pathId,
   currentMistakes,
   elapsedTime,
+  currentScore,
+  targetScore,
 }: ImageRevealPuzzleProps) => {
   const [answer, setAnswer] = useState('');
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -66,6 +70,8 @@ export const ImageRevealPuzzle = ({
       pathId={pathId}
       currentMistakes={currentMistakes}
       elapsedTime={elapsedTime}
+      currentScore={currentScore}
+      targetScore={targetScore}
     >
       <div className="space-y-6">
         {/* SVG Rough-Edge Mask Definition */}

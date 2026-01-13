@@ -89,9 +89,6 @@ interface QuestState {
   // Is vault unlocked (all 3 keys collected)
   isVaultUnlocked: boolean;
 
-  // Has user seen the intro/welcome screen
-  hasSeenIntro: boolean;
-
   // Current run tracking for live achievement stakes
   currentRun: CurrentRun;
 
@@ -112,7 +109,6 @@ interface QuestState {
   getNextUnsolvedPuzzle: (pathId: PathId) => string | null;
   hydrateFromDatabase: (completedPaths: PathId[]) => void;
   checkVaultStatus: () => void;
-  setHasSeenIntro: (value: boolean) => void;
   startNewRun: () => void;
   recordMistake: () => void;
   resetRun: () => void;
@@ -151,7 +147,6 @@ const initialState = {
   currentPuzzleId: null,
   pathStats: {},
   isVaultUnlocked: false,
-  hasSeenIntro: false,
   currentRun: {
     mistakes: 0,
     startTime: null,
@@ -317,8 +312,6 @@ export const useQuestStore = create<QuestState>()(
         const isUnlocked = keysCollected.length === 3;
         set({ isVaultUnlocked: isUnlocked });
       },
-
-      setHasSeenIntro: (value) => set({ hasSeenIntro: value }),
 
       startNewRun: () => {
         set({

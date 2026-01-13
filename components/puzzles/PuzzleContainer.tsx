@@ -2,9 +2,8 @@
 
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { HelpCircle, Zap } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { AchievementStakes } from '@/components/quest/AchievementStakes';
+import { HelpCircle, Zap, Clock, Trophy } from 'lucide-react';
+import { formatTime } from '@/lib/themed-titles';
 import type { PathId } from '@/store/useQuestStore';
 
 interface PuzzleContainerProps {
@@ -15,6 +14,8 @@ interface PuzzleContainerProps {
   pathId: PathId;
   currentMistakes: number;
   elapsedTime: number;
+  currentScore: number;
+  targetScore: number;
   children: ReactNode;
 }
 
@@ -26,16 +27,18 @@ export const PuzzleContainer = ({
   pathId,
   currentMistakes,
   elapsedTime,
+  currentScore,
+  targetScore,
   children,
 }: PuzzleContainerProps) => {
   const getDifficultyStyles = () => {
     switch (difficulty) {
       case 'easy':
-        return 'bg-festive-green text-white border-festive-green';
+        return 'bg-green-500 text-white border-green-500';
       case 'medium':
-        return 'bg-festive-gold text-festive-brown border-festive-gold';
+        return 'bg-yellow-500 text-white border-yellow-500';
       case 'hard':
-        return 'bg-festive-coral text-white border-festive-coral';
+        return 'bg-red-500 text-white border-red-500';
     }
   };
 
@@ -45,27 +48,36 @@ export const PuzzleContainer = ({
 
   return (
     <div className="mx-auto w-full max-w-lg">
-      {/* Achievement Stakes - Live Rewards Preview */}
-      <AchievementStakes
-        pathId={pathId}
-        currentMistakes={currentMistakes}
-        elapsedTime={elapsedTime}
-      />
-
-      {/* Difficulty Badge */}
+      {/* Quest Status Pill - Horizontal Flex */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
+        initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
-        className="mb-4 flex justify-center"
+        className="mb-6 hand-drawn bg-celebration-pink/10 border-3 border-celebration-pink/40 p-4"
       >
-        <Badge
-          variant="outline"
-          className={`hand-drawn flex items-center gap-2 px-4 py-2 border-3 shadow-sm ${getDifficultyStyles()}`}
-        >
-          <Zap className="h-4 w-4" />
-          <span className="text-sm font-semibold">{getDifficultyLabel()}</span>
-        </Badge>
+        <div className="flex items-center justify-center gap-4 flex-wrap">
+          {/* Difficulty Badge */}
+          <div className={`hand-drawn flex items-center gap-2 px-3 py-1.5 border-3 shadow-sm ${getDifficultyStyles()}`}>
+            <Zap className="h-4 w-4" />
+            <span className="text-sm font-semibold">{getDifficultyLabel()}</span>
+          </div>
+
+          <div className="h-5 w-px bg-deep-brown/20" />
+
+          {/* Current Score */}
+          <div className="flex items-center gap-2 text-sm font-medium text-deep-brown">
+            <Trophy className="h-4 w-4 text-starbucks-green" />
+            <span className="font-semibold">{currentScore} / {targetScore} Pts</span>
+          </div>
+
+          <div className="h-5 w-px bg-deep-brown/20" />
+
+          {/* Timer */}
+          <div className="flex items-center gap-2 text-sm font-medium text-deep-brown">
+            <Clock className="h-4 w-4 text-starbucks-green" />
+            <span>{formatTime(elapsedTime)}</span>
+          </div>
+        </div>
       </motion.div>
 
       {/* Question */}

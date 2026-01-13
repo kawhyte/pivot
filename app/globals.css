@@ -240,7 +240,7 @@
   }
 
   input[type="radio"]:checked {
-    background-color: var(--starbucks-green);
+    background-color: var(--celebration-gold);
     box-shadow: 0 0 0 4px var(--celebration-pink);
     animation: checkPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
@@ -260,6 +260,33 @@
   input[type="radio"]:focus {
     outline: 3px solid var(--starbucks-green);
     outline-offset: 3px;
+  }
+
+  /* Text Input & Textarea Styles - High Contrast */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="number"],
+  textarea {
+    border: 3px solid var(--deep-brown) / 0.3;
+    border-radius: 8px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus,
+  input[type="search"]:focus,
+  input[type="tel"]:focus,
+  input[type="url"]:focus,
+  input[type="number"]:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--starbucks-green);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 1), 0 0 0 7px var(--starbucks-green);
   }
 
   /* Highlighter Effect - Selected Item Glow */

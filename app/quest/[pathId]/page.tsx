@@ -15,6 +15,7 @@ import { getThemedAchievement } from '@/lib/achievements';
 import { PerformanceSummary } from '@/components/quest/PerformanceSummary';
 import { KeyUnlockedToast } from '@/components/quest/KeyUnlockedToast';
 import { BonusCoupon } from '@/components/puzzles/BonusCoupon';
+import { AchievementStakes } from '@/components/quest/AchievementStakes';
 import type { ValidationResult } from '@/types/puzzle';
 
 interface QuestPageProps {
@@ -371,35 +372,45 @@ const QuestPage = ({ params }: QuestPageProps) => {
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-festive-cream via-festive-peach/20 to-festive-cream">
-      {/* Header */}
-      <header className="border-b-2 border-festive-brown/10 bg-white/90 backdrop-blur-sm">
+      {/* Header - Mission Dashboard */}
+      <header className="border-b-3 border-starbucks-green/20 bg-soft-white/95 backdrop-blur-sm">
         <div className="mx-auto max-w-3xl px-6 py-4">
           <div className="flex items-center justify-between gap-4 flex-wrap">
-            <motion.button
-              onClick={handleBackToVault}
-              whileHover={{ scale: 1.05, x: -3 }}
-              whileTap={{ scale: 0.95 }}
-              className="hand-drawn-soft flex items-center gap-2 text-sm font-medium text-festive-brown bg-white px-3 py-2 border-2 border-festive-brown/20 hover:border-festive-coral/50 transition-colors"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back to Vault
-            </motion.button>
-
+            {/* Left: Back Button + Achievement Stakes */}
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 text-sm font-medium text-festive-brown">
-                <Clock className="h-4 w-4" />
+              <motion.button
+                onClick={handleBackToVault}
+                whileHover={{ scale: 1.05, x: -3 }}
+                whileTap={{ scale: 0.95 }}
+                className="hand-drawn flex items-center gap-2 text-sm font-medium text-deep-brown bg-white px-4 py-2 border-3 border-starbucks-green/30 hover:border-starbucks-green/60 transition-colors shadow-sm"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to Vault
+              </motion.button>
+
+              {/* Achievement Stakes in Header */}
+              <AchievementStakes
+                pathId={pathId}
+                currentMistakes={currentRun.mistakes}
+                elapsedTime={currentTime}
+              />
+            </div>
+
+            {/* Right: Timer + Points + Finish Button */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5 text-sm font-medium text-deep-brown">
+                <Clock className="h-4 w-4 text-starbucks-green" />
                 <span>{formatTime(currentTime)}</span>
               </div>
-              <div className="h-4 w-px bg-festive-brown/20" />
+              <div className="h-4 w-px bg-deep-brown/20" />
               {/* Points Meter */}
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-festive-brown">
+                <span className="text-sm font-semibold text-deep-brown">
                   {currentScore} / {targetScore} pts
                 </span>
-                <div className="hand-drawn-soft h-2.5 w-24 overflow-hidden bg-festive-brown/10 relative">
+                <div className="hand-drawn h-3 w-24 overflow-hidden bg-starbucks-green/10 relative border-2 border-starbucks-green/30">
                   <motion.div
-                    className="h-full"
-                    style={{ background: pathMeta.colors.primary }}
+                    className="h-full bg-starbucks-green"
                     initial={{ width: 0 }}
                     animate={{
                       width: `${Math.min((currentScore / targetScore) * 100, 100)}%`,
@@ -416,11 +427,7 @@ const QuestPage = ({ params }: QuestPageProps) => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   onClick={handleFinishAndClaim}
-                  className="hand-drawn ml-2 px-5 py-2.5 font-semibold text-white text-sm flex items-center gap-2 shadow-md border-3"
-                  style={{
-                    background: pathMeta.colors.primary,
-                    borderColor: pathMeta.colors.primary,
-                  }}
+                  className="hand-drawn ml-2 px-5 py-2.5 font-semibold text-white text-sm flex items-center gap-2 shadow-md border-3 bg-starbucks-green border-starbucks-green"
                   whileHover={{ scale: 1.08, rotate: 2 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -476,6 +483,8 @@ const QuestPage = ({ params }: QuestPageProps) => {
               pathId={pathId}
               currentMistakes={currentRun.mistakes}
               elapsedTime={currentTime}
+              currentScore={currentScore}
+              targetScore={targetScore}
             />
 
             {/* Skip Button */}

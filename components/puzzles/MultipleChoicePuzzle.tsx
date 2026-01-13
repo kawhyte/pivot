@@ -17,6 +17,8 @@ interface MultipleChoicePuzzleProps {
   pathId: PathId;
   currentMistakes: number;
   elapsedTime: number;
+  currentScore: number;
+  targetScore: number;
 }
 
 export const MultipleChoicePuzzle = ({
@@ -27,6 +29,8 @@ export const MultipleChoicePuzzle = ({
   pathId,
   currentMistakes,
   elapsedTime,
+  currentScore,
+  targetScore,
 }: MultipleChoicePuzzleProps) => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
@@ -44,6 +48,8 @@ export const MultipleChoicePuzzle = ({
       pathId={pathId}
       currentMistakes={currentMistakes}
       elapsedTime={elapsedTime}
+      currentScore={currentScore}
+      targetScore={targetScore}
     >
       <div className="space-y-3">
         {puzzle.options.map((option, index) => {
@@ -60,8 +66,8 @@ export const MultipleChoicePuzzle = ({
                 relative w-full hand-drawn-card border-3 p-5 text-left transition-all shadow-md
                 ${
                   isSelected
-                    ? 'border-festive-coral bg-festive-peach'
-                    : 'border-festive-brown/20 bg-white hover:border-festive-coral/50 hover:bg-festive-cream'
+                    ? 'border-celebration-pink bg-celebration-pink/20'
+                    : 'border-deep-brown/20 bg-white hover:border-celebration-pink/50 hover:bg-warm-cream'
                 }
                 ${isSubmitting ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
               `}
@@ -73,8 +79,8 @@ export const MultipleChoicePuzzle = ({
                     flex h-7 w-7 flex-shrink-0 items-center justify-center hand-drawn border-3 transition-colors
                     ${
                       isSelected
-                        ? 'border-festive-coral bg-festive-coral'
-                        : 'border-festive-brown/40 bg-white'
+                        ? 'border-celebration-gold bg-celebration-gold'
+                        : 'border-deep-brown/40 bg-white'
                     }
                   `}
                 >
@@ -84,13 +90,13 @@ export const MultipleChoicePuzzle = ({
                       animate={{ scale: 1, rotate: 0 }}
                       transition={{ type: 'spring', stiffness: 300 }}
                     >
-                      <Check className="h-5 w-5 text-white" strokeWidth={3} />
+                      <Check className="h-5 w-5 text-zinc-950" strokeWidth={3} />
                     </motion.div>
                   )}
                 </div>
 
                 {/* Option Text */}
-                <span className="text-base font-medium text-festive-brown">
+                <span className="text-base font-medium text-deep-brown">
                   {option}
                 </span>
               </div>
