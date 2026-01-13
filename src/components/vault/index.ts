@@ -1,0 +1,1 @@
+export { VaultReveal } from './VaultReveal';

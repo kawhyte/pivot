@@ -1,0 +1,60 @@
+{
+  "paths": [
+    {
+      "id": "pop-culture",
+      "title": "The Pop Culture Path",
+      "unlockDate": "2026-01-20T08:00:00",
+      "color": { "primary": "#6366f1", "secondary": "#fbbf24" },
+      "levels": [
+        {
+          "id": 1,
+          "type": "multiple-choice",
+          "question": "What is the name of Joey’s favorite bedtime penguin?",
+          "options": ["Waddle", "Hugsy", "Chilly", "Pingu"],
+          "answer": "Hugsy"
+        },
+        {
+          "id": 2,
+          "type": "drag-and-drop",
+          "question": "Match the character to their signature coffee/drink order.",
+          "items": [
+            { "name": "Lorelai Gilmore", "match": "Black Coffee (Large)" },
+            { "name": "Monica Geller", "match": "Decaf Cappuccino" },
+            { "name": "Phoebe Buffay", "match": "Herbal Tea" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "renaissance",
+      "title": "The Renaissance Path",
+      "unlockDate": "2026-01-21T08:00:00",
+      "color": { "primary": "#065f46", "secondary": "#d4af37" },
+      "levels": [
+        {
+          "id": 1,
+          "type": "audio-trivia",
+          "question": "Identify this iconic 90s intro theme.",
+          "audioSrc": "/audio/trivia-1.mp3",
+          "answer": "I'll Be There For You"
+        }
+      ]
+    },
+    {
+      "id": "heart",
+      "title": "The Heart Path",
+      "unlockDate": "2026-01-22T08:00:00",
+      "color": { "primary": "#be123c", "secondary": "#fb7185" },
+      "levels": [
+        {
+          "id": 1,
+          "type": "memory-blur",
+          "question": "Where was this photo taken?",
+          "imageSrc": "/images/memory-1.jpg",
+          "options": ["Our First Date", "The Proposal", "Last Summer"],
+          "answer": "The Proposal"
+        }
+      ]
+    }
+  ]
+}

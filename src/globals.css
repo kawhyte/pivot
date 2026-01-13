@@ -1,0 +1,331 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --radius: 0.625rem;
+  /* Starbucks For Life Palette - High Contrast */
+  --starbucks-green: #006241;
+  --warm-cream: #F5F5F5;
+  --celebration-pink: #F9A8D4;
+  --celebration-gold: #FBBF24;
+  --deep-brown: #1F2937;
+  --soft-white: #FAFAFA;
+
+  --background: var(--warm-cream);
+  --foreground: var(--deep-brown);
+  --card: var(--soft-white);
+  --card-foreground: var(--deep-brown);
+  --popover: var(--soft-white);
+  --popover-foreground: var(--deep-brown);
+  --primary: var(--starbucks-green);
+  --primary-foreground: #FFFFFF;
+  --secondary: var(--celebration-pink);
+  --secondary-foreground: var(--deep-brown);
+  --muted: #E5E7EB;
+  --muted-foreground: #6B7280;
+  --accent: var(--celebration-gold);
+  --accent-foreground: var(--deep-brown);
+  --destructive: #DC2626;
+  --border: #D1D5DB;
+  --input: #D1D5DB;
+  --ring: var(--starbucks-green);
+  --chart-1: var(--starbucks-green);
+  --chart-2: var(--celebration-gold);
+  --chart-3: var(--celebration-pink);
+  --chart-4: #10B981;
+  --chart-5: #8B5CF6;
+  --sidebar: var(--soft-white);
+  --sidebar-foreground: var(--deep-brown);
+  --sidebar-primary: var(--starbucks-green);
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: var(--celebration-pink);
+  --sidebar-accent-foreground: var(--deep-brown);
+  --sidebar-border: #D1D5DB;
+  --sidebar-ring: var(--starbucks-green);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    position: relative;
+  }
+
+  /* Grain Filter Overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+
+  /* Floating Sparkles & Coffee Pattern */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.08;
+    background-image:
+      url("data:image/svg+xml,%3Csvg width='80' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 15 L42 25 L52 27 L42 29 L40 39 L38 29 L28 27 L38 25 Z' fill='%23FFD700'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 10 L31 18 L39 19 L31 20 L30 28 L29 20 L21 19 L29 18 Z' fill='%23FF6B6B'/%3E%3C/svg%3E");
+    background-size: 120px 120px, 180px 180px;
+    background-position: 0 0, 40px 60px;
+    animation: floatPattern 60s linear infinite;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-bungee), cursive;
+  }
+
+  .font-accent {
+    font-family: var(--font-alegreya), serif;
+    font-style: italic;
+  }
+}
+
+@layer utilities {
+  /* Hand-Drawn Utility Class */
+  .hand-drawn {
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    position: relative;
+  }
+
+  .hand-drawn-soft {
+    border-radius: 225px 20px 215px 20px / 20px 215px 20px 225px;
+  }
+
+  .hand-drawn-card {
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    box-shadow:
+      2px 2px 0px rgba(0, 0, 0, 0.05),
+      4px 4px 0px rgba(0, 0, 0, 0.03);
+  }
+
+  /* Bouncy Animations */
+  .bounce-gentle {
+    animation: bounceGentle 2s ease-in-out infinite;
+  }
+
+  .wiggle {
+    animation: wiggle 0.5s ease-in-out;
+  }
+
+  /* Sketchy Border */
+  .sketchy-border {
+    position: relative;
+    border: 3px solid currentColor;
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  }
+
+  .sketchy-border::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border: 2px solid currentColor;
+    border-radius: 245px 20px 235px 20px / 20px 235px 20px 245px;
+    opacity: 0.3;
+  }
+
+  /* HIGH-CONTRAST FORM ELEMENTS - ACCESSIBILITY PLUS */
+
+  /* Custom Checkbox */
+  input[type="checkbox"] {
+    appearance: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 3px solid var(--starbucks-green);
+    border-radius: 6px;
+    background-color: white;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  input[type="checkbox"]:checked {
+    background-color: var(--starbucks-green);
+    box-shadow: 0 0 0 4px var(--celebration-pink);
+    animation: checkPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+
+  input[type="checkbox"]:focus {
+    outline: 3px solid var(--starbucks-green);
+    outline-offset: 3px;
+  }
+
+  /* Custom Radio Button */
+  input[type="radio"] {
+    appearance: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 3px solid var(--starbucks-green);
+    border-radius: 50%;
+    background-color: white;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  input[type="radio"]:checked {
+    background-color: var(--celebration-gold);
+    box-shadow: 0 0 0 4px var(--celebration-pink);
+    animation: checkPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: white;
+  }
+
+  input[type="radio"]:focus {
+    outline: 3px solid var(--starbucks-green);
+    outline-offset: 3px;
+  }
+
+  /* Text Input & Textarea Styles - High Contrast */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="number"],
+  textarea {
+    border: 3px solid var(--deep-brown) / 0.3;
+    border-radius: 8px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus,
+  input[type="search"]:focus,
+  input[type="tel"]:focus,
+  input[type="url"]:focus,
+  input[type="number"]:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--starbucks-green);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 1), 0 0 0 7px var(--starbucks-green);
+  }
+
+  /* Highlighter Effect - Selected Item Glow */
+  .selected-glow {
+    background: linear-gradient(
+      135deg,
+      rgba(249, 168, 212, 0.25) 0%,
+      rgba(251, 191, 36, 0.15) 100%
+    );
+    box-shadow:
+      0 0 20px rgba(249, 168, 212, 0.3),
+      inset 0 0 30px rgba(249, 168, 212, 0.1);
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+
+  /* Hand-Drawn Border with Enhanced Irregularity */
+  .hand-drawn-border {
+    border-radius: 248px 18px 232px 12px / 12px 232px 18px 248px;
+    border: 3px solid currentColor;
+    position: relative;
+  }
+
+  .hand-drawn-border::before {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border: 2px solid currentColor;
+    border-radius: 252px 15px 228px 20px / 20px 228px 15px 252px;
+    opacity: 0.2;
+    pointer-events: none;
+  }
+}
+
+@keyframes bounceGentle {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-3deg) scale(1.02);
+  }
+  75% {
+    transform: rotate(3deg) scale(1.02);
+  }
+}
+
+@keyframes floatPattern {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(50px, 50px);
+  }
+}
+
+@keyframes checkPop {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(249, 168, 212, 0.3),
+      inset 0 0 30px rgba(249, 168, 212, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(249, 168, 212, 0.5),
+      inset 0 0 40px rgba(249, 168, 212, 0.2);
+  }
+}
