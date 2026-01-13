@@ -4,7 +4,7 @@
  * Format: ISO 8601 string (e.g., '2026-01-20T08:00:00')
  */
 export const MISSION_START_DATE = new Date(
-  process.env.NEXT_PUBLIC_MISSION_START_DATE || '2026-01-20T08:00:00'
+  import.meta.env.VITE_MISSION_START_DATE || '2026-01-13T08:00:00'
 );
 
 /**

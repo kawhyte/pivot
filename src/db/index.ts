@@ -6,7 +6,7 @@ import * as schema from './schema';
  * Database connection configuration
  * Ensure DATABASE_URL is set in your .env.local file
  */
-const connectionString = process.env.DATABASE_URL;
+const connectionString = import.meta.env.VITE_DATABASE_URL;
 
 // Only create connection if DATABASE_URL is available
 // This prevents build-time errors when env vars aren't set yet
