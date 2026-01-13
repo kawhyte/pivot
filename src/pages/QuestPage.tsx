@@ -382,22 +382,24 @@ const QuestPage = () => {
                 Back to Vault
               </motion.button>
 
-              {/* Achievement Stakes in Header */}
+             
+            </div> 
+            
+            {/* Achievement Stakes in Header */}
               <AchievementStakes
                 pathId={pathId}
                 currentMistakes={currentRun.mistakes}
                 elapsedTime={currentTime}
               />
-            </div>
 
             {/* Right: Timer + Points + Finish Button */}
-            <div className="flex items-center gap-4">
+            {/* <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5 text-sm font-medium text-deep-brown">
                 <Clock className="h-4 w-4 text-starbucks-green" />
                 <span>{formatTime(currentTime)}</span>
               </div>
               <div className="h-4 w-px bg-deep-brown/20" />
-              {/* Points Meter */}
+             
               <div className="flex items-center gap-2">
                 <span className="text-sm font-semibold text-deep-brown">
                   {currentScore} / {targetScore} pts
@@ -414,7 +416,7 @@ const QuestPage = () => {
                 </div>
               </div>
 
-              {/* Finish & Claim Key Button */}
+              
               {canClaimKey && (
                 <motion.button
                   initial={{ opacity: 0, scale: 0.8 }}
@@ -434,7 +436,7 @@ const QuestPage = () => {
                   Finish & Claim Key
                 </motion.button>
               )}
-            </div>
+            </div> */}
           </div>
         </div>
       </header>
