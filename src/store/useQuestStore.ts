@@ -68,6 +68,9 @@ interface QuestState {
   // User ID for database persistence
   userId: number | null;
 
+  // Hydration state for preventing redirect loops
+  _hasHydrated: boolean;
+
   // Active path being played (null = in vault view)
   activePath: PathId | null;
 
@@ -95,6 +98,7 @@ interface QuestState {
   // Actions
   setAuthentication: (isAuthenticated: boolean, agentName: string, agentRole: string, agentId: number) => void;
   setUserId: (id: number) => void;
+  setHasHydrated: (hydrated: boolean) => void;
   setActivePath: (pathId: PathId | null) => void;
   addKey: (pathId: PathId, stats?: PathStats) => Promise<void>;
   setUnlockedPaths: (paths: PathId[]) => void;
@@ -121,6 +125,7 @@ const initialState = {
   agentRole: '',
   agentId: null,
   userId: null,
+  _hasHydrated: false,
   activePath: null,
   keysCollected: [],
   unlockedPaths: [],
@@ -162,6 +167,8 @@ export const useQuestStore = create<QuestState>()(
         set({ isAuthenticated, agentName, agentRole, agentId, userId: agentId }),
 
       setUserId: (id) => set({ userId: id }),
+
+      setHasHydrated: (hydrated) => set({ _hasHydrated: hydrated }),
 
       setActivePath: (pathId) => set({ activePath: pathId }),
 
@@ -359,6 +366,15 @@ export const useQuestStore = create<QuestState>()(
         agentId: state.agentId,
         userId: state.userId,
       }),
+      // Set hydration flag after storage is loaded
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          console.error('Error rehydrating store:', error);
+        }
+        if (state) {
+          state._hasHydrated = true;
+        }
+      },
       // Migration: Convert old pathLevels to pathProgress
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {

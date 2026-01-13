@@ -8,7 +8,7 @@ import { MISSION_START_DATE } from '@/lib/mission';
 
 const LandingPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useQuestStore();
+  const { _hasHydrated, isAuthenticated } = useQuestStore();
   const [isMissionActive, setIsMissionActive] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
@@ -34,12 +34,12 @@ const LandingPage = () => {
     return () => clearInterval(interval);
   }, [isClient]);
 
-  // Redirect authenticated users to hub
+  // Redirect authenticated users to hub (only after hydration to prevent loops)
   useEffect(() => {
-    if (isClient && isAuthenticated) {
+    if (isClient && _hasHydrated && isAuthenticated) {
       navigate('/hub');
     }
-  }, [isClient, isAuthenticated, navigate]);
+  }, [isClient, _hasHydrated, isAuthenticated, navigate]);
 
   // Don't render anything until client-side hydration
   if (!isClient) {

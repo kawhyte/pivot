@@ -16,6 +16,7 @@ const VaultHub = () => {
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const {
+    _hasHydrated,
     keysCollected,
     isVaultUnlocked,
     userId,
@@ -27,12 +28,12 @@ const VaultHub = () => {
     resetQuest,
   } = useQuestStore();
 
-  // Redirect if not authenticated
+  // Redirect if not authenticated (only after hydration to prevent loops)
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (_hasHydrated && !isAuthenticated) {
       navigate('/');
     }
-  }, [isAuthenticated, navigate]);
+  }, [_hasHydrated, isAuthenticated, navigate]);
 
   // Update unlocked paths based on current date
   useEffect(() => {
