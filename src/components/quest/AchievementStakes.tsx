@@ -29,7 +29,7 @@ const getPathStakes = (pathId: PathId, completionPercentage: number): StakeItem[
       return [
         {
           id: 'friends-completionist',
-          title: 'Friends Completionist Award',
+          title: 'Sitcom Completionist Award',
           icon: <Trophy className="h-4 w-4" />,
           type: 'completionist',
           isAvailable: true,
@@ -166,7 +166,7 @@ export const AchievementStakes = ({
                       `}
                       layout
                     >
-                      {stake.title} 🏆
+                      {stake.title} 
                     </motion.span>
                   </motion.div>
                 )}

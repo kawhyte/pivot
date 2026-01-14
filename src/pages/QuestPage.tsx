@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { ArrowLeft, Trophy, Sparkles } from 'lucide-react';
 import { useQuestStore, PATH_METADATA, type PathId } from '@/store/useQuestStore';
-import { getPuzzleById, getTotalPuzzles, getRandomCoupon, TARGET_SCORES } from '@/data/puzzles';
+import { getPuzzleById, getTotalPuzzles, getRandomCoupon, TARGET_SCORES, getPathPuzzles } from '@/data/puzzles';
 import { validateAnswer } from '@/lib/puzzle-validator';
 import { PuzzleRenderer } from '@/components/puzzles/PuzzleRenderer';
 import { QuestionNavigator } from '@/components/puzzles/QuestionNavigator';
@@ -54,9 +54,20 @@ const QuestPage = () => {
   const currentScore = getPathScore(pathId);
   const targetScore = TARGET_SCORES[pathId];
 
-  // Calculate completion percentage
+  // Dynamic Vanishing Navigation: Filter out completed puzzles
+  const allPuzzles = getPathPuzzles(pathId)?.puzzles || [];
+  const remainingPuzzles = allPuzzles.filter(
+    (p) => !progress.completedIds.includes(p.id)
+  );
+
+  // Calculate completion percentage (for visual progress, not for counter)
   const completedPuzzles = progress.completedIds.length;
   const completionPercentage = Math.round((completedPuzzles / totalPuzzles) * 100);
+
+  // Current position within remaining puzzles
+  const currentRemainingIndex = remainingPuzzles.findIndex(
+    (p) => p.id === currentPuzzleId
+  );
 
   // Threshold: 81% of target score to claim key
   const claimKeyThreshold = Math.ceil(targetScore * 0.81);
@@ -500,11 +511,12 @@ const QuestPage = () => {
         </AnimatePresence>
       </main>
 
-      {/* Question Navigator - Now handles its own fixed positioning */}
-      {currentPuzzleId && (
+      {/* Question Navigator - Dynamic Vanishing Navigation */}
+      {currentPuzzleId && remainingPuzzles.length > 0 && (
         <QuestionNavigator
           pathId={pathId}
           currentPuzzleId={currentPuzzleId}
+          remainingPuzzles={remainingPuzzles}
           onNavigate={handleNavigate}
         />
       )}
