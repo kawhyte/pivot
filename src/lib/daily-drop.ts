@@ -1,6 +1,5 @@
 import { differenceInHours, differenceInDays, addDays } from 'date-fns';
-import { PATH_IDS, type PathId } from '@/store/useQuestStore';
-
+import { PATH_IDS, type PathId } from '@/lib/paths';
 /**
  * START DATE: January 20, 2026
  * This is the birthday date when the quest begins

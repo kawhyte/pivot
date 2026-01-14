@@ -1,13 +1,14 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { supabase } from '@/db';
+import type { PathId } from '@/lib/paths';
 
 export const useQuestStore = create()(
   persist(
     (set, get) => ({
       agentId: null,
       isTester: false,
-      activePathId: null,
+      activePathId: null as PathId | null,
       currentPuzzleId: null,
       attemptsMade: 0,
       shuffledQueue: [],
@@ -44,7 +45,7 @@ export const useQuestStore = create()(
         });
       },
 
-      submitAnswer: async (pathId: number, puzzleId: string, isCorrect: boolean) => {
+      submitAnswer: async (pathId: PathId, puzzleId: string, isCorrect: boolean) => {
         const { attemptsMade, isTester, syncProgress } = get();
 
         if (isCorrect) {
@@ -66,9 +67,9 @@ export const useQuestStore = create()(
       },
     }),
     {
-      name: 'quest-storage',
+     name: 'quest-storage',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ agentId: state.agentId }), // ONLY persist the ID locally
+      partialize: (state) => ({ agentId: state.agentId }),
     }
   )
 );
