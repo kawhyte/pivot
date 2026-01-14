@@ -69,14 +69,15 @@ const QuestPage = () => {
     (p) => p.id === currentPuzzleId
   );
 
-  // Threshold: 81% of target score to claim key
-  const claimKeyThreshold = Math.ceil(targetScore * 0.81);
+  // GAUNTLET MODE: 93% threshold to claim key
+  const claimKeyThreshold = Math.ceil(targetScore * 0.93);
   const canClaimKey = currentScore >= claimKeyThreshold && !isPathCompleted;
 
   // Progress percentage for glow button
   const scoreProgress = Math.round((currentScore / targetScore) * 100);
-  const showFinishButton = scoreProgress >= 80 && canClaimKey;
-  const isCompletionistPending = scoreProgress >= 90 && scoreProgress < 100 && canClaimKey;
+  const showFinishButton = scoreProgress >= 93 && canClaimKey;
+  // Glow at 95%+ (now that 93% is base requirement)
+  const isCompletionistPending = scoreProgress >= 95 && scoreProgress < 100 && canClaimKey;
 
   // Initialize: Set current puzzle to first unsolved
   useEffect(() => {

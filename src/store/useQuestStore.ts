@@ -233,11 +233,12 @@ export const useQuestStore = create<QuestState>()(
           };
         });
 
-        // Check if key should be unlocked
+        // Check if key should be unlocked (GAUNTLET MODE: 93% threshold)
         const score = get().getPathScore(pathId);
         const threshold = TARGET_SCORES[pathId];
-        if (score >= threshold && !get().keysCollected.includes(pathId)) {
-          // Auto-unlock key!
+        const gauntletThreshold = Math.ceil(threshold * 0.93);
+        if (score >= gauntletThreshold && !get().keysCollected.includes(pathId)) {
+          // Auto-unlock key at 93% mastery!
           await get().addKey(pathId);
         }
       },
@@ -288,12 +289,16 @@ export const useQuestStore = create<QuestState>()(
         const pathConfig = getPathPuzzles(pathId);
         if (!pathConfig) return null;
 
-        // Find first puzzle that's neither completed nor skipped
-        const unsolved = pathConfig.puzzles.find(
+        // GAUNTLET MODE: Collect all unsolved puzzles and return random one
+        const unsolvedPuzzles = pathConfig.puzzles.filter(
           (p) => !progress.completedIds.includes(p.id) && !progress.skippedIds.includes(p.id)
         );
 
-        return unsolved?.id || null;
+        if (unsolvedPuzzles.length === 0) return null;
+
+        // Return random puzzle from unsolved pool
+        const randomIndex = Math.floor(Math.random() * unsolvedPuzzles.length);
+        return unsolvedPuzzles[randomIndex].id;
       },
 
       setPathStats: (pathId, stats) => {
