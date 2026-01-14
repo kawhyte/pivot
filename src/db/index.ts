@@ -1,11 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 
-// These use the VITE_ prefix for security and visibility
 const supabaseUrl = 'https://xfcbfyjvpbrtnmplornu.supabase.co';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY; 
 
-if (!supabaseAnonKey) {
-  console.error("CRITICAL: VITE_SUPABASE_ANON_KEY is missing!");
-}
-
+// The New Web-Ready Client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey || '');
+
+// DUMMY DB: This prevents other files from crashing while we migrate
+export const db = null as any;
