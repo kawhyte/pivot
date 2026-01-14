@@ -9,16 +9,41 @@ export default {
     extend: {
       fontFamily: {
         sans: ['var(--font-quicksand)', 'ui-sans-serif', 'system-ui'],
-        display: ['var(--font-bungee)', 'cursive'],
-        accent: ['var(--font-alegreya)', 'serif'],
+        display: ['var(--font-quicksand)', 'ui-sans-serif', 'system-ui'], // Use Quicksand for display too
+        accent: ['var(--font-quicksand)', 'ui-sans-serif', 'system-ui'], // Consistent font family
       },
       colors: {
-        'starbucks-green': '#006241',
-        'warm-cream': '#F5F5F5',
-        'celebration-pink': '#F9A8D4',
-        'celebration-gold': '#FBBF24',
-        'deep-brown': '#1F2937',
-        'soft-white': '#FAFAFA',
+        // Duolingo Primary Colors
+        'duolingo-green': {
+          DEFAULT: '#58CC02',
+          dark: '#46A302',
+          light: '#88D843',
+        },
+        'success-bright': '#58CC02',
+        'success-bg': '#D7FFB8',
+        'warning-orange': '#FF9600',
+        'error-red': '#FF4B4B',
+
+        // Neutral Palette
+        'neutral': {
+          50: '#FFFFFF',
+          100: '#F7F7F7',
+          200: '#E5E5E5',
+          300: '#AFAFAF',
+          700: '#4B4B4B',
+          900: '#1C1C1C',
+        },
+
+        // Progress Bar Colors
+        'glow-orange': '#FF9600',
+        'glow-yellow': '#FFC800',
+
+        // Path Accent Colors (for badges/icons only)
+        'path-pop-purple': '#CE82FF',
+        'path-renaissance-blue': '#1CB0F6',
+        'path-heart-pink': '#FF4B4B',
+
+        // Semantic Tokens (mapped to CSS variables)
         background: 'var(--background)',
         foreground: 'var(--foreground)',
         card: {
@@ -71,48 +96,53 @@ export default {
         },
       },
       borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
-        xl: 'calc(var(--radius) + 4px)',
-        '2xl': 'calc(var(--radius) + 8px)',
-        '3xl': 'calc(var(--radius) + 12px)',
-        '4xl': 'calc(var(--radius) + 16px)',
+        lg: 'var(--radius)',      // 16px
+        md: '12px',
+        sm: '8px',
+        xl: '20px',
+        '2xl': '24px',
+        '3xl': '28px',
+        '4xl': '32px',
+        full: '9999px',
       },
       keyframes: {
-        bounceGentle: {
-          '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
-          '50%': { transform: 'translateY(-10px) rotate(2deg)' },
-        },
-        wiggle: {
-          '0%, 100%': { transform: 'rotate(0deg)' },
-          '25%': { transform: 'rotate(-3deg) scale(1.02)' },
-          '75%': { transform: 'rotate(3deg) scale(1.02)' },
-        },
-        floatPattern: {
-          '0%': { transform: 'translate(0, 0)' },
-          '100%': { transform: 'translate(50px, 50px)' },
-        },
-        checkPop: {
-          '0%': { transform: 'scale(0.8)' },
-          '50%': { transform: 'scale(1.1)' },
-          '100%': { transform: 'scale(1)' },
-        },
-        glowPulse: {
-          '0%, 100%': {
-            boxShadow: '0 0 20px rgba(249, 168, 212, 0.3), inset 0 0 30px rgba(249, 168, 212, 0.1)',
+        // Success Overlay - Quick Pop (600ms)
+        successPop: {
+          '0%': {
+            opacity: '0',
+            transform: 'translate(-50%, -50%) scale(0.8)'
           },
           '50%': {
-            boxShadow: '0 0 30px rgba(249, 168, 212, 0.5), inset 0 0 40px rgba(249, 168, 212, 0.2)',
+            opacity: '1',
+            transform: 'translate(-50%, -50%) scale(1.05)'
+          },
+          '100%': {
+            opacity: '0',
+            transform: 'translate(-50%, -50%) scale(1)'
+          },
+        },
+        // Fade In for Page Transitions (300ms)
+        fadeIn: {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        // Slide Up for Content (300ms)
+        slideUp: {
+          from: {
+            opacity: '0',
+            transform: 'translateY(12px)'
+          },
+          to: {
+            opacity: '1',
+            transform: 'translateY(0)'
           },
         },
       },
       animation: {
-        'bounce-gentle': 'bounceGentle 2s ease-in-out infinite',
-        'wiggle': 'wiggle 0.5s ease-in-out',
-        'float-pattern': 'floatPattern 60s linear infinite',
-        'check-pop': 'checkPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-        'glow-pulse': 'glowPulse 2s ease-in-out infinite',
+        'success-pop': 'successPop 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+        'fade-in': 'fadeIn 0.3s ease',
+        'slide-up': 'slideUp 0.3s ease',
+        // NO infinite animations
       },
     },
   },
