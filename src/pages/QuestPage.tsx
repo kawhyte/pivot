@@ -64,6 +64,7 @@ const QuestPage = () => {
 
   // Progress percentage for glow button
   const scoreProgress = Math.round((currentScore / targetScore) * 100);
+  const showFinishButton = scoreProgress >= 80 && canClaimKey;
   const isCompletionistPending = scoreProgress >= 90 && scoreProgress < 100 && canClaimKey;
 
   // Initialize: Set current puzzle to first unsolved
@@ -315,7 +316,7 @@ const QuestPage = () => {
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-festive-cream via-festive-peach/20 to-festive-cream">
       {/* Fixed Header - Slim Progress Bar */}
       <header className="fixed top-0 left-0 right-0 h-14 bg-zinc-900 z-50">
-        <div className="h-full flex items-center px-6 gap-4">
+        <div className="h-full flex items-center justify-between px-4 gap-4">
           {/* Back Button */}
           <motion.button
             onClick={handleBackToVault}
@@ -328,12 +329,12 @@ const QuestPage = () => {
           </motion.button>
 
           {/* Dynamic Progress Background */}
-          <div className="flex-1 relative h-full bg-zinc-800 overflow-hidden">
+          <div className="flex-1 relative h-full bg-zinc-800 overflow-hidden mx-4">
             <motion.div
-              className="absolute top-0 left-0 h-full bg-gradient-to-r from-amber-500 via-orange-400 to-red-500"
-              initial={{ width: 0 }}
+              className="absolute top-0 left-0 h-full bg-gradient-to-r from-amber-500 via-orange-400 to-red-500 origin-left"
+              initial={{ scaleX: 0 }}
               animate={{
-                width: `${Math.min((currentScore / targetScore) * 100, 100)}%`,
+                scaleX: Math.min(currentScore / targetScore, 1),
               }}
               transition={{ duration: 0.5 }}
             />
@@ -345,8 +346,8 @@ const QuestPage = () => {
             </div>
           </div>
 
-          {/* Achievement Stakes on Right */}
-          <div className="flex-shrink-0">
+          {/* Right Side Container - Score & Achievement Stakes */}
+          <div className="flex items-center gap-4 flex-shrink-0">
             <AchievementStakes
               pathId={pathId}
               completionPercentage={completionPercentage}
@@ -369,7 +370,7 @@ const QuestPage = () => {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex flex-1 flex-col px-6 py-12 pb-32">
+      <main className="flex flex-1 flex-col px-6 pt-20 pb-32">
         <AnimatePresence mode="wait">
           <motion.div
             key={puzzle.id}
@@ -407,8 +408,8 @@ const QuestPage = () => {
               </motion.div>
             )}
 
-            {/* Glow Button - Completionist Pending */}
-            {canClaimKey && (
+            {/* Glow Button - Show at 80%, Glow at 90% */}
+            {showFinishButton && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -416,10 +417,10 @@ const QuestPage = () => {
                 className="mx-auto mt-8 w-full max-w-lg"
               >
                 <div className="relative">
-                  {/* Glow Effect when >= 90% */}
+                  {/* Gold Glow Effect when >= 90% */}
                   {isCompletionistPending && (
                     <motion.div
-                      className="absolute inset-0 rounded-lg bg-gradient-to-r from-yellow-400 to-amber-400 blur-lg"
+                      className="absolute inset-0 rounded-lg bg-gradient-to-r from-yellow-300 to-amber-300 blur-xl"
                       animate={{ opacity: [0.3, 0.6, 0.3] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     />
@@ -449,7 +450,7 @@ const QuestPage = () => {
                       transition-all duration-300
                       ${
                         isCompletionistPending
-                          ? 'bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 shadow-lg animate-pulse'
+                          ? 'bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 shadow-[0_0_20px_rgba(255,215,0,0.5)] animate-pulse'
                           : 'bg-gradient-to-r from-blue-500 to-blue-600 shadow-md'
                       }
                     `}
@@ -457,7 +458,7 @@ const QuestPage = () => {
                     Finish & Claim Key
                   </motion.button>
 
-                  {/* Hint Text */}
+                  {/* Hint Text - Only at 90%+ */}
                   {isCompletionistPending && (
                     <motion.p
                       initial={{ opacity: 0, y: -5 }}
@@ -499,17 +500,13 @@ const QuestPage = () => {
         </AnimatePresence>
       </main>
 
-      {/* Sticky Footer - Question Navigator */}
+      {/* Question Navigator - Now handles its own fixed positioning */}
       {currentPuzzleId && (
-        <footer className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-festive-cream via-festive-peach/30 to-transparent backdrop-blur-sm border-t border-zinc-200/50 z-40">
-          <div className="max-w-3xl mx-auto px-6 py-4">
-            <QuestionNavigator
-              pathId={pathId}
-              currentPuzzleId={currentPuzzleId}
-              onNavigate={handleNavigate}
-            />
-          </div>
-        </footer>
+        <QuestionNavigator
+          pathId={pathId}
+          currentPuzzleId={currentPuzzleId}
+          onNavigate={handleNavigate}
+        />
       )}
     </div>
   );

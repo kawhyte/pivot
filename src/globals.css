@@ -273,6 +273,16 @@
     opacity: 0.2;
     pointer-events: none;
   }
+
+  /* Hide scrollbar while allowing scrolling */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @keyframes bounceGentle {

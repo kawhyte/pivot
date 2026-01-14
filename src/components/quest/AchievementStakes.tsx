@@ -29,7 +29,7 @@ const getPathStakes = (pathId: PathId, completionPercentage: number): StakeItem[
       return [
         {
           id: 'friends-completionist',
-          title: 'Friends Completionist ☕',
+          title: 'Friends Completionist Award 🏆',
           icon: <Zap className="h-4 w-4" />,
           type: 'completionist',
           isAvailable: true,
@@ -42,7 +42,7 @@ const getPathStakes = (pathId: PathId, completionPercentage: number): StakeItem[
       return [
         {
           id: 'renaissance-completionist',
-          title: 'Renaissance Completionist 🎨',
+          title: 'Renaissance Completionist Award 🏆',
           icon: <Zap className="h-4 w-4" />,
           type: 'completionist',
           isAvailable: true,
@@ -55,7 +55,7 @@ const getPathStakes = (pathId: PathId, completionPercentage: number): StakeItem[
       return [
         {
           id: 'heartfelt-completionist',
-          title: 'Heartfelt Completionist ❤️',
+          title: 'Heartfelt Completionist Award 🏆',
           icon: <Zap className="h-4 w-4" />,
           type: 'completionist',
           isAvailable: true,
@@ -96,7 +96,7 @@ export const AchievementStakes = ({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex items-center gap-3"
+      className="flex items-center gap-2"
       layout
     >
       <AnimatePresence mode="popLayout">
@@ -108,9 +108,9 @@ export const AchievementStakes = ({
               key={stake.id}
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.5 }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}
-              className="relative"
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              className="flex items-center gap-2"
               layout
             >
               {/* Icon Button */}
@@ -131,7 +131,7 @@ export const AchievementStakes = ({
                     : {}
                 }
                 className={`
-                  relative flex items-center justify-center h-8 w-8 rounded-full
+                  flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full
                   transition-all duration-300
                   ${
                     stake.requirementMet
@@ -144,20 +144,20 @@ export const AchievementStakes = ({
                 {stake.icon}
               </motion.button>
 
-              {/* Peek Tooltip */}
+              {/* Peek Title - Flex Width Animation */}
               <AnimatePresence mode="wait">
                 {isPeeked && (
                   <motion.div
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ opacity: 1, width: 'auto' }}
                     exit={{ opacity: 0, width: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="absolute left-10 top-1/2 -translate-y-1/2 whitespace-nowrap overflow-hidden"
+                    transition={{ duration: 0.35, ease: 'easeInOut' }}
+                    className="overflow-hidden"
                     layout
                   >
-                    <motion.div
+                    <motion.span
                       className={`
-                        px-2 py-1 rounded text-xs font-medium whitespace-nowrap
+                        inline-block px-2 py-1 rounded text-xs font-medium whitespace-nowrap
                         ${
                           stake.requirementMet
                             ? 'bg-purple-100 text-purple-700 border border-purple-300'
@@ -167,7 +167,7 @@ export const AchievementStakes = ({
                       layout
                     >
                       {stake.title}
-                    </motion.div>
+                    </motion.span>
                   </motion.div>
                 )}
               </AnimatePresence>
