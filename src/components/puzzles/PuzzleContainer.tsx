@@ -3,7 +3,7 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { HelpCircle, Zap } from 'lucide-react';
-import type { PathId } from '@/store/useQuestStore';
+import type { PathId } from '@/lib/paths';
 
 interface PuzzleContainerProps {
   question: string;

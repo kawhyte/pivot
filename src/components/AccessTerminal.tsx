@@ -102,7 +102,7 @@ export const AccessTerminal = () => {
       ]);
 
       // Save authentication to store
-      setAuthentication(true, profile.name, profile.role, profile.id);
+      setAuthentication(true, profile.name, profile.role || 'Agent', profile.id, profile.isTester);
 
       // Redirect to hub after 1 second
       setTimeout(() => {

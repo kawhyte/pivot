@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useEffect } from 'react';
-import { PATH_METADATA, type PathId } from '@/store/useQuestStore';
+import { PATH_METADATA, type PathId } from '@/lib/paths';
 
 interface KeyUnlockedToastProps {
   pathId: PathId;

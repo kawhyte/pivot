@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import type { PathId } from '@/store/useQuestStore';
+import type { PathId } from '@/lib/paths';
 import type { Puzzle } from '@/types/puzzle';
 
 interface QuestionNavigatorProps {

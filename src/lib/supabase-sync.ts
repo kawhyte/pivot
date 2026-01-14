@@ -1,46 +1,44 @@
-import { db } from '@/db';
-import { activeSessions, questProgress, profiles } from '@/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { supabase } from '@/db';
 import type { PathId } from '@/lib/paths';
 
 /**
  * Fetch or create active session for a path
  */
 export async function getOrCreateSession(profileId: number, pathId: PathId) {
-  if (!db) return null;
+  if (!supabase) return null;
 
   try {
     // Try to fetch existing session
-    const existing = await db
-      .select()
-      .from(activeSessions)
-      .where(
-        and(
-          eq(activeSessions.profileId, profileId),
-          eq(activeSessions.pathId, pathId)
-        )
-      )
-      .limit(1);
+    const { data: existing, error: fetchError } = await supabase
+      .from('active_sessions')
+      .select('*')
+      .eq('profile_id', profileId)
+      .eq('active_path_id', pathId)
+      .single();
 
-    if (existing.length > 0) {
-      return existing[0];
+    if (existing && !fetchError) {
+      return existing;
     }
 
     // Create new session
-    const newSession = await db
-      .insert(activeSessions)
-      .values({
-        profileId,
-        pathId,
-        currentPuzzleId: null,
-        shuffledQueue: null,
-        attemptsMade: 0,
-        score: 0,
-        mistakes: 0,
+    const { data: newSession, error: insertError } = await supabase
+      .from('active_sessions')
+      .insert({
+        profile_id: profileId,
+        active_path_id: pathId,
+        current_puzzle_id: null,
+        shuffled_queue: null,
+        attempts_made: 0,
       })
-      .returning();
+      .select()
+      .single();
 
-    return newSession[0];
+    if (insertError) {
+      console.error('Error creating session:', insertError);
+      return null;
+    }
+
+    return newSession;
   } catch (error) {
     console.error('Error getting/creating session:', error);
     return null;
@@ -49,7 +47,7 @@ export async function getOrCreateSession(profileId: number, pathId: PathId) {
 
 /**
  * Update active session with current progress
- * Uses onConflictDoUpdate for atomic upserts
+ * Uses upsert for atomic updates
  */
 export async function syncSessionProgress(
   profileId: number,
@@ -62,23 +60,26 @@ export async function syncSessionProgress(
     mistakes?: number;
   }
 ) {
-  if (!db) return false;
+  if (!supabase) return false;
 
   try {
-    await db
-      .insert(activeSessions)
-      .values({
-        profileId,
-        pathId,
-        ...updates,
-      })
-      .onConflictDoUpdate({
-        target: [activeSessions.profileId, activeSessions.pathId],
-        set: {
-          ...updates,
-          updatedAt: new Date(),
-        },
+    const { error } = await supabase
+      .from('active_sessions')
+      .upsert({
+        profile_id: profileId,
+        active_path_id: pathId,
+        current_puzzle_id: updates.currentPuzzleId,
+        shuffled_queue: updates.shuffledQueue,
+        attempts_made: updates.attemptsMade,
+        updated_at: new Date().toISOString(),
+      }, {
+        onConflict: 'profile_id',
       });
+
+    if (error) {
+      console.error('Error syncing session progress:', error);
+      return false;
+    }
 
     return true;
   } catch (error) {
@@ -91,15 +92,20 @@ export async function syncSessionProgress(
  * Fetch quest progress (completed paths) for a profile
  */
 export async function fetchQuestProgress(profileId: number) {
-  if (!db) return [];
+  if (!supabase) return [];
 
   try {
-    const progress = await db
-      .select()
-      .from(questProgress)
-      .where(eq(questProgress.profileId, profileId));
+    const { data, error } = await supabase
+      .from('quest_progress')
+      .select('*')
+      .eq('profile_id', profileId);
 
-    return progress;
+    if (error) {
+      console.error('Error fetching quest progress:', error);
+      return [];
+    }
+
+    return data || [];
   } catch (error) {
     console.error('Error fetching quest progress:', error);
     return [];
@@ -121,37 +127,28 @@ export async function savePathCompletion(
     themedTitle: string;
   }
 ) {
-  if (!db) return false;
+  if (!supabase) return false;
 
   try {
-    await db
-      .insert(questProgress)
-      .values({
-        profileId,
-        pathId,
-        isCompleted: true,
-        completedIds: JSON.stringify(data.completedIds),
-        skippedIds: JSON.stringify(data.skippedIds),
-        finalScore: data.finalScore,
-        completedAt: new Date(),
-        accuracy: data.accuracy,
-        mistakes: Math.round(data.mistakes * 10), // Store as integer (0.5 = 5, 1.0 = 10)
-        themedTitle: data.themedTitle,
-      })
-      .onConflictDoUpdate({
-        target: [questProgress.profileId, questProgress.pathId],
-        set: {
-          isCompleted: true,
-          completedIds: JSON.stringify(data.completedIds),
-          skippedIds: JSON.stringify(data.skippedIds),
-          finalScore: data.finalScore,
-          completedAt: new Date(),
-          accuracy: data.accuracy,
-          mistakes: Math.round(data.mistakes * 10),
-          themedTitle: data.themedTitle,
-          updatedAt: new Date(),
-        },
+    const { error } = await supabase
+      .from('quest_progress')
+      .upsert({
+        profile_id: profileId,
+        path_id: pathId,
+        is_completed: true,
+        score: data.finalScore,
+        completed_at: new Date().toISOString(),
+        mistakes: data.mistakes,
+        themed_title: data.themedTitle,
+        updated_at: new Date().toISOString(),
+      }, {
+        onConflict: 'profile_id,path_id',
       });
+
+    if (error) {
+      console.error('Error saving path completion:', error);
+      return false;
+    }
 
     return true;
   } catch (error) {
@@ -164,16 +161,26 @@ export async function savePathCompletion(
  * Fetch profile with isTester flag
  */
 export async function fetchProfile(profileId: number) {
-  if (!db) return null;
+  if (!supabase) return null;
 
   try {
-    const result = await db
-      .select()
-      .from(profiles)
-      .where(eq(profiles.id, profileId))
-      .limit(1);
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', profileId)
+      .single();
 
-    return result.length > 0 ? result[0] : null;
+    if (error) {
+      console.error('Error fetching profile:', error);
+      return null;
+    }
+
+    return data ? {
+      id: data.id,
+      agentName: data.agent_name,
+      agentRole: data.agent_role || 'Agent',
+      isTester: data.is_tester || false,
+    } : null;
   } catch (error) {
     console.error('Error fetching profile:', error);
     return null;

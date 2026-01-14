@@ -7,7 +7,7 @@ import type { TextInputPuzzle as TextInputPuzzleType, ValidationResult } from '@
 import { PuzzleContainer } from './PuzzleContainer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import type { PathId } from '@/store/useQuestStore';
+import type { PathId } from '@/lib/paths';
 
 interface TextInputPuzzleProps {
   puzzle: TextInputPuzzleType;

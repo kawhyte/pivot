@@ -2,7 +2,8 @@
 
 import { motion } from 'framer-motion';
 import { Lock, Key, Clock, Sparkles, Tv, BookOpen, Heart as HeartIcon } from 'lucide-react';
-import { PATH_METADATA, type PathId, type PathStats } from '@/store/useQuestStore';
+import { PATH_METADATA, type PathId } from '@/lib/paths';
+import type { PathStats } from '@/store/useQuestStore';
 import { getCountdownText, isPathUnlocked } from '@/lib/daily-drop';
 import { formatTime } from '@/lib/themed-titles';
 

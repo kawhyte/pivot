@@ -3,6 +3,7 @@ import { supabase } from '@/db';
 export interface AgentProfile {
   id: number;
   name: string;
+  role: string;
   isTester: boolean;
 }
 
@@ -24,6 +25,7 @@ export async function verifyPasscode(code: string): Promise<AgentProfile | null>
     return {
       id: data.id,
       name: data.agent_name,
+      role: 'Agent', // Default role
       isTester: data.is_tester
     };
   } catch (err) {

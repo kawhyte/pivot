@@ -4,8 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Copy, Check, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import type { Coupon } from '@/types/puzzle';
-import type { PathId } from '@/store/useQuestStore';
-import { PATH_METADATA } from '@/store/useQuestStore';
+import type { PathId } from '@/lib/paths';
+import { PATH_METADATA } from '@/lib/paths';
 import confetti from 'canvas-confetti';
 
 interface BonusCouponProps {

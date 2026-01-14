@@ -7,7 +7,7 @@ import type { MultipleChoicePuzzle as MultipleChoicePuzzleType } from '@/types/p
 import { PuzzleContainer } from './PuzzleContainer';
 import { Button } from '@/components/ui/button';
 
-import type { PathId } from '@/store/useQuestStore';
+import type { PathId } from '@/lib/paths';
 
 interface MultipleChoicePuzzleProps {
   puzzle: MultipleChoicePuzzleType;

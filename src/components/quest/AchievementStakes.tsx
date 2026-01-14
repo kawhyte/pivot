@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy } from 'lucide-react';
-import type { PathId } from '@/store/useQuestStore';
-import { PATH_IDS } from '@/store/useQuestStore';
+import type { PathId } from '@/lib/paths';
+import { PATH_IDS } from '@/lib/paths';
 
 interface AchievementStakesProps {
   pathId: PathId;

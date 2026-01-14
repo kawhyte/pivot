@@ -1,5 +1,5 @@
-import type { PathId } from '@/store/useQuestStore';
-import { PATH_IDS } from '@/store/useQuestStore';
+import type { PathId } from '@/lib/paths';
+import { PATH_IDS } from '@/lib/paths';
 
 /**
  * Themed titles for each path based on accuracy

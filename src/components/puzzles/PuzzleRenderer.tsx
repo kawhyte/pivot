@@ -1,7 +1,7 @@
 'use client';
 
 import type { Puzzle, ValidationResult } from '@/types/puzzle';
-import type { PathId } from '@/store/useQuestStore';
+import type { PathId } from '@/lib/paths';
 import { MultipleChoicePuzzle } from './MultipleChoicePuzzle';
 import { TextInputPuzzle } from './TextInputPuzzle';
 import { ImageRevealPuzzle } from './ImageRevealPuzzle';

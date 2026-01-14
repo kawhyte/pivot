@@ -3,8 +3,8 @@
  * Maps performance metrics to themed achievements with priority logic
  */
 
-import type { PathId } from '@/store/useQuestStore';
-import { PATH_IDS } from '@/store/useQuestStore';
+import type { PathId } from '@/lib/paths';
+import { PATH_IDS } from '@/lib/paths';
 import { SPEED_THRESHOLDS, ACCURACY_THRESHOLDS } from '@/lib/constants';
 
 export interface AchievementResult {
