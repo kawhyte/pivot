@@ -16,7 +16,6 @@ interface MultipleChoicePuzzleProps {
   isSubmitting: boolean;
   pathId: PathId;
   currentMistakes: number;
-  elapsedTime: number;
   currentScore: number;
   targetScore: number;
 }
@@ -28,7 +27,6 @@ export const MultipleChoicePuzzle = ({
   isSubmitting,
   pathId,
   currentMistakes,
-  elapsedTime,
   currentScore,
   targetScore,
 }: MultipleChoicePuzzleProps) => {
@@ -47,7 +45,6 @@ export const MultipleChoicePuzzle = ({
       difficulty={puzzle.difficulty}
       pathId={pathId}
       currentMistakes={currentMistakes}
-      elapsedTime={elapsedTime}
       currentScore={currentScore}
       targetScore={targetScore}
     >

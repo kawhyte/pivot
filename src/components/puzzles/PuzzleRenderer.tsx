@@ -14,7 +14,6 @@ interface PuzzleRendererProps {
   validationResult?: ValidationResult | null;
   pathId: PathId;
   currentMistakes: number;
-  elapsedTime: number;
   currentScore: number;
   targetScore: number;
 }
@@ -27,7 +26,6 @@ export const PuzzleRenderer = ({
   validationResult,
   pathId,
   currentMistakes,
-  elapsedTime,
   currentScore,
   targetScore,
 }: PuzzleRendererProps) => {
@@ -41,7 +39,6 @@ export const PuzzleRenderer = ({
           isSubmitting={isSubmitting}
           pathId={pathId}
           currentMistakes={currentMistakes}
-          elapsedTime={elapsedTime}
           currentScore={currentScore}
           targetScore={targetScore}
         />
@@ -57,7 +54,6 @@ export const PuzzleRenderer = ({
           validationResult={validationResult}
           pathId={pathId}
           currentMistakes={currentMistakes}
-          elapsedTime={elapsedTime}
           currentScore={currentScore}
           targetScore={targetScore}
         />
@@ -73,7 +69,6 @@ export const PuzzleRenderer = ({
           validationResult={validationResult}
           pathId={pathId}
           currentMistakes={currentMistakes}
-          elapsedTime={elapsedTime}
           currentScore={currentScore}
           targetScore={targetScore}
         />

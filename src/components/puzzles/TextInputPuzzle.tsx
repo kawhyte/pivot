@@ -17,7 +17,6 @@ interface TextInputPuzzleProps {
   validationResult?: ValidationResult | null;
   pathId: PathId;
   currentMistakes: number;
-  elapsedTime: number;
   currentScore: number;
   targetScore: number;
 }
@@ -30,7 +29,6 @@ export const TextInputPuzzle = ({
   validationResult,
   pathId,
   currentMistakes,
-  elapsedTime,
   currentScore,
   targetScore,
 }: TextInputPuzzleProps) => {
@@ -67,7 +65,6 @@ export const TextInputPuzzle = ({
       difficulty={puzzle.difficulty}
       pathId={pathId}
       currentMistakes={currentMistakes}
-      elapsedTime={elapsedTime}
       currentScore={currentScore}
       targetScore={targetScore}
     >

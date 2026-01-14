@@ -1,14 +1,14 @@
-import { use, useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { ArrowLeft, Trophy, Sparkles, Clock, Flag } from 'lucide-react';
+import { ArrowLeft, Trophy, Sparkles } from 'lucide-react';
 import { useQuestStore, PATH_METADATA, type PathId } from '@/store/useQuestStore';
 import { getPuzzleById, getTotalPuzzles, getRandomCoupon, TARGET_SCORES } from '@/data/puzzles';
 import { validateAnswer } from '@/lib/puzzle-validator';
 import { PuzzleRenderer } from '@/components/puzzles/PuzzleRenderer';
 import { QuestionNavigator } from '@/components/puzzles/QuestionNavigator';
-import { formatTime, calculateAccuracy, getThemedTitle } from '@/lib/themed-titles';
+import { calculateAccuracy, getThemedTitle } from '@/lib/themed-titles';
 import { getThemedAchievement } from '@/lib/achievements';
 import { PerformanceSummary } from '@/components/quest/PerformanceSummary';
 import { KeyUnlockedToast } from '@/components/quest/KeyUnlockedToast';
@@ -32,7 +32,6 @@ const QuestPage = () => {
     getPathStats,
     getPathScore,
     isPerfectRun,
-    isPathUnlocked,
     getNextUnsolvedPuzzle,
     startNewRun,
     recordMistake,
@@ -47,12 +46,6 @@ const QuestPage = () => {
   const [showCompletion, setShowCompletion] = useState(false);
   const [showKeyUnlockedToast, setShowKeyUnlockedToast] = useState(false);
 
-  // Timer & performance tracking
-  const [startTime, setStartTime] = useState<number>(Date.now());
-  const [elapsedTime, setElapsedTime] = useState<number>(0);
-  const [currentTime, setCurrentTime] = useState<number>(0); // For live display
-  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
   const totalPuzzles = getTotalPuzzles(pathId);
   const puzzle = currentPuzzleId ? getPuzzleById(pathId, currentPuzzleId) : null;
   const pathMeta = PATH_METADATA[pathId];
@@ -60,6 +53,14 @@ const QuestPage = () => {
   const progress = pathProgress[pathId];
   const currentScore = getPathScore(pathId);
   const targetScore = TARGET_SCORES[pathId];
+
+  // Calculate completion percentage
+  const completedPuzzles = progress.completedIds.length;
+  const completionPercentage = Math.round((completedPuzzles / totalPuzzles) * 100);
+
+  // Threshold: 81% of target score to claim key
+  const claimKeyThreshold = Math.ceil(targetScore * 0.81);
+  const canClaimKey = currentScore >= claimKeyThreshold && !isPathCompleted;
 
   // Initialize: Set current puzzle to first unsolved
   useEffect(() => {
@@ -92,40 +93,6 @@ const QuestPage = () => {
     }
   }, [puzzle, currentPuzzleId, isPathCompleted, navigate]);
 
-  // Timer: Update current time every second
-  useEffect(() => {
-    timerIntervalRef.current = setInterval(() => {
-      setCurrentTime(elapsedTime + (Date.now() - startTime));
-    }, 1000);
-
-    return () => {
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
-      }
-    };
-  }, [startTime, elapsedTime]);
-
-  // Visibility: Pause timer when tab is hidden
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        // Pause timer
-        setElapsedTime((prev) => prev + (Date.now() - startTime));
-        if (timerIntervalRef.current) {
-          clearInterval(timerIntervalRef.current);
-        }
-      } else {
-        // Resume timer
-        setStartTime(Date.now());
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [startTime]);
 
   // Fire confetti
   const fireConfetti = () => {
@@ -209,12 +176,11 @@ const QuestPage = () => {
       setTimeout(() => {
         if (allCompleted) {
           // Show completion screen - Perfect Run Bonus applies here
-          const finalTime = elapsedTime + (Date.now() - startTime);
           const accuracy = calculateAccuracy(totalPuzzles, progress.mistakes);
           const themedTitle = getThemedTitle(pathId, accuracy);
 
           const stats = {
-            completionTime: finalTime,
+            completionTime: 0,
             accuracy,
             mistakes: progress.mistakes,
             themedTitle,
@@ -263,29 +229,6 @@ const QuestPage = () => {
     navigate('/hub');
   };
 
-  const handleFinishAndClaim = () => {
-    // Calculate final stats
-    const finalTime = elapsedTime + (Date.now() - startTime);
-    const accuracy = calculateAccuracy(totalPuzzles, progress.mistakes);
-    const themedTitle = getThemedTitle(pathId, accuracy);
-
-    const stats = {
-      completionTime: finalTime,
-      accuracy,
-      mistakes: progress.mistakes,
-      themedTitle,
-      completedAt: Date.now(),
-    };
-
-    // Show completion screen and add key
-    setShowCompletion(true);
-    if (!keysCollected.includes(pathId)) {
-      addKey(pathId, stats);
-    }
-  };
-
-  // Determine if we can show the Finish & Claim Key button
-  const canClaimKey = currentScore >= targetScore && !isPathCompleted;
 
   // Path completion screen
   if (showCompletion || isPathCompleted) {
@@ -366,80 +309,50 @@ const QuestPage = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-festive-cream via-festive-peach/20 to-festive-cream">
-      {/* Header - Mission Dashboard */}
-      <header className="border-b-3 border-starbucks-green/20 bg-soft-white/95 backdrop-blur-sm">
-        <div className="mx-auto max-w-3xl px-6 py-4">
-          <div className="flex items-center justify-between gap-4 flex-wrap">
-            {/* Left: Back Button + Achievement Stakes */}
-            <div className="flex items-center gap-4">
-              <motion.button
-                onClick={handleBackToVault}
-                whileHover={{ scale: 1.05, x: -3 }}
-                whileTap={{ scale: 0.95 }}
-                className="hand-drawn flex items-center gap-2 text-sm font-medium text-deep-brown bg-white px-4 py-2 border-3 border-starbucks-green/30 hover:border-starbucks-green/60 transition-colors shadow-sm"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Vault
-              </motion.button>
+      {/* Fixed Header - Slim Progress Bar */}
+      <header className="fixed top-0 left-0 right-0 h-14 bg-zinc-900 z-50">
+        <div className="h-full flex items-center px-6 gap-4">
+          {/* Back Button */}
+          <motion.button
+            onClick={handleBackToVault}
+            whileHover={{ scale: 1.05, x: -3 }}
+            whileTap={{ scale: 0.95 }}
+            className="hand-drawn flex items-center gap-2 text-xs font-medium text-white bg-zinc-800 px-3 py-1.5 border-2 border-zinc-700 hover:border-zinc-600 transition-colors shadow-sm flex-shrink-0"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Back</span>
+          </motion.button>
 
-             
-            </div> 
-            
-            {/* Achievement Stakes in Header */}
-              <AchievementStakes
-                pathId={pathId}
-                currentMistakes={currentRun.mistakes}
-                elapsedTime={currentTime}
-              />
-
-            {/* Right: Timer + Points + Finish Button */}
-            {/* <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 text-sm font-medium text-deep-brown">
-                <Clock className="h-4 w-4 text-starbucks-green" />
-                <span>{formatTime(currentTime)}</span>
+          {/* Dynamic Progress Background */}
+          <div className="flex-1 relative h-full bg-zinc-800 overflow-hidden">
+            <motion.div
+              className="absolute top-0 left-0 h-full bg-gradient-to-r from-amber-500 via-orange-400 to-red-500"
+              initial={{ width: 0 }}
+              animate={{
+                width: `${Math.min((currentScore / targetScore) * 100, 100)}%`,
+              }}
+              transition={{ duration: 0.5 }}
+            />
+            {/* Content inside progress bar */}
+            <div className="relative h-full flex items-center justify-center">
+              <div className="text-xs font-mono text-zinc-200">
+                {currentScore} / {targetScore} pts
               </div>
-              <div className="h-4 w-px bg-deep-brown/20" />
-             
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-deep-brown">
-                  {currentScore} / {targetScore} pts
-                </span>
-                <div className="hand-drawn h-3 w-24 overflow-hidden bg-starbucks-green/10 relative border-2 border-starbucks-green/30">
-                  <motion.div
-                    className="h-full bg-starbucks-green"
-                    initial={{ width: 0 }}
-                    animate={{
-                      width: `${Math.min((currentScore / targetScore) * 100, 100)}%`,
-                    }}
-                    transition={{ duration: 0.5 }}
-                  />
-                </div>
-              </div>
+            </div>
+          </div>
 
-              
-              {canClaimKey && (
-                <motion.button
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                  onClick={handleFinishAndClaim}
-                  className="hand-drawn ml-2 px-5 py-2.5 font-semibold text-white text-sm flex items-center gap-2 shadow-md border-3 bg-starbucks-green border-starbucks-green"
-                  whileHover={{ scale: 1.08, rotate: 2 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  >
-                    <Flag className="h-4 w-4" />
-                  </motion.div>
-                  Finish & Claim Key
-                </motion.button>
-              )}
-            </div> */}
+          {/* Achievement Stakes on Right */}
+          <div className="flex-shrink-0">
+            <AchievementStakes
+              pathId={pathId}
+              completionPercentage={completionPercentage}
+            />
           </div>
         </div>
       </header>
+
+      {/* Spacer for fixed header */}
+      <div className="h-14" />
 
       {/* Key Unlocked Toast */}
       <AnimatePresence>
@@ -452,16 +365,7 @@ const QuestPage = () => {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex flex-1 flex-col px-6 py-12">
-        {/* Question Navigator Grid */}
-        {currentPuzzleId && (
-          <QuestionNavigator
-            pathId={pathId}
-            currentPuzzleId={currentPuzzleId}
-            onNavigate={handleNavigate}
-          />
-        )}
-
+      <main className="flex flex-1 flex-col px-6 py-12 pb-32">
         <AnimatePresence mode="wait">
           <motion.div
             key={puzzle.id}
@@ -478,7 +382,6 @@ const QuestPage = () => {
               validationResult={validationResult}
               pathId={pathId}
               currentMistakes={currentRun.mistakes}
-              elapsedTime={currentTime}
               currentScore={currentScore}
               targetScore={targetScore}
             />
@@ -527,6 +430,19 @@ const QuestPage = () => {
           )}
         </AnimatePresence>
       </main>
+
+      {/* Sticky Footer - Question Navigator */}
+      {currentPuzzleId && (
+        <footer className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-festive-cream via-festive-peach/30 to-transparent backdrop-blur-sm border-t border-zinc-200/50 z-40">
+          <div className="max-w-3xl mx-auto px-6 py-4">
+            <QuestionNavigator
+              pathId={pathId}
+              currentPuzzleId={currentPuzzleId}
+              onNavigate={handleNavigate}
+            />
+          </div>
+        </footer>
+      )}
     </div>
   );
 };

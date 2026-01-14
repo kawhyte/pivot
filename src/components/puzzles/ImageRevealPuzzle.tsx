@@ -17,7 +17,6 @@ interface ImageRevealPuzzleProps {
   validationResult?: ValidationResult | null;
   pathId: PathId;
   currentMistakes: number;
-  elapsedTime: number;
   currentScore: number;
   targetScore: number;
 }
@@ -30,7 +29,6 @@ export const ImageRevealPuzzle = ({
   validationResult,
   pathId,
   currentMistakes,
-  elapsedTime,
   currentScore,
   targetScore,
 }: ImageRevealPuzzleProps) => {
@@ -68,7 +66,6 @@ export const ImageRevealPuzzle = ({
       difficulty={puzzle.difficulty}
       pathId={pathId}
       currentMistakes={currentMistakes}
-      elapsedTime={elapsedTime}
       currentScore={currentScore}
       targetScore={targetScore}
     >
