@@ -111,7 +111,7 @@ export const MultipleChoicePuzzle = ({
         <Button
           onClick={handleSubmit}
           disabled={selectedOption === null || isSubmitting}
-          className="hand-drawn w-full py-6 text-lg font-semibold text-white bg-festive-coral hover:bg-festive-coral/90 disabled:bg-festive-brown/30 disabled:text-festive-brown/60 shadow-md transition-all"
+          className="hand-drawn w-full py-6 text-lg font-semibold text-white bg-zinc-900 hover:bg-zinc-800 disabled:bg-festive-brown/30 disabled:text-festive-brown/60 shadow-md transition-all"
           size="lg"
         >
           {isSubmitting ? 'Checking...' : 'Submit Answer'}

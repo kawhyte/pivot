@@ -39,8 +39,8 @@ export const QuestionNavigator = ({
         className="text-lg font-semibold text-zinc-900 text-center"
         layout
       >
-        Remaining:{' '}
-        <span className="text-festive-coral font-display text-xl">{currentPosition}</span> of{' '}
+        Questions Remaining:{' '}
+        {/* <span className="text-festive-coral font-display text-xl">{currentPosition}</span> of{' '} */}
         <span className="text-festive-coral font-display text-xl">{remainingTotal}</span>
       </motion.p>
     </motion.div>

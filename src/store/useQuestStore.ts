@@ -234,10 +234,10 @@ export const useQuestStore = create<QuestState>()(
         });
 
         // Check if key should be unlocked (GAUNTLET MODE: 93% threshold)
+        // TARGET_SCORES now represent 93% of max available points
         const score = get().getPathScore(pathId);
         const threshold = TARGET_SCORES[pathId];
-        const gauntletThreshold = Math.ceil(threshold * 0.93);
-        if (score >= gauntletThreshold && !get().keysCollected.includes(pathId)) {
+        if (score >= threshold && !get().keysCollected.includes(pathId)) {
           // Auto-unlock key at 93% mastery!
           await get().addKey(pathId);
         }

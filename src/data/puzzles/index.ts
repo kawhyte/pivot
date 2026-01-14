@@ -6,14 +6,15 @@ import { renaissancePath } from './renaissance';
 import { heartPath } from './heart';
 
 /**
- * Point-based unlock thresholds
+ * Point-based unlock thresholds (ELITE MASTERY: 93% of max available)
  * These are minimum point targets to unlock keys
  * Easy=1pt, Medium=2pts, Hard=3pts per puzzle
+ * GAUNTLET MODE: 93% threshold for key unlock
  */
 export const TARGET_SCORES: Record<PathId, number> = {
-  [PATH_IDS.POP_CULTURE]: 53,
-  [PATH_IDS.RENAISSANCE]: 44,
-  [PATH_IDS.HEART]: 32,
+  [PATH_IDS.POP_CULTURE]: 646,
+  [PATH_IDS.RENAISSANCE]: 525,
+  [PATH_IDS.HEART]: 400,
 } as const;
 
 /**
