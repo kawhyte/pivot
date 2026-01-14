@@ -14,12 +14,12 @@ interface KeyUnlockedToastProps {
 export const KeyUnlockedToast = ({ pathId, onDismiss }: KeyUnlockedToastProps) => {
   const pathMeta = PATH_METADATA[pathId];
 
-  // Fire confetti on mount
+  // Fire confetti on mount (reduced particles)
   useEffect(() => {
     const colors = [pathMeta.colors.primary, pathMeta.colors.secondary];
 
     confetti({
-      particleCount: 80,
+      particleCount: 50,
       spread: 60,
       origin: { y: 0.5 },
       colors,
@@ -37,32 +37,14 @@ export const KeyUnlockedToast = ({ pathId, onDismiss }: KeyUnlockedToastProps) =
       exit={{ opacity: 0, y: -20 }}
       className="fixed top-6 left-1/2 z-50 -translate-x-1/2"
     >
-      <div
-        className="rounded-2xl px-6 py-4 shadow-lg border-2 backdrop-blur-sm"
-        style={{
-          background: `linear-gradient(135deg, ${pathMeta.colors.primary}20, ${pathMeta.colors.secondary}20)`,
-          borderColor: pathMeta.colors.primary,
-        }}
-      >
+      <div className="duo-card px-6 py-4 bg-success-bg border-duolingo-green border-[3px]">
         <div className="flex items-center gap-3">
-          <motion.div
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 0.6, repeat: Infinity }}
-          >
-            <Sparkles
-              className="h-5 w-5"
-              style={{ color: pathMeta.colors.primary }}
-              strokeWidth={2}
-            />
-          </motion.div>
+          <Sparkles className="h-5 w-5 text-duolingo-green flex-shrink-0" strokeWidth={2} />
           <div className="flex flex-col gap-1">
-            <p
-              className="font-bold text-sm"
-              style={{ color: pathMeta.colors.primary }}
-            >
+            <p className="font-bold text-sm text-neutral-900">
               Key Unlocked! 🔑
             </p>
-            <p className="text-xs text-zinc-600">
+            <p className="text-xs text-neutral-700">
               You can claim your key in the header or keep playing for a perfect run bonus!
             </p>
           </div>

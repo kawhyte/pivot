@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Gift, Sparkles, Lock, AlertCircle } from 'lucide-react';
+import { Gift, Lock, AlertCircle, KeyRound } from 'lucide-react';
 import { verifyPasscode, type AgentProfile } from '@/lib/auth';
 import { useQuestStore } from '@/store/useQuestStore';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,7 @@ export const GiftBoxLogin = () => {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [isGiftOpen, setIsGiftOpen] = useState(false);
+  const [showLoginForm, setShowLoginForm] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -21,25 +21,12 @@ export const GiftBoxLogin = () => {
 
   const { setAuthentication } = useQuestStore();
 
-  // Focus input when gift opens
+  // Focus input when login form opens
   useEffect(() => {
-    if (isGiftOpen && inputRef.current) {
+    if (showLoginForm && inputRef.current) {
       setTimeout(() => inputRef.current?.focus(), 300);
     }
-  }, [isGiftOpen]);
-
-  const handleGiftTap = () => {
-    if (!isGiftOpen) {
-      setIsGiftOpen(true);
-      // Celebration confetti when opening
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.6 },
-        colors: ['#FFD700', '#FF6B6B', '#FFE5D9'],
-      });
-    }
-  };
+  }, [showLoginForm]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,12 +50,12 @@ export const GiftBoxLogin = () => {
         setAgentProfile(profile);
         setShowSuccess(true);
 
-        // Big celebration confetti
+        // Celebration confetti (reduced particles)
         confetti({
-          particleCount: 100,
+          particleCount: 50,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ['#FFD700', '#FF6B6B', '#2E7D32'],
+          colors: ['#58CC02', '#88D843', '#FFC800'],
         });
 
         // Save authentication to store (with isTester flag)
@@ -113,141 +100,156 @@ export const GiftBoxLogin = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center px-6 py-12 bg-gradient-to-br from-festive-cream via-festive-peach/30 to-festive-cream">
-      {/* Floating Decorative Elements */}
-      <motion.div
-        className="absolute top-20 left-10"
-        animate={{
-          y: [0, -15, 0],
-          rotate: [0, 5, -5, 0],
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-      >
-        <Sparkles className="h-8 w-8 text-festive-gold opacity-40" />
-      </motion.div>
-
-      <motion.div
-        className="absolute bottom-32 right-16"
-        animate={{
-          y: [0, -20, 0],
-          rotate: [0, -8, 8, 0],
-        }}
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: 1,
-        }}
-      >
-        <Gift className="h-10 w-10 text-festive-coral opacity-30" />
-      </motion.div>
+    <div className="relative flex min-h-screen flex-col items-center justify-center px-6 py-12 bg-gradient-to-b from-blue-50 via-white to-green-50 overflow-hidden">
+      {/* Decorative Background Accents (Duolingo-style) */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-duolingo-green/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/5 rounded-full blur-3xl" />
+      <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-warning-orange/3 rounded-full blur-3xl" />
 
       {/* Main Content */}
       <AnimatePresence mode="wait">
         {!showSuccess ? (
           <motion.div
-            key="gift-box"
-            initial={{ opacity: 0, scale: 0.9 }}
+            key="landing"
+            initial={{ opacity: 0, y: 20 }}
             animate={{
               opacity: 1,
-              scale: 1,
+              y: 0,
               x: shakeTrigger ? [0, -10, 10, -10, 10, 0] : 0,
             }}
-            exit={{ opacity: 0, scale: 0.8 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.4 }}
-            className="w-full max-w-md text-center relative z-10"
+            className="w-full max-w-2xl text-center relative z-10"
           >
-            {/* Title */}
-            <motion.h1
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-4 text-4xl font-display text-festive-brown"
-            >
-              Birthday Quest
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="mb-12 font-accent text-lg text-festive-brown/70"
-            >
-              A Special Surprise Awaits
-            </motion.p>
-
-            {/* Gift Box */}
-            {!isGiftOpen ? (
-              <motion.button
-                onClick={handleGiftTap}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="group relative mx-auto mb-8"
-              >
+            {!showLoginForm ? (
+              /* Hero Section */
+              <>
+                {/* Icon */}
                 <motion.div
-                  animate={{
-                    y: [0, -10, 0],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                  className="relative"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1 }}
+                  className="mb-8 flex justify-center"
                 >
-                  {/* Gift Box */}
-                  <div className="hand-drawn-card bg-festive-coral w-40 h-40 flex items-center justify-center shadow-lg">
-                    <Gift className="h-20 w-20 text-white" strokeWidth={2} />
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-duolingo-green/30 rounded-3xl blur-3xl" />
+                    <div
+                      className="relative rounded-3xl p-8 shadow-lg"
+                      style={{
+                        background: 'linear-gradient(135deg, #58CC02 0%, #46A302 100%)',
+                      }}
+                    >
+                      <Gift className="h-24 w-24 text-white" strokeWidth={1.5} />
+                    </div>
                   </div>
-
-                  {/* Ribbon */}
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-full bg-festive-gold/80 hand-drawn-soft" />
-                  <div className="absolute top-1/2 left-0 -translate-y-1/2 w-full h-8 bg-festive-gold/80 hand-drawn-soft" />
-
-                  {/* Bow */}
-                  <motion.div
-                    animate={{ rotate: [0, 5, -5, 0] }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                    className="absolute -top-6 left-1/2 -translate-x-1/2 w-16 h-16 bg-festive-gold hand-drawn rounded-full flex items-center justify-center shadow-md"
-                  >
-                    <Sparkles className="h-8 w-8 text-white" />
-                  </motion.div>
                 </motion.div>
 
+                {/* Title */}
+                <motion.h1
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="mb-6 text-6xl font-black text-neutral-900 leading-tight"
+                >
+                  Birthday Quest
+                </motion.h1>
+
+                {/* Subtitle */}
                 <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="mt-6 font-accent text-lg text-festive-brown"
+                  transition={{ delay: 0.3 }}
+                  className="mb-4 text-2xl font-bold text-neutral-700"
                 >
-                  Tap to Open
+                  A Special Surprise Awaits
                 </motion.p>
-              </motion.button>
+
+                {/* Description */}
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="mb-12 text-lg text-neutral-600 max-w-xl mx-auto"
+                >
+                  Complete three themed quests to unlock your birthday vault. Each path is filled with puzzles crafted just for you.
+                </motion.p>
+
+                {/* CTA Button */}
+                <motion.button
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  onClick={() => setShowLoginForm(true)}
+                  className="duo-button px-12 py-6 text-2xl font-black mx-auto"
+                  style={{
+                    backgroundColor: '#58CC02',
+                    color: '#FFFFFF',
+                  }}
+                >
+                  GET STARTED
+                </motion.button>
+
+                {/* Features */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                  className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto"
+                >
+                  <div className="text-center">
+                    <div className="mb-3 flex justify-center">
+                      <div className="h-12 w-12 rounded-full bg-path-pop-purple/10 flex items-center justify-center">
+                        <KeyRound className="h-6 w-6 text-path-pop-purple" strokeWidth={2} />
+                      </div>
+                    </div>
+                    <h3 className="text-lg font-bold text-neutral-900 mb-2">3 Unique Paths</h3>
+                    <p className="text-sm text-neutral-600">Pop Culture, Renaissance, and Heart-themed quests</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="mb-3 flex justify-center">
+                      <div className="h-12 w-12 rounded-full bg-path-renaissance-blue/10 flex items-center justify-center">
+                        <Lock className="h-6 w-6 text-path-renaissance-blue" strokeWidth={2} />
+                      </div>
+                    </div>
+                    <h3 className="text-lg font-bold text-neutral-900 mb-2">Unlock Your Vault</h3>
+                    <p className="text-sm text-neutral-600">Collect all 3 keys to reveal your birthday surprise</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="mb-3 flex justify-center">
+                      <div className="h-12 w-12 rounded-full bg-path-heart-pink/10 flex items-center justify-center">
+                        <Gift className="h-6 w-6 text-path-heart-pink" strokeWidth={2} />
+                      </div>
+                    </div>
+                    <h3 className="text-lg font-bold text-neutral-900 mb-2">Made With Love</h3>
+                    <p className="text-sm text-neutral-600">A handcrafted adventure designed just for you</p>
+                  </div>
+                </motion.div>
+              </>
             ) : (
+              /* Login Form */
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-                className="space-y-6"
+                className="space-y-6 max-w-md mx-auto"
               >
-                {/* Opened Gift - Passcode Input */}
-                <motion.div
-                  initial={{ y: 20 }}
-                  animate={{ y: 0 }}
-                  className="hand-drawn-card bg-white p-8 shadow-xl relative overflow-hidden"
+                {/* Back Button */}
+                <button
+                  onClick={() => setShowLoginForm(false)}
+                  className="mb-4 text-sm font-semibold text-neutral-600 hover:text-neutral-900 transition-colors"
                 >
-                  {/* Decorative Corner */}
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-festive-gold/10 hand-drawn-soft" />
+                  ← Back
+                </button>
 
-                  <Lock className="mx-auto mb-4 h-12 w-12 text-festive-coral" />
+                {/* Login Card */}
+                <div className="duo-card bg-white p-8 shadow-xl">
+                  <Lock className="mx-auto mb-4 h-12 w-12 text-duolingo-green" />
 
-                  <h2 className="mb-2 text-2xl font-display text-festive-brown">
-                    Agent Access
+                  <h2 className="mb-2 text-2xl font-black text-neutral-900">
+                    Enter Your Code
                   </h2>
-                  <p className="mb-6 font-accent text-festive-brown/70">
-                    Enter Your Secret Code
+                  <p className="mb-6 text-base text-neutral-600">
+                    Use your secret access code to begin the quest
                   </p>
 
                   <form onSubmit={handleSubmit} className="space-y-4">
@@ -258,31 +260,24 @@ export const GiftBoxLogin = () => {
                       onChange={(e) => setInputValue(e.target.value)}
                       disabled={isProcessing}
                       placeholder="MOONLIGHT-747"
-                      className="hand-drawn w-full px-6 py-4 text-center text-lg font-semibold text-festive-brown placeholder:text-festive-brown/30 bg-festive-cream border-3 border-festive-brown/20 focus:border-festive-coral focus:ring-4 focus:ring-festive-coral/20 transition-all disabled:opacity-50"
+                      className="duo-input w-full h-16 text-center text-lg font-semibold uppercase tracking-wider disabled:opacity-50"
                       autoComplete="off"
                       spellCheck="false"
                     />
 
-                    <motion.button
+                    <button
                       type="submit"
                       disabled={inputValue.trim() === '' || isProcessing}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="hand-drawn w-full py-4 text-lg font-semibold text-white bg-festive-coral hover:bg-festive-coral/90 disabled:bg-festive-brown/30 disabled:cursor-not-allowed transition-colors shadow-md"
+                      className="duo-button w-full py-4 text-lg font-bold disabled:opacity-50"
+                      style={{
+                        backgroundColor: inputValue.trim() === '' || isProcessing ? '#E5E5E5' : '#58CC02',
+                        color: inputValue.trim() === '' || isProcessing ? '#AFAFAF' : '#FFFFFF',
+                      }}
                     >
-                      {isProcessing ? (
-                        <motion.span
-                          animate={{ opacity: [1, 0.5, 1] }}
-                          transition={{ duration: 1, repeat: Infinity }}
-                        >
-                          Verifying...
-                        </motion.span>
-                      ) : (
-                        'Unlock Quest'
-                      )}
-                    </motion.button>
+                      {isProcessing ? 'Verifying...' : 'Start Quest'}
+                    </button>
                   </form>
-                </motion.div>
+                </div>
 
                 {/* Error Message */}
                 <AnimatePresence>
@@ -291,10 +286,10 @@ export const GiftBoxLogin = () => {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="hand-drawn-card flex items-center gap-3 bg-red-50 border-2 border-red-300 px-4 py-3"
+                      className="duo-card flex items-center gap-3 bg-red-50 border-error-red px-4 py-3"
                     >
-                      <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-600" />
-                      <p className="text-sm font-medium text-red-700">
+                      <AlertCircle className="h-5 w-5 flex-shrink-0 text-error-red" />
+                      <p className="text-sm font-semibold text-neutral-900">
                         Access Denied. Check your code and try again.
                       </p>
                     </motion.div>
@@ -304,70 +299,37 @@ export const GiftBoxLogin = () => {
             )}
           </motion.div>
         ) : (
-          /* Success Sticker Reveal */
+          /* Success Screen */
           <motion.div
             key="success"
-            initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
             className="w-full max-w-md text-center relative z-10"
           >
-            <motion.div
-              animate={{
-                scale: [1, 1.05, 1],
-                rotate: [0, 3, -3, 0],
-              }}
-              transition={{
-                duration: 0.8,
-                repeat: Infinity,
-                repeatDelay: 1,
-              }}
-              className="hand-drawn-card bg-white p-12 shadow-2xl border-4 border-festive-gold relative overflow-hidden"
-            >
-              {/* Sticker Effect Border */}
-              <div className="absolute inset-0 bg-gradient-to-br from-festive-gold/20 via-transparent to-festive-coral/20 pointer-events-none" />
+            <div className="duo-card bg-white p-12">
+              <div className="mb-6 flex justify-center">
+                <div className="h-20 w-20 rounded-full bg-duolingo-green/10 flex items-center justify-center">
+                  <Gift className="h-10 w-10 text-duolingo-green" strokeWidth={2} />
+                </div>
+              </div>
 
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-              >
-                <Sparkles className="mx-auto mb-4 h-20 w-20 text-festive-gold" />
-              </motion.div>
-
-              <h2 className="mb-2 text-3xl font-display text-festive-brown">
+              <h2 className="mb-2 text-3xl font-black text-neutral-900">
                 Welcome Back!
               </h2>
-              <p className="text-xl font-accent text-festive-coral mb-4">
+              <p className="text-xl font-bold text-duolingo-green mb-4">
                 {agentProfile?.name}
               </p>
-              <p className="text-sm font-medium text-festive-brown/60 uppercase tracking-widest">
+              <p className="text-sm font-semibold text-neutral-600 uppercase tracking-wider">
                 {agentProfile?.role}
               </p>
 
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="mt-6 text-sm font-accent text-festive-brown/70"
-              >
+              <div className="mt-6 text-sm text-neutral-700">
                 Loading your quest...
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Footer */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
-        className="mt-12 text-center relative z-10"
-      >
-        <p className="font-accent text-sm text-festive-brown/50">
-          A handcrafted adventure just for you
-        </p>
-      </motion.div>
     </div>
   );
 };

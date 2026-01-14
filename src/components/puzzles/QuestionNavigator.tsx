@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import type { PathId } from '@/lib/paths';
 import type { Puzzle } from '@/types/puzzle';
 
@@ -19,29 +18,18 @@ export const QuestionNavigator = ({
 }: QuestionNavigatorProps) => {
   if (remainingPuzzles.length === 0) return null;
 
-  // Calculate current position within remaining puzzles
-  const currentIndex = remainingPuzzles.findIndex((p) => p.id === currentPuzzleId);
-  const currentPosition = currentIndex !== -1 ? currentIndex + 1 : 1;
   const remainingTotal = remainingPuzzles.length;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 }}
-      className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-t border-zinc-200 h-16 flex items-center justify-center shadow-lg px-4"
-      layout
-    >
-      <motion.p
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-        className="text-lg font-semibold text-zinc-900 text-center"
-        layout
-      >
-        Remaining:{' '}
-        <span className="text-festive-coral font-display text-xl">{remainingTotal}</span>
-      </motion.p>
-    </motion.div>
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t-2 border-neutral-200 h-20 flex items-center justify-center">
+      <div className="text-center">
+        <p className="text-sm font-semibold text-neutral-500 uppercase tracking-wide">
+          Remaining
+        </p>
+        <p className="text-4xl font-black text-duolingo-green">
+          {remainingTotal}
+        </p>
+      </div>
+    </div>
   );
 };

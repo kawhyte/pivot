@@ -23,8 +23,8 @@ export const PATH_METADATA = {
     name: 'Pop Culture',
     subtitle: 'Central Perk & Stars Hollow',
     colors: {
-      primary: '#6366f1', // Central Perk Purple
-      secondary: '#fbbf24', // Stars Hollow Yellow
+      primary: '#CE82FF', // Purple (subtle badge accent only)
+      secondary: '#FFC800', // Yellow
     },
     unlockDay: 1,
   },
@@ -33,8 +33,8 @@ export const PATH_METADATA = {
     name: 'Renaissance',
     subtitle: 'Knowledge & Discovery',
     colors: {
-      primary: '#065f46', // Deep Emerald
-      secondary: '#d4af37', // Gold
+      primary: '#1CB0F6', // Blue (subtle badge accent only)
+      secondary: '#FFD700', // Gold
     },
     unlockDay: 2,
   },
@@ -43,8 +43,8 @@ export const PATH_METADATA = {
     name: 'Heart',
     subtitle: 'Our Story',
     colors: {
-      primary: '#be123c', // Soft Crimson
-      secondary: '#fb7185', // Rose
+      primary: '#FF4B4B', // Pink/Red (subtle badge accent only)
+      secondary: '#FFC0CB', // Pink
     },
     unlockDay: 3,
   },

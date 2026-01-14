@@ -8,6 +8,8 @@ import { PATH_IDS } from '@/lib/paths';
 import { getUnlockedPaths } from '@/lib/daily-drop';
 import { KeySlot } from '@/components/KeySlot';
 import { HowToPlayDialog } from '@/components/HowToPlayDialog';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { Toast } from '@/components/ui/Toast';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 
@@ -15,7 +17,10 @@ const VaultHub = () => {
   const navigate = useNavigate();
   const hasTriggeredConfetti = useRef(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [showShareToast, setShowShareToast] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
   const {
     _hasHydrated,
     keysCollected,
@@ -43,39 +48,19 @@ const VaultHub = () => {
     setUnlockedPaths(unlocked);
   }, [setUnlockedPaths, isTester]);
 
-  // Fire confetti when vault is unlocked - STARBUCKS GREEN
+  // Fire confetti when vault is unlocked (reduced particles)
   useEffect(() => {
     if (isVaultUnlocked && !hasTriggeredConfetti.current) {
       hasTriggeredConfetti.current = true;
 
-      // Delay slightly to let UI update
+      // Single confetti burst
       setTimeout(() => {
         confetti({
-          particleCount: 100,
+          particleCount: 50,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ['#006241', '#10B981', '#34D399'],
+          colors: ['#58CC02', '#88D843', '#FFC800'],
         });
-
-        setTimeout(() => {
-          confetti({
-            particleCount: 80,
-            angle: 60,
-            spread: 55,
-            origin: { x: 0, y: 0.7 },
-            colors: ['#006241', '#F9A8D4', '#FBBF24'],
-          });
-        }, 250);
-
-        setTimeout(() => {
-          confetti({
-            particleCount: 80,
-            angle: 120,
-            spread: 55,
-            origin: { x: 1, y: 0.7 },
-            colors: ['#006241', '#F9A8D4', '#FBBF24'],
-          });
-        }, 500);
       }, 300);
     }
   }, [isVaultUnlocked]);
@@ -89,99 +74,93 @@ const VaultHub = () => {
     if (!userId) return;
 
     // Generate shareable URL with userId parameter
-    const shareUrl = `${window.location.origin}?userId=${userId}`;
+    const url = `${window.location.origin}?userId=${userId}`;
 
     try {
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(url);
       setLinkCopied(true);
 
       // Reset after 2 seconds
       setTimeout(() => setLinkCopied(false), 2000);
     } catch (error) {
       console.error('Failed to copy link:', error);
-      // Fallback: show alert with URL
-      alert(`Copy this link to continue on another device:\n\n${shareUrl}`);
+      // Fallback: show toast with URL
+      setShareUrl(url);
+      setShowShareToast(true);
     }
   };
 
   const handleLogout = () => {
-    if (confirm('Are you sure you want to logout? Your progress will be saved.')) {
-      resetQuest();
-      navigate('/');
-    }
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
+    resetQuest();
+    navigate('/');
   };
 
   return (
     <div className="flex min-h-screen flex-col bg-warm-cream relative">
       {/* Floating Help Button - Top Right */}
-      <motion.button
+      <button
         onClick={() => setShowHowToPlay(true)}
-        className="fixed top-6 right-6 z-40 hand-drawn bg-starbucks-green text-white p-4 shadow-2xl "
-        whileHover={{
-          scale: 1.1,
-          rotate: [0, -10, 10, -10, 0],
-          transition: { duration: 0.5 }
-        }}
-        whileTap={{ scale: 0.95 }}
-        animate={{
-          y: [0, -8, 0],
-        }}
-        transition={{
-          y: {
-            duration: 2,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          },
-        }}
+        className="fixed top-6 right-6 z-40 duo-button bg-duolingo-green text-white p-4"
         aria-label="How to Play"
       >
         <HelpCircle className="h-6 w-6" strokeWidth={2.5} />
-      </motion.button>
+      </button>
 
       {/* How to Play Dialog */}
       <HowToPlayDialog open={showHowToPlay} onOpenChange={setShowHowToPlay} />
 
+      {/* Logout Confirmation Dialog */}
+      <ConfirmDialog
+        open={showLogoutConfirm}
+        onOpenChange={setShowLogoutConfirm}
+        title="Logout?"
+        description="Are you sure you want to logout? Your progress will be saved."
+        confirmText="Logout"
+        cancelText="Cancel"
+        onConfirm={confirmLogout}
+        variant="default"
+      />
+
+      {/* Share URL Toast (fallback if clipboard fails) */}
+      <Toast
+        open={showShareToast}
+        onOpenChange={setShowShareToast}
+        title="Copy this link to continue on another device"
+        description={shareUrl}
+        variant="info"
+        duration={10000}
+      />
+
       {/* Header */}
-      <header className="border-b-3 border-starbucks-green/20 bg-soft-white/95 backdrop-blur-sm">
+      <header className="border-b-2 border-neutral-200 bg-white">
         <div className="mx-auto max-w-md px-6 py-6">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            className="text-center"
-          >
+          <div className="text-center">
             <div className="mb-2 flex items-center justify-center gap-2">
-              <motion.div
-                animate={{ rotate: [0, -10, 10, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-              >
-                <KeyRound className="h-7 w-7 text-starbucks-green" strokeWidth={2.5} />
-              </motion.div>
-              <h1 className="text-3xl font-display text-starbucks-green">
+              <KeyRound className="h-7 w-7 text-duolingo-green" strokeWidth={2.5} />
+              <h1 className="text-3xl font-bold text-duolingo-green">
                 The Vault
               </h1>
             </div>
-            <p className="text-base font-accent text-deep-brown/70 italic">
+            <p className="text-base text-neutral-700">
               Collect 3 keys to unlock your birthday surprise
             </p>
             {agentName && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3, type: 'spring', stiffness: 300, damping: 20 }}
-                className="mt-4"
-              >
-                <div className="hand-drawn-card bg-starbucks-green/10 border-2 border-starbucks-green/30 px-4 py-2.5 inline-block">
-                  <p className="font-accent text-sm text-deep-brown/70">
+              <div className="mt-4">
+                <div className="duo-card bg-success-bg border-duolingo-green px-4 py-2.5 inline-block">
+                  <p className="text-sm text-neutral-700">
                     Logged in as
                   </p>
-                  <p className="font-display text-lg text-starbucks-green font-bold">
+                  <p className="text-lg text-duolingo-green font-bold">
                     {agentName}
                   </p>
                 </div>
-              </motion.div>
+              </div>
             )}
-          </motion.div>
+          </div>
         </div>
       </header>
 
@@ -189,40 +168,22 @@ const VaultHub = () => {
       <main className="flex flex-1 flex-col px-6 py-8">
         <div className="mx-auto w-full max-w-md">
           {/* Progress Indicator */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{
-              delay: 0.2,
-              type: 'spring',
-              stiffness: 300,
-              damping: 20
-            }}
-            className="mb-8"
-          >
-            <div className="hand-drawn-card bg-soft-white p-6 shadow-lg border-3 border-starbucks-green/30 relative overflow-hidden">
-              {/* Decorative Corner Stars */}
-              <Sparkles className="absolute top-2 right-2 h-5 w-5 text-celebration-gold/30" />
-              <Sparkles className="absolute bottom-2 left-2 h-4 w-4 text-celebration-pink/30" />
-
+          <div className="mb-8">
+            <div className="duo-card bg-white p-6">
               <div className="mb-3 flex items-center justify-between">
-                <span className="text-base font-accent text-starbucks-green italic">
+                <span className="text-base font-semibold text-duolingo-green">
                   Your Progress
                 </span>
-                <motion.span
-                  className="text-3xl font-display text-starbucks-green"
-                  animate={{ scale: keysCollected.length > 0 ? [1, 1.1, 1] : 1 }}
-                  transition={{ duration: 0.3 }}
-                >
+                <span className="text-3xl font-black text-duolingo-green">
                   {keysCollected.length} / 3
-                </motion.span>
+                </span>
               </div>
               <Progress
                 value={(keysCollected.length / 3) * 100}
-                className="h-4 hand-drawn bg-starbucks-green/10"
+                className="h-4 bg-neutral-200"
               />
             </div>
-          </motion.div>
+          </div>
 
           {/* Key Slots */}
           <div className="space-y-4">
@@ -251,138 +212,74 @@ const VaultHub = () => {
 
           {/* Vault Unlock Status */}
           {isVaultUnlocked && (
-            <motion.div
-              initial={{ opacity: 0, y: 20, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{
-                delay: 0.4,
-                type: 'spring',
-                stiffness: 300,
-                damping: 20
-              }}
-              className="mt-8"
-            >
-              <div className="relative overflow-hidden hand-drawn-border border-4 border-starbucks-green bg-gradient-to-br from-starbucks-green to-starbucks-green/90 p-8 text-center shadow-2xl">
-                {/* Animated Background Sparkles */}
-                <motion.div
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    rotate: [0, 180, 360],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: 'linear',
-                  }}
-                  className="absolute inset-0 opacity-10"
-                >
-                  <Sparkles className="absolute top-1/4 left-1/4 h-12 w-12 text-white" />
-                  <Sparkles className="absolute top-1/3 right-1/4 h-16 w-16 text-celebration-pink" />
-                  <Sparkles className="absolute bottom-1/4 left-1/3 h-10 w-10 text-celebration-gold" />
-                </motion.div>
-
-                <motion.div
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    rotate: [0, 5, -5, 0],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    repeatDelay: 1,
-                  }}
-                  className="mb-4 flex justify-center relative z-10"
-                >
-                  <Sparkles className="h-14 w-14 text-celebration-gold" strokeWidth={2} fill="currentColor" />
-                </motion.div>
-                <h2 className="mb-2 text-3xl font-display text-white relative z-10">
+            <div className="mt-8">
+              <div className="duo-card bg-duolingo-green p-8 text-center border-[3px] border-duolingo-green-dark">
+                <div className="mb-4 flex justify-center">
+                  <Sparkles className="h-14 w-14 text-white" strokeWidth={2} fill="currentColor" />
+                </div>
+                <h2 className="mb-2 text-3xl font-black text-white">
                   Vault Unlocked!
                 </h2>
-                <p className="mb-6 text-base font-accent text-white/90 relative z-10 italic">
+                <p className="mb-6 text-base text-white/90">
                   You've collected all 3 keys. Ready to see your surprise?
                 </p>
-                <motion.div
-                  whileHover={{ scale: 1.05, rotate: 2 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                <button
+                  onClick={() => navigate('/vault')}
+                  className="duo-button bg-white text-duolingo-green px-8 py-4 text-xl font-black hover:bg-neutral-100"
                 >
-                  <Button
-                    onClick={() => navigate('/vault')}
-                    className="hand-drawn bg-celebration-gold text-deep-brown px-8 py-6 font-display text-lg hover:bg-celebration-gold/90 shadow-xl border-3 border-celebration-gold/50 relative z-10"
-                    size="lg"
-                  >
-                    Open Vault ✨
-                  </Button>
-                </motion.div>
+                  Open Vault
+                </button>
               </div>
-            </motion.div>
+            </div>
           )}
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t-3 border-starbucks-green/20 bg-soft-white/95 backdrop-blur-sm">
+      <footer className="border-t-2 border-neutral-200 bg-white">
         <div className="mx-auto max-w-md px-6 py-4">
           <div className="flex items-center justify-between flex-wrap gap-3">
-            <p className="text-xs font-accent text-deep-brown/60 italic">
-              A birthday quest made with love ✨
+            <p className="text-xs text-neutral-600">
+              A birthday quest made with love
             </p>
             <div className="flex items-center gap-2">
-              <motion.div
-                whileHover={{ scale: 1.05, rotate: 5 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              <Button
+                onClick={handleShareProgress}
+                disabled={!userId}
+                variant="outline"
+                size="sm"
+                className="gap-1 duo-button bg-neutral-100 border-neutral-300 text-xs font-medium text-neutral-900 hover:bg-neutral-200 px-3 py-2"
               >
-                <Button
-                  onClick={handleShareProgress}
-                  disabled={!userId}
-                  variant="outline"
-                  size="sm"
-                  className="gap-1 hand-drawn bg-celebration-pink/20 border-2 border-celebration-pink text-xs font-medium text-deep-brown hover:bg-celebration-pink/30"
-                >
-                  {linkCopied ? (
-                    <>
-                      <Check className="h-3.5 w-3.5" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Share2 className="h-3.5 w-3.5" />
-                      Share
-                    </>
-                  )}
-                </Button>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05, rotate: -5 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                {linkCopied ? (
+                  <>
+                    <Check className="h-3.5 w-3.5" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="h-3.5 w-3.5" />
+                    Share
+                  </>
+                )}
+              </Button>
+              <Button
+                onClick={() => setShowHowToPlay(true)}
+                variant="outline"
+                size="sm"
+                className="gap-1 duo-button bg-neutral-100 border-neutral-300 text-xs font-medium text-neutral-900 hover:bg-neutral-200 px-3 py-2"
               >
-                <Button
-                  onClick={() => setShowHowToPlay(true)}
-                  variant="outline"
-                  size="sm"
-                  className="gap-1 hand-drawn bg-celebration-gold/20 border-2 border-celebration-gold text-xs font-medium text-deep-brown hover:bg-celebration-gold/30"
-                >
-                  <HelpCircle className="h-3.5 w-3.5" />
-                  Help
-                </Button>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05, rotate: 5 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                <HelpCircle className="h-3.5 w-3.5" />
+                Help
+              </Button>
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                size="sm"
+                className="gap-1 duo-button bg-red-50 border-error-red text-xs font-medium text-error-red hover:bg-red-100 px-3 py-2"
               >
-                <Button
-                  onClick={handleLogout}
-                  variant="outline"
-                  size="sm"
-                  className="gap-1 hand-drawn bg-red-100 border-2 border-red-300 text-xs font-medium text-red-700 hover:bg-red-200"
-                >
-                  <LogOut className="h-3.5 w-3.5" />
-                  Logout
-                </Button>
-              </motion.div>
+                <LogOut className="h-3.5 w-3.5" />
+                Logout
+              </Button>
             </div>
           </div>
         </div>

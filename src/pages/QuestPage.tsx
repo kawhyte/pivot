@@ -9,6 +9,7 @@ import { getPuzzleById, getTotalPuzzles, getRandomCoupon, TARGET_SCORES, getPath
 import { validateAnswer } from '@/lib/puzzle-validator';
 import { PuzzleRenderer } from '@/components/puzzles/PuzzleRenderer';
 import { QuestionNavigator } from '@/components/puzzles/QuestionNavigator';
+import { SuccessOverlay } from '@/components/puzzles/SuccessOverlay';
 import { calculateAccuracy, getThemedTitle } from '@/lib/themed-titles';
 import { getThemedAchievement } from '@/lib/achievements';
 import { PerformanceSummary } from '@/components/quest/PerformanceSummary';
@@ -79,6 +80,7 @@ const QuestPage = () => {
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [showCompletion, setShowCompletion] = useState(false);
   const [showKeyUnlockedToast, setShowKeyUnlockedToast] = useState(false);
+  const [showSuccessOverlay, setShowSuccessOverlay] = useState(false);
   const [attempts, setAttempts] = useState(0);
   const [shake, setShake] = useState(false);
 
@@ -152,36 +154,16 @@ const QuestPage = () => {
   }, [currentPuzzleId]);
 
 
-  // Fire confetti
+  // Fire confetti (reduced to 50 particles, single burst)
   const fireConfetti = () => {
     const colors = [pathMeta.colors.primary, pathMeta.colors.secondary];
 
     confetti({
-      particleCount: 100,
-      spread: 70,
+      particleCount: 50,
+      spread: 60,
       origin: { y: 0.6 },
       colors,
     });
-
-    setTimeout(() => {
-      confetti({
-        particleCount: 50,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0 },
-        colors,
-      });
-    }, 200);
-
-    setTimeout(() => {
-      confetti({
-        particleCount: 50,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1 },
-        colors,
-      });
-    }, 400);
   };
 
   const handleNavigate = (puzzleId: string) => {
@@ -216,6 +198,11 @@ const QuestPage = () => {
 
     if (result.status === 'correct') {
       setFeedback({ type: 'success', message: result.message });
+
+      // Show success overlay
+      setShowSuccessOverlay(true);
+      setTimeout(() => setShowSuccessOverlay(false), 1200);
+
       fireConfetti();
 
       // Submit correct answer to store
@@ -421,28 +408,25 @@ const QuestPage = () => {
           {/* Back Button */}
           <motion.button
             onClick={handleBackToVault}
-            whileHover={{ scale: 1.05, x: -3 }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="hand-drawn flex items-center gap-2 text-xs font-medium text-white bg-zinc-800 px-3 py-1.5 border-2 border-zinc-700 hover:border-zinc-600 transition-colors shadow-sm flex-shrink-0"
+            className="duo-button flex items-center gap-2 text-sm bg-neutral-200 text-neutral-900 hover:bg-neutral-300 px-4 py-2 flex-shrink-0"
           >
-            <ArrowLeft className="h-3.5 w-3.5" />
+            <ArrowLeft className="h-4 w-4" />
             <span className="hidden sm:inline">Back</span>
           </motion.button>
 
-          {/* Dynamic Progress Background */}
-          <div className="flex-1 relative h-full bg-zinc-800 overflow-hidden mx-4">
-            <motion.div
-              className="absolute top-0 left-0 h-full bg-gradient-to-r from-amber-500 via-orange-400 to-red-500 origin-left"
-              initial={{ scaleX: 0 }}
-              animate={{
-                scaleX: Math.min(currentScore / targetScore, 1),
-              }}
-              transition={{ duration: 0.5 }}
-            />
-            {/* Content inside progress bar */}
-            <div className="relative h-full flex items-center justify-center">
-              <div className="text-xs font-mono text-zinc-200">
-                {currentScore} / {targetScore} pts
+          {/* Progress Bar */}
+          <div className="flex-1 mx-4">
+            <div className="duo-progress-bar">
+              <motion.div
+                className="duo-progress-fill"
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.min((currentScore / targetScore) * 100, 100)}%` }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+              />
+              <div className="duo-progress-streak">
+                {currentScore} / {targetScore} PTS
               </div>
             </div>
           </div>
@@ -469,6 +453,9 @@ const QuestPage = () => {
           />
         )}
       </AnimatePresence>
+
+      {/* Success Overlay */}
+      <SuccessOverlay show={showSuccessOverlay} message="AWESOME!" />
 
       {/* Main Content */}
       <main className="flex flex-1 flex-col px-6 pt-20 pb-24">
@@ -515,7 +502,7 @@ const QuestPage = () => {
               </motion.div>
             )}
 
-            {/* Glow Button - Show at 80%, Glow at 90% */}
+            {/* Finish Button - Show at 93% threshold */}
             {showFinishButton && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -523,61 +510,41 @@ const QuestPage = () => {
                 transition={{ delay: 0.5 }}
                 className="mx-auto mt-8 w-full max-w-lg"
               >
-                <div className="relative">
-                  {/* Gold Glow Effect when >= 90% */}
-                  {isCompletionistPending && (
-                    <motion.div
-                      className="absolute inset-0 rounded-lg bg-gradient-to-r from-yellow-300 to-amber-300 blur-xl"
-                      animate={{ opacity: [0.3, 0.6, 0.3] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    />
-                  )}
+                <button
+                  onClick={() => {
+                    const accuracy = Math.round(((progress.completedIds.length / totalPuzzles) * 100));
+                    const stats = {
+                      completionTime: 0,
+                      accuracy,
+                      mistakes: progress.mistakes,
+                      themedTitle: getThemedTitle(pathId, accuracy),
+                      completedAt: Date.now(),
+                    };
 
-                  {/* Button */}
-                  <motion.button
-                    onClick={() => {
-                      const accuracy = Math.round(((progress.completedIds.length / totalPuzzles) * 100));
-                      const stats = {
-                        completionTime: 0,
-                        accuracy,
-                        mistakes: progress.mistakes,
-                        themedTitle: getThemedTitle(pathId, accuracy),
-                        completedAt: Date.now(),
-                      };
+                    setShowCompletion(true);
+                    if (!keysCollected.includes(pathId)) {
+                      addKey(pathId, stats);
+                    }
+                  }}
+                  className={`duo-button w-full py-4 text-xl font-black text-white ${
+                    isTester
+                      ? 'bg-cyan-600 hover:bg-cyan-500'
+                      : 'bg-duolingo-green hover:bg-duolingo-green-dark'
+                  }`}
+                >
+                  Finish & Claim Key
+                </button>
 
-                      setShowCompletion(true);
-                      if (!keysCollected.includes(pathId)) {
-                        addKey(pathId, stats);
-                      }
-                    }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`
-                      relative w-full px-6 py-3 rounded-lg font-semibold text-white text-center
-                      transition-all duration-300
-                      ${
-                        isTester
-                          ? 'bg-gradient-to-r from-cyan-600 to-cyan-500 shadow-md'
-                          : isCompletionistPending
-                            ? 'bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 shadow-[0_0_20px_rgba(255,215,0,0.5)] animate-pulse'
-                            : 'bg-gradient-to-r from-blue-500 to-blue-600 shadow-md'
-                      }
-                    `}
+                {/* Hint Text - Only at 95%+ */}
+                {isCompletionistPending && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-2 text-center text-sm text-neutral-700 font-semibold"
                   >
-                    Finish & Claim Key
-                  </motion.button>
-
-                  {/* Hint Text - Only at 90%+ */}
-                  {isCompletionistPending && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="mt-2 text-center text-xs text-amber-600 font-medium"
-                    >
-                      Go for 100%? 🏆
-                    </motion.p>
-                  )}
-                </div>
+                    Go for 100%?
+                  </motion.p>
+                )}
               </motion.div>
             )}
           </motion.div>
@@ -594,11 +561,11 @@ const QuestPage = () => {
             >
               <div
                 className={`
-                  rounded-xl p-4 text-center font-medium
+                  duo-card p-4 text-center font-bold
                   ${
                     feedback.type === 'success'
-                      ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
-                      : 'bg-red-50 text-red-900 border border-red-200'
+                      ? 'bg-success-bg border-duolingo-green text-neutral-900'
+                      : 'bg-red-50 border-error-red text-neutral-900'
                   }
                 `}
               >
