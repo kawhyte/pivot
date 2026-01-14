@@ -7,7 +7,7 @@ export const profiles = pgTable('profiles', {
   id: serial('id').primaryKey(),
   secretCode: text('secret_code').notNull().unique(),
   agentName: text('agent_name').notNull(),
-  agentRole: text('agent_role').notNull(),
+  // REMOVED agentRole to match actual Supabase table
   isTester: boolean('is_tester').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
