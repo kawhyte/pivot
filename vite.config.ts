@@ -33,10 +33,16 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(__dirname, './src'),
+      // Mock server-only modules for client build
+      'postgres': path.resolve(__dirname, './src/lib/mocks/postgres.ts'),
+      '@/db': path.resolve(__dirname, './src/lib/mocks/db.ts'),
     }
   },
   server: {
     port: 3000
+  },
+  optimizeDeps: {
+    exclude: ['postgres', 'drizzle-orm']
   }
 });

@@ -69,6 +69,7 @@ const QuestPage = () => {
     recordMistake,
     resetRun,
     currentRun,
+    isTester, // GOD MODE / GHOST MODE
   } = useQuestStore();
 
   const [showHint, setShowHint] = useState(false);
@@ -331,7 +332,11 @@ const QuestPage = () => {
     const bonusCoupon = isPerfect ? getRandomCoupon(pathId) : null;
 
     return (
-      <div className="flex min-h-screen flex-col bg-gradient-to-br from-festive-cream via-festive-peach/30 to-festive-cream">
+      <div className={`flex min-h-screen flex-col ${
+        isTester
+          ? 'bg-zinc-950'
+          : 'bg-gradient-to-br from-festive-cream via-festive-peach/30 to-festive-cream'
+      }`}>
         <div className="flex flex-1 items-center justify-center px-6">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -345,18 +350,18 @@ const QuestPage = () => {
             >
               <Trophy
                 className="h-24 w-24"
-                style={{ color: pathMeta.colors.primary }}
+                style={{ color: isTester ? '#06b6d4' : pathMeta.colors.primary }}
                 strokeWidth={1.5}
               />
             </motion.div>
 
-            <h1 className="mb-4 text-3xl font-bold text-zinc-900">
+            <h1 className={`mb-4 text-3xl font-bold ${isTester ? 'text-cyan-400' : 'text-zinc-900'}`}>
               Path Complete!
             </h1>
-            <p className="mb-2 text-lg text-zinc-700">
+            <p className={`mb-2 text-lg ${isTester ? 'text-zinc-300' : 'text-zinc-700'}`}>
               You've earned the <span className="font-semibold">{pathMeta.name}</span> key!
             </p>
-            <p className="mb-8 text-sm text-zinc-600">
+            <p className={`mb-8 text-sm ${isTester ? 'text-zinc-400' : 'text-zinc-600'}`}>
               {pathMeta.subtitle}
             </p>
 
@@ -387,7 +392,9 @@ const QuestPage = () => {
               onClick={handleBackToVault}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-full rounded-full bg-zinc-900 px-8 py-4 font-semibold text-white"
+              className={`w-full rounded-full px-8 py-4 font-semibold text-white ${
+                isTester ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-zinc-900'
+              }`}
             >
               Return to Vault
             </motion.button>
@@ -402,7 +409,11 @@ const QuestPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-br from-festive-cream via-festive-peach/20 to-festive-cream">
+    <div className={`flex min-h-screen flex-col ${
+      isTester
+        ? 'bg-zinc-950'
+        : 'bg-gradient-to-br from-festive-cream via-festive-peach/20 to-festive-cream'
+    }`}>
       {/* Fixed Header - Slim Progress Bar */}
       <header className="fixed top-0 left-0 right-0 h-14 bg-zinc-900 z-50">
         <div className="h-full flex items-center justify-between px-4 gap-4">
@@ -479,6 +490,7 @@ const QuestPage = () => {
               currentScore={currentScore}
               targetScore={targetScore}
               shake={shake}
+              isTester={isTester}
             />
 
             {/* Skip Button */}
@@ -491,7 +503,11 @@ const QuestPage = () => {
               >
                 <button
                   onClick={handleSkip}
-                  className="w-full text-center text-sm text-zinc-500 hover:text-zinc-700 transition-colors"
+                  className={`w-full text-center text-sm transition-colors ${
+                    isTester
+                      ? 'text-zinc-400 hover:text-cyan-400'
+                      : 'text-zinc-500 hover:text-zinc-700'
+                  }`}
                 >
                   Skip for Now →
                 </button>
@@ -539,9 +555,11 @@ const QuestPage = () => {
                       relative w-full px-6 py-3 rounded-lg font-semibold text-white text-center
                       transition-all duration-300
                       ${
-                        isCompletionistPending
-                          ? 'bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 shadow-[0_0_20px_rgba(255,215,0,0.5)] animate-pulse'
-                          : 'bg-gradient-to-r from-blue-500 to-blue-600 shadow-md'
+                        isTester
+                          ? 'bg-gradient-to-r from-cyan-600 to-cyan-500 shadow-md'
+                          : isCompletionistPending
+                            ? 'bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 shadow-[0_0_20px_rgba(255,215,0,0.5)] animate-pulse'
+                            : 'bg-gradient-to-r from-blue-500 to-blue-600 shadow-md'
                       }
                     `}
                   >

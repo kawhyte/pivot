@@ -20,6 +20,7 @@ interface ImageRevealPuzzleProps {
   currentScore: number;
   targetScore: number;
   shake?: boolean;
+  isTester?: boolean;
 }
 
 export const ImageRevealPuzzle = ({
@@ -33,6 +34,7 @@ export const ImageRevealPuzzle = ({
   currentScore,
   targetScore,
   shake = false,
+  isTester = false,
 }: ImageRevealPuzzleProps) => {
   const [answer, setAnswer] = useState('');
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -170,7 +172,11 @@ export const ImageRevealPuzzle = ({
           <Button
             onClick={handleSubmit}
             disabled={answer.trim() === '' || isSubmitting}
-            className="hand-drawn w-full py-6 text-lg font-semibold text-white bg-zinc-900 hover:bg-zinc-800 disabled:bg-festive-brown/30 disabled:text-festive-brown/60 shadow-md transition-all"
+            className={`hand-drawn w-full py-6 text-lg font-semibold text-white shadow-md transition-all ${
+              isTester
+                ? 'bg-cyan-700 hover:bg-cyan-600 disabled:bg-cyan-900/30 disabled:text-cyan-700/60'
+                : 'bg-zinc-900 hover:bg-zinc-800 disabled:bg-festive-brown/30 disabled:text-festive-brown/60'
+            }`}
             size="lg"
           >
             {isSubmitting ? 'Checking...' : 'Submit Answer'}

@@ -4,6 +4,13 @@ import type { PathProgress } from '@/types/puzzle';
 import type { PathId } from '@/lib/paths';
 import { PATH_IDS } from '@/lib/paths';
 import { getPathPuzzles, getTotalPuzzles, TARGET_SCORES } from '@/data/puzzles';
+import {
+  fetchProfile,
+  fetchQuestProgress,
+  getOrCreateSession,
+  syncSessionProgress,
+  savePathCompletion,
+} from '@/lib/supabase-sync';
 
 // Re-export PATH_IDS and PathId for convenience (backward compatibility)
 export { PATH_IDS };
@@ -64,8 +71,9 @@ interface QuestState {
   agentName: string;
   agentRole: string;
   agentId: number | null;
+  isTester: boolean; // God Mode flag for testers
 
-  // User ID for database persistence
+  // User ID for database persistence (same as agentId)
   userId: number | null;
 
   // Hydration state for preventing redirect loops
@@ -96,7 +104,7 @@ interface QuestState {
   currentRun: CurrentRun;
 
   // Actions
-  setAuthentication: (isAuthenticated: boolean, agentName: string, agentRole: string, agentId: number) => void;
+  setAuthentication: (isAuthenticated: boolean, agentName: string, agentRole: string, agentId: number, isTester: boolean) => void;
   setUserId: (id: number) => void;
   setHasHydrated: (hydrated: boolean) => void;
   setActivePath: (pathId: PathId | null) => void;
@@ -111,7 +119,7 @@ interface QuestState {
   isPerfectRun: (pathId: PathId) => boolean;
   isPathUnlocked: (pathId: PathId) => boolean;
   getNextUnsolvedPuzzle: (pathId: PathId) => string | null;
-  hydrateFromDatabase: (completedPaths: PathId[]) => void;
+  hydrateFromDatabase: (agentId: number) => Promise<void>;
   checkVaultStatus: () => void;
   startNewRun: () => void;
   recordMistake: () => void;
@@ -124,6 +132,7 @@ const initialState = {
   agentName: '',
   agentRole: '',
   agentId: null,
+  isTester: false,
   userId: null,
   _hasHydrated: false,
   activePath: null,
@@ -163,8 +172,8 @@ export const useQuestStore = create<QuestState>()(
     (set, get) => ({
       ...initialState,
 
-      setAuthentication: (isAuthenticated, agentName, agentRole, agentId) =>
-        set({ isAuthenticated, agentName, agentRole, agentId, userId: agentId }),
+      setAuthentication: (isAuthenticated, agentName, agentRole, agentId, isTester) =>
+        set({ isAuthenticated, agentName, agentRole, agentId, isTester, userId: agentId }),
 
       setUserId: (id) => set({ userId: id }),
 
@@ -187,25 +196,25 @@ export const useQuestStore = create<QuestState>()(
         });
         get().checkVaultStatus();
 
-        // NOTE: Database sync removed for Vite (client-side only)
-        // All state is persisted via Zustand localStorage middleware
-        // Server sync was optional additional functionality
-        /* NEXT.JS SERVER SYNC (disabled for Vite):
-        const { userId } = get();
-        if (userId) {
+        // SUPABASE SYNC: Save path completion to database
+        const { agentId, pathProgress } = get();
+        if (agentId) {
           try {
-            const { syncPathCompletion } = await import('@/app/actions/quest');
-            await syncPathCompletion(userId, pathId, stats ? {
-              timeTaken: stats.completionTime,
-              accuracy: stats.accuracy,
-              mistakes: stats.mistakes,
-              themedTitle: stats.themedTitle,
-            } : undefined);
+            const progress = pathProgress[pathId];
+            const score = get().getPathScore(pathId);
+
+            await savePathCompletion(agentId, pathId, {
+              completedIds: progress.completedIds,
+              skippedIds: progress.skippedIds,
+              finalScore: score,
+              accuracy: stats?.accuracy || 100,
+              mistakes: progress.mistakes,
+              themedTitle: stats?.themedTitle || 'Completed',
+            });
           } catch (error) {
             console.error('Failed to sync key collection:', error);
           }
         }
-        */
       },
 
       setUnlockedPaths: (paths) => set({ unlockedPaths: paths }),
@@ -213,7 +222,7 @@ export const useQuestStore = create<QuestState>()(
       setCurrentPuzzle: (puzzleId) => set({ currentPuzzleId: puzzleId }),
 
       submitAnswer: async (pathId, puzzleId, isCorrect, mistakeWeight = 1.0) => {
-        // Update progress in store
+        // OPTIMISTIC UPDATE: Update local state immediately
         set((state) => {
           const progress = { ...state.pathProgress[pathId] };
 
@@ -232,6 +241,19 @@ export const useQuestStore = create<QuestState>()(
             pathProgress: { ...state.pathProgress, [pathId]: progress },
           };
         });
+
+        // SUPABASE SYNC: Sync progress to database immediately after local update
+        const { agentId } = get();
+        if (agentId) {
+          const currentProgress = get().pathProgress[pathId];
+          const score = get().getPathScore(pathId);
+
+          await syncSessionProgress(agentId, pathId, {
+            currentPuzzleId: puzzleId,
+            score,
+            mistakes: Math.round(currentProgress.mistakes * 10), // Store as integer
+          });
+        }
 
         // Check if key should be unlocked (GAUNTLET MODE: 93% threshold)
         // TARGET_SCORES now represent 93% of max available points
@@ -311,16 +333,89 @@ export const useQuestStore = create<QuestState>()(
         return get().pathStats[pathId];
       },
 
-      hydrateFromDatabase: (completedPaths) => {
-        // Merge database state with local state
-        // Database is source of truth for completed paths
-        const currentKeys = get().keysCollected;
-        const mergedKeys = Array.from(
-          new Set([...currentKeys, ...completedPaths])
-        ) as PathId[];
+      hydrateFromDatabase: async (agentId: number) => {
+        try {
+          // 1. Fetch profile (isTester, agentName, agentRole)
+          const profile = await fetchProfile(agentId);
+          if (!profile) {
+            console.error('Failed to fetch profile during hydration');
+            return;
+          }
 
-        set({ keysCollected: mergedKeys });
-        get().checkVaultStatus();
+          // 2. Fetch quest progress (completed paths)
+          const questProgressData = await fetchQuestProgress(agentId);
+          const completedPaths = questProgressData
+            .filter((p) => p.isCompleted)
+            .map((p) => p.pathId as PathId);
+
+          // 3. Fetch active sessions for all paths (shuffledQueue, attemptsMade, currentPuzzleId, score, mistakes)
+          const sessions: Record<PathId, any> = {};
+          for (const pathId of [PATH_IDS.POP_CULTURE, PATH_IDS.RENAISSANCE, PATH_IDS.HEART]) {
+            const session = await getOrCreateSession(agentId, pathId);
+            if (session) {
+              sessions[pathId] = session;
+            }
+          }
+
+          // 4. Restore full state
+          const pathProgress: Record<PathId, PathProgress> = {
+            [PATH_IDS.POP_CULTURE]: {
+              completedIds: [],
+              skippedIds: [],
+              mistakes: 0,
+              startTime: null,
+            },
+            [PATH_IDS.RENAISSANCE]: {
+              completedIds: [],
+              skippedIds: [],
+              mistakes: 0,
+              startTime: null,
+            },
+            [PATH_IDS.HEART]: {
+              completedIds: [],
+              skippedIds: [],
+              mistakes: 0,
+              startTime: null,
+            },
+          };
+
+          // Restore progress from active_sessions
+          for (const pathId in sessions) {
+            const session = sessions[pathId as unknown as PathId];
+            if (session) {
+              const pathIdNum = Number(pathId) as PathId;
+              pathProgress[pathIdNum].mistakes = session.mistakes / 10; // Convert back from integer storage
+            }
+          }
+
+          // Restore completed/skipped from quest_progress
+          for (const progress of questProgressData) {
+            const pathId = progress.pathId as PathId;
+            if (progress.completedIds) {
+              pathProgress[pathId].completedIds = JSON.parse(progress.completedIds as string);
+            }
+            if (progress.skippedIds) {
+              pathProgress[pathId].skippedIds = JSON.parse(progress.skippedIds as string);
+            }
+          }
+
+          // 5. Update store with hydrated state
+          set({
+            isAuthenticated: true,
+            agentName: profile.agentName,
+            agentRole: profile.agentRole,
+            agentId: profile.id,
+            isTester: profile.isTester,
+            userId: profile.id,
+            keysCollected: completedPaths,
+            pathProgress,
+            _hasHydrated: true,
+          });
+
+          get().checkVaultStatus();
+        } catch (error) {
+          console.error('Error hydrating from database:', error);
+        }
       },
 
       checkVaultStatus: () => {
@@ -363,13 +458,10 @@ export const useQuestStore = create<QuestState>()(
     {
       name: 'birthday-quest-storage',
       storage: createJSONStorage(() => localStorage),
-      // Persist authentication state and userId
+      // SUPABASE-FIRST: Only persist agentId (profile_id) to localStorage
+      // All other state comes from database on hydration
       partialize: (state) => ({
-        isAuthenticated: state.isAuthenticated,
-        agentName: state.agentName,
-        agentRole: state.agentRole,
         agentId: state.agentId,
-        userId: state.userId,
       }),
       // Set hydration flag after storage is loaded
       onRehydrateStorage: () => (state, error) => {
