@@ -18,6 +18,7 @@ interface MultipleChoicePuzzleProps {
   currentMistakes: number;
   currentScore: number;
   targetScore: number;
+  shake?: boolean;
 }
 
 export const MultipleChoicePuzzle = ({
@@ -29,6 +30,7 @@ export const MultipleChoicePuzzle = ({
   currentMistakes,
   currentScore,
   targetScore,
+  shake = false,
 }: MultipleChoicePuzzleProps) => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
@@ -48,7 +50,13 @@ export const MultipleChoicePuzzle = ({
       currentScore={currentScore}
       targetScore={targetScore}
     >
-      <div className="space-y-3">
+      <motion.div
+        className="space-y-3"
+        animate={shake ? {
+          x: [-4, 4, -4, 4, 0],
+        } : {}}
+        transition={{ duration: 0.4 }}
+      >
         {puzzle.options.map((option, index) => {
           const isSelected = selectedOption === index;
 
@@ -100,7 +108,7 @@ export const MultipleChoicePuzzle = ({
             </motion.button>
           );
         })}
-      </div>
+      </motion.div>
 
       {/* Submit Button */}
       <motion.div

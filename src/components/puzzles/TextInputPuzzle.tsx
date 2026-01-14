@@ -19,6 +19,7 @@ interface TextInputPuzzleProps {
   currentMistakes: number;
   currentScore: number;
   targetScore: number;
+  shake?: boolean;
 }
 
 export const TextInputPuzzle = ({
@@ -31,17 +32,18 @@ export const TextInputPuzzle = ({
   currentMistakes,
   currentScore,
   targetScore,
+  shake = false,
 }: TextInputPuzzleProps) => {
   const [answer, setAnswer] = useState('');
-  const [shake, setShake] = useState(false);
+  const [closeShake, setCloseShake] = useState(false);
 
   const handleSubmit = () => {
     if (answer.trim() === '' || isSubmitting) return;
 
     // Trigger shake animation for "close" status
     if (validationResult?.status === 'close') {
-      setShake(true);
-      setTimeout(() => setShake(false), 400);
+      setCloseShake(true);
+      setTimeout(() => setCloseShake(false), 400);
     }
 
     onSubmit(answer);
@@ -71,7 +73,7 @@ export const TextInputPuzzle = ({
       <div className="space-y-4">
         {/* Text Input with Shake Animation */}
         <motion.div
-          animate={shake ? {
+          animate={shake || closeShake ? {
             x: [-4, 4, -4, 4, 0],
           } : {}}
           transition={{ duration: 0.4 }}

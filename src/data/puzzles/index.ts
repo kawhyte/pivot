@@ -12,9 +12,9 @@ import { heartPath } from './heart';
  * GAUNTLET MODE: 93% threshold for key unlock
  */
 export const TARGET_SCORES: Record<PathId, number> = {
-  [PATH_IDS.POP_CULTURE]: 646,
-  [PATH_IDS.RENAISSANCE]: 525,
-  [PATH_IDS.HEART]: 400,
+  [PATH_IDS.POP_CULTURE]: 642,
+  [PATH_IDS.RENAISSANCE]: 544,
+  [PATH_IDS.HEART]: 386,
 } as const;
 
 /**

@@ -16,6 +16,7 @@ interface PuzzleRendererProps {
   currentMistakes: number;
   currentScore: number;
   targetScore: number;
+  shake?: boolean;
 }
 
 export const PuzzleRenderer = ({
@@ -28,6 +29,7 @@ export const PuzzleRenderer = ({
   currentMistakes,
   currentScore,
   targetScore,
+  shake = false,
 }: PuzzleRendererProps) => {
   switch (puzzle.type) {
     case 'multiple-choice':
@@ -41,6 +43,7 @@ export const PuzzleRenderer = ({
           currentMistakes={currentMistakes}
           currentScore={currentScore}
           targetScore={targetScore}
+          shake={shake}
         />
       );
 
@@ -56,6 +59,7 @@ export const PuzzleRenderer = ({
           currentMistakes={currentMistakes}
           currentScore={currentScore}
           targetScore={targetScore}
+          shake={shake}
         />
       );
 
@@ -71,6 +75,7 @@ export const PuzzleRenderer = ({
           currentMistakes={currentMistakes}
           currentScore={currentScore}
           targetScore={targetScore}
+          shake={shake}
         />
       );
 

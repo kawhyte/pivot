@@ -17,18 +17,34 @@ import { AchievementStakes } from '@/components/quest/AchievementStakes';
 import type { ValidationResult } from '@/types/puzzle';
 
 /**
- * Get themed pun message for one-strike skip based on path theme
+ * Get themed pun message for first strike (warning before skip)
  */
-const getThemedSkipMessage = (pathId: PathId): string => {
+const getFirstStrikeMessage = (pathId: PathId): string => {
   switch (pathId) {
     case 1: // Pop Culture
-      return "Pivot! You only get one guess here. We'll put this on 'break' and come back to it later! ☕";
+      return "Pivot! That's one strike. Don't make us go on a 'break' from this question! ☕";
     case 2: // Renaissance
-      return "Your flight has been delayed! You get one shot per terminal. We'll re-route you back here later! ✈️";
+      return "Turbulence! One more wrong move and we're re-routing your flight. ✈️";
     case 3: // Heart
-      return "No 'Whyte House' secrets revealed yet! One guess per memory. We'll save this for a future date! ❤️";
+      return "Memory foggy? One more guess before we save this for the scrapbook! ❤️";
     default:
-      return "One guess per question! Moving on...";
+      return "That's strike one! One more wrong and we're moving on...";
+  }
+};
+
+/**
+ * Get themed pun message for second strike (auto-skip)
+ */
+const getSecondStrikeMessage = (pathId: PathId): string => {
+  switch (pathId) {
+    case 1: // Pop Culture
+      return "We're putting this on 'break'! Moving on... ☕";
+    case 2: // Renaissance
+      return "Flight re-routed! Next question incoming! ✈️";
+    case 3: // Heart
+      return "Saved to the scrapbook! Let's come back to this later! ❤️";
+    default:
+      return "Strike two! Moving on to the next question...";
   }
 };
 
@@ -61,6 +77,8 @@ const QuestPage = () => {
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [showCompletion, setShowCompletion] = useState(false);
   const [showKeyUnlockedToast, setShowKeyUnlockedToast] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [shake, setShake] = useState(false);
 
   const totalPuzzles = getTotalPuzzles(pathId);
   const puzzle = currentPuzzleId ? getPuzzleById(pathId, currentPuzzleId) : null;
@@ -124,6 +142,12 @@ const QuestPage = () => {
       navigate('/hub');
     }
   }, [puzzle, currentPuzzleId, isPathCompleted, navigate]);
+
+  // Reset attempts when puzzle changes
+  useEffect(() => {
+    setAttempts(0);
+    setShake(false);
+  }, [currentPuzzleId]);
 
 
   // Fire confetti
@@ -235,48 +259,61 @@ const QuestPage = () => {
         }
       }, 1500);
     } else {
-      // ONE-STRIKE SKIP: Both "close" and "incorrect" trigger skip
+      // TWO-STRIKE MERCY: First wrong answer is a warning, second is a skip
       const mistakeWeight = result.status === 'close' ? 0.5 : 1.0;
 
       // Track mistake in store
       await submitAnswer(pathId, currentPuzzleId, false, mistakeWeight);
       recordMistake(); // Update live achievement stakes
 
-      // Show themed skip pun message
-      const themedPun = getThemedSkipMessage(pathId);
-      setFeedback({ type: 'error', message: themedPun });
+      if (attempts === 0) {
+        // FIRST STRIKE: Show warning pun and shake animation
+        const firstStrikePun = getFirstStrikeMessage(pathId);
+        setFeedback({ type: 'error', message: firstStrikePun });
 
-      // Auto-skip this puzzle (remove from remaining)
-      skipPuzzle(pathId, currentPuzzleId);
+        // Trigger shake animation
+        setShake(true);
+        setTimeout(() => setShake(false), 400);
 
-      // Wait 2 seconds for user to read the pun, then auto-navigate
-      setTimeout(() => {
-        const nextPuzzle = getNextUnsolvedPuzzle(pathId);
-        if (nextPuzzle) {
-          handleNavigate(nextPuzzle);
-        } else {
-          // No more unsolved puzzles - check if path is complete
-          const allCompleted = progress.completedIds.length === totalPuzzles;
-          if (allCompleted) {
-            const accuracy = calculateAccuracy(totalPuzzles, progress.mistakes);
-            const themedTitle = getThemedTitle(pathId, accuracy);
-            const stats = {
-              completionTime: 0,
-              accuracy,
-              mistakes: progress.mistakes,
-              themedTitle,
-              completedAt: Date.now(),
-            };
-            setShowCompletion(true);
-            if (!keysCollected.includes(pathId)) {
-              addKey(pathId, stats);
+        // Increment attempts
+        setAttempts(1);
+      } else {
+        // SECOND STRIKE: Auto-skip and move to next puzzle
+        const secondStrikePun = getSecondStrikeMessage(pathId);
+        setFeedback({ type: 'error', message: secondStrikePun });
+
+        // Auto-skip this puzzle (remove from remaining)
+        skipPuzzle(pathId, currentPuzzleId);
+
+        // Wait 1.5 seconds for user to read the pun, then auto-navigate
+        setTimeout(() => {
+          const nextPuzzle = getNextUnsolvedPuzzle(pathId);
+          if (nextPuzzle) {
+            handleNavigate(nextPuzzle);
+          } else {
+            // No more unsolved puzzles - check if path is complete
+            const allCompleted = progress.completedIds.length === totalPuzzles;
+            if (allCompleted) {
+              const accuracy = calculateAccuracy(totalPuzzles, progress.mistakes);
+              const themedTitle = getThemedTitle(pathId, accuracy);
+              const stats = {
+                completionTime: 0,
+                accuracy,
+                mistakes: progress.mistakes,
+                themedTitle,
+                completedAt: Date.now(),
+              };
+              setShowCompletion(true);
+              if (!keysCollected.includes(pathId)) {
+                addKey(pathId, stats);
+              }
             }
           }
-        }
-        setFeedback(null);
-        setValidationResult(null);
-        setShowHint(false);
-      }, 2000);
+          setFeedback(null);
+          setValidationResult(null);
+          setShowHint(false);
+        }, 1500);
+      }
     }
 
     setIsSubmitting(false);
@@ -441,6 +478,7 @@ const QuestPage = () => {
               currentMistakes={currentRun.mistakes}
               currentScore={currentScore}
               targetScore={targetScore}
+              shake={shake}
             />
 
             {/* Skip Button */}
