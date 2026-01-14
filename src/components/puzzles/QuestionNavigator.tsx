@@ -40,7 +40,6 @@ export const QuestionNavigator = ({
         layout
       >
         Remaining:{' '}
-        <span className="text-festive-coral font-display text-xl">{currentPosition}</span> of{' '}
         <span className="text-festive-coral font-display text-xl">{remainingTotal}</span>
       </motion.p>
     </motion.div>
