@@ -23,6 +23,7 @@ const VaultHub = () => {
     userId,
     isAuthenticated,
     agentName,
+    isTester,
     setActivePath,
     setUnlockedPaths,
     getPathStats,
@@ -36,11 +37,11 @@ const VaultHub = () => {
     }
   }, [_hasHydrated, isAuthenticated, navigate]);
 
-  // Update unlocked paths based on current date
+  // Update unlocked paths based on current date (GOD MODE: testers bypass restrictions)
   useEffect(() => {
-    const unlocked = getUnlockedPaths();
+    const unlocked = getUnlockedPaths(isTester);
     setUnlockedPaths(unlocked);
-  }, [setUnlockedPaths]);
+  }, [setUnlockedPaths, isTester]);
 
   // Fire confetti when vault is unlocked - STARBUCKS GREEN
   useEffect(() => {
@@ -230,18 +231,21 @@ const VaultHub = () => {
               isCollected={keysCollected.includes(PATH_IDS.POP_CULTURE)}
               onClick={() => handlePathClick(PATH_IDS.POP_CULTURE)}
               stats={getPathStats(PATH_IDS.POP_CULTURE)}
+              isTester={isTester}
             />
             <KeySlot
               pathId={PATH_IDS.RENAISSANCE}
               isCollected={keysCollected.includes(PATH_IDS.RENAISSANCE)}
               onClick={() => handlePathClick(PATH_IDS.RENAISSANCE)}
               stats={getPathStats(PATH_IDS.RENAISSANCE)}
+              isTester={isTester}
             />
             <KeySlot
               pathId={PATH_IDS.HEART}
               isCollected={keysCollected.includes(PATH_IDS.HEART)}
               onClick={() => handlePathClick(PATH_IDS.HEART)}
               stats={getPathStats(PATH_IDS.HEART)}
+              isTester={isTester}
             />
           </div>
 

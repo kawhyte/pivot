@@ -12,12 +12,13 @@ interface KeySlotProps {
   isCollected: boolean;
   onClick: () => void;
   stats?: PathStats;
+  isTester?: boolean;
 }
 
-export const KeySlot = ({ pathId, isCollected, onClick, stats }: KeySlotProps) => {
+export const KeySlot = ({ pathId, isCollected, onClick, stats, isTester = false }: KeySlotProps) => {
   const path = PATH_METADATA[pathId];
-  const unlocked = isPathUnlocked(pathId);
-  const countdownText = getCountdownText(pathId);
+  const unlocked = isPathUnlocked(pathId, isTester);
+  const countdownText = getCountdownText(pathId, isTester);
 
   const isClickable = unlocked && !isCollected;
 

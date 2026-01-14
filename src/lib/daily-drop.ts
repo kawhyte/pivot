@@ -34,8 +34,14 @@ export const getCurrentQuestDay = (): number => {
 
 /**
  * Returns array of unlocked path IDs based on current date
+ * GOD MODE: If isTester is true, all paths are unlocked
  */
-export const getUnlockedPaths = (): PathId[] => {
+export const getUnlockedPaths = (isTester: boolean = false): PathId[] => {
+  // GOD MODE: Testers bypass all restrictions
+  if (isTester) {
+    return [PATH_IDS.POP_CULTURE, PATH_IDS.RENAISSANCE, PATH_IDS.HEART];
+  }
+
   const currentDay = getCurrentQuestDay();
   const unlocked: PathId[] = [];
 
@@ -48,8 +54,12 @@ export const getUnlockedPaths = (): PathId[] => {
 
 /**
  * Checks if a specific path is unlocked
+ * GOD MODE: If isTester is true, always returns true
  */
-export const isPathUnlocked = (pathId: PathId): boolean => {
+export const isPathUnlocked = (pathId: PathId, isTester: boolean = false): boolean => {
+  // GOD MODE: Testers bypass all restrictions
+  if (isTester) return true;
+
   const unlockedPaths = getUnlockedPaths();
   return unlockedPaths.includes(pathId);
 };
@@ -77,8 +87,12 @@ export const getPathUnlockDate = (pathId: PathId): Date => {
 
 /**
  * Gets hours remaining until a path unlocks (returns 0 if already unlocked)
+ * GOD MODE: If isTester is true, always returns 0
  */
-export const getHoursUntilUnlock = (pathId: PathId): number => {
+export const getHoursUntilUnlock = (pathId: PathId, isTester: boolean = false): number => {
+  // GOD MODE: Testers have instant access
+  if (isTester) return 0;
+
   if (isPathUnlocked(pathId)) return 0;
 
   const unlockDate = getPathUnlockDate(pathId);
@@ -90,8 +104,12 @@ export const getHoursUntilUnlock = (pathId: PathId): number => {
 
 /**
  * Formats countdown text for locked paths
+ * GOD MODE: If isTester is true, always returns 'Unlocked'
  */
-export const getCountdownText = (pathId: PathId): string => {
+export const getCountdownText = (pathId: PathId, isTester: boolean = false): string => {
+  // GOD MODE: Always show as unlocked for testers
+  if (isTester) return 'Unlocked';
+
   const hoursRemaining = getHoursUntilUnlock(pathId);
 
   if (hoursRemaining === 0) return 'Unlocked';
