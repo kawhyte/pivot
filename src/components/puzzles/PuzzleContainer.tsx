@@ -51,6 +51,7 @@ export const PuzzleContainer = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
         className="mb-8"
+        layout
       >
         <div className="flex items-start gap-3">
           {/* Difficulty Badge */}
@@ -70,6 +71,7 @@ export const PuzzleContainer = ({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.1 }}
+        layout
       >
         {children}
       </motion.div>
@@ -81,6 +83,7 @@ export const PuzzleContainer = ({
           animate={{ opacity: 1, height: 'auto' }}
           transition={{ duration: 0.3 }}
           className="mt-6 overflow-hidden"
+          layout
         >
           <div className="flex gap-3 bg-amber-50 p-5 border border-amber-200 rounded-lg">
             <HelpCircle className="h-5 w-5 flex-shrink-0 text-amber-600" />

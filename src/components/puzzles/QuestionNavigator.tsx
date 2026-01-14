@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Check, SkipForward } from 'lucide-react';
+import { SkipForward } from 'lucide-react';
 import { useQuestStore, type PathId } from '@/store/useQuestStore';
 import { getPathPuzzles } from '@/data/puzzles';
 
@@ -66,9 +66,7 @@ export const QuestionNavigator = ({
             `}
             title={`Question ${idx + 1}${isCompleted ? ' - Completed' : isSkipped ? ' - Skipped' : isCurrent ? ' - Current' : ' - Locked'}`}
           >
-            {isCompleted ? (
-              <Check className="h-5 w-5" strokeWidth={3} />
-            ) : isSkipped ? (
+            {isSkipped ? (
               <SkipForward className="h-5 w-5" />
             ) : (
               <span className="font-display">{idx + 1}</span>

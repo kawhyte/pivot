@@ -62,6 +62,10 @@ const QuestPage = () => {
   const claimKeyThreshold = Math.ceil(targetScore * 0.81);
   const canClaimKey = currentScore >= claimKeyThreshold && !isPathCompleted;
 
+  // Progress percentage for glow button
+  const scoreProgress = Math.round((currentScore / targetScore) * 100);
+  const isCompletionistPending = scoreProgress >= 90 && scoreProgress < 100 && canClaimKey;
+
   // Initialize: Set current puzzle to first unsolved
   useEffect(() => {
     if (!currentPuzzleId) {
@@ -400,6 +404,70 @@ const QuestPage = () => {
                 >
                   Skip for Now →
                 </button>
+              </motion.div>
+            )}
+
+            {/* Glow Button - Completionist Pending */}
+            {canClaimKey && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="mx-auto mt-8 w-full max-w-lg"
+              >
+                <div className="relative">
+                  {/* Glow Effect when >= 90% */}
+                  {isCompletionistPending && (
+                    <motion.div
+                      className="absolute inset-0 rounded-lg bg-gradient-to-r from-yellow-400 to-amber-400 blur-lg"
+                      animate={{ opacity: [0.3, 0.6, 0.3] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                  )}
+
+                  {/* Button */}
+                  <motion.button
+                    onClick={() => {
+                      const accuracy = Math.round(((progress.completedIds.length / totalPuzzles) * 100));
+                      const stats = {
+                        completionTime: 0,
+                        accuracy,
+                        mistakes: progress.mistakes,
+                        themedTitle: getThemedTitle(pathId, accuracy),
+                        completedAt: Date.now(),
+                      };
+
+                      setShowCompletion(true);
+                      if (!keysCollected.includes(pathId)) {
+                        addKey(pathId, stats);
+                      }
+                    }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`
+                      relative w-full px-6 py-3 rounded-lg font-semibold text-white text-center
+                      transition-all duration-300
+                      ${
+                        isCompletionistPending
+                          ? 'bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 shadow-lg animate-pulse'
+                          : 'bg-gradient-to-r from-blue-500 to-blue-600 shadow-md'
+                      }
+                    `}
+                  >
+                    Finish & Claim Key
+                  </motion.button>
+
+                  {/* Hint Text */}
+                  {isCompletionistPending && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-2 text-center text-xs text-amber-600 font-medium"
+                    >
+                      Go for 100%? 🏆
+                    </motion.p>
+                  )}
+                </div>
               </motion.div>
             )}
           </motion.div>
