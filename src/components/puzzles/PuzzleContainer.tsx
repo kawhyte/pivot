@@ -44,7 +44,7 @@ export const PuzzleContainer = ({
   };
 
   return (
-    <div className="mx-auto w-full max-w-lg">
+    <div className="mx-auto w-full max-w-lg px-4 sm:px-0">
       {/* Question with Difficulty Badge */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -53,14 +53,14 @@ export const PuzzleContainer = ({
         className="mb-8"
         layout
       >
-        <div className="flex items-start gap-3">
-          {/* Difficulty Badge */}
-          <div className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold shadow-sm flex-shrink-0 mt-1 ${getDifficultyStyles()}`}>
+        <div className="flex flex-wrap items-start gap-3">
+          {/* Difficulty Badge - Inline-Flex */}
+          <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold shadow-sm flex-shrink-0 ${getDifficultyStyles()}`}>
             <Zap className="h-3 w-3" />
-            <span>{getDifficultyLabel()}</span>
-          </div>
+            {getDifficultyLabel()}
+          </span>
           {/* Question Text */}
-          <h2 className="text-2xl font-display leading-tight text-festive-brown">
+          <h2 className="text-2xl font-display leading-tight text-festive-brown flex-1">
             {question}
           </h2>
         </div>

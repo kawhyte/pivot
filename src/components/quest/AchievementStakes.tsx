@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import type { PathId } from '@/store/useQuestStore';
 import { PATH_IDS } from '@/store/useQuestStore';
 
@@ -29,8 +29,8 @@ const getPathStakes = (pathId: PathId, completionPercentage: number): StakeItem[
       return [
         {
           id: 'friends-completionist',
-          title: 'Friends Completionist Award 🏆',
-          icon: <Zap className="h-4 w-4" />,
+          title: 'Friends Completionist Award',
+          icon: <Trophy className="h-4 w-4" />,
           type: 'completionist',
           isAvailable: true,
           requirementMet: isCompleted,
@@ -42,8 +42,8 @@ const getPathStakes = (pathId: PathId, completionPercentage: number): StakeItem[
       return [
         {
           id: 'renaissance-completionist',
-          title: 'Renaissance Completionist Award 🏆',
-          icon: <Zap className="h-4 w-4" />,
+          title: 'Renaissance Completionist Award',
+          icon: <Trophy className="h-4 w-4" />,
           type: 'completionist',
           isAvailable: true,
           requirementMet: isCompleted,
@@ -55,8 +55,8 @@ const getPathStakes = (pathId: PathId, completionPercentage: number): StakeItem[
       return [
         {
           id: 'heartfelt-completionist',
-          title: 'Heartfelt Completionist Award 🏆',
-          icon: <Zap className="h-4 w-4" />,
+          title: 'Heartfelt Completionist Award',
+          icon: <Trophy className="h-4 w-4" />,
           type: 'completionist',
           isAvailable: true,
           requirementMet: isCompleted,
@@ -96,7 +96,7 @@ export const AchievementStakes = ({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex items-center gap-2"
+      className="flex items-center gap-3"
       layout
     >
       <AnimatePresence mode="popLayout">
@@ -113,12 +113,12 @@ export const AchievementStakes = ({
               className="flex items-center gap-2"
               layout
             >
-              {/* Icon Button */}
-              <motion.button
+              {/* Icon Badge */}
+              <motion.div
                 animate={
                   isPeeked && stake.requirementMet
                     ? {
-                        scale: [1, 1.08, 1],
+                        scale: [1, 1.1, 1],
                       }
                     : {}
                 }
@@ -135,38 +135,38 @@ export const AchievementStakes = ({
                   transition-all duration-300
                   ${
                     stake.requirementMet
-                      ? 'bg-purple-100/80 text-purple-700 border border-purple-300'
+                      ? 'bg-amber-100 text-amber-600 border-2 border-amber-300'
                       : 'bg-zinc-100 text-zinc-400 border border-zinc-200'
                   }
                 `}
                 title={stake.title}
               >
                 {stake.icon}
-              </motion.button>
+              </motion.div>
 
-              {/* Peek Title - Flex Width Animation */}
+              {/* Peek Title - Slides in horizontally */}
               <AnimatePresence mode="wait">
                 {isPeeked && (
                   <motion.div
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ opacity: 1, width: 'auto' }}
                     exit={{ opacity: 0, width: 0 }}
-                    transition={{ duration: 0.35, ease: 'easeInOut' }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
                     className="overflow-hidden"
                     layout
                   >
                     <motion.span
                       className={`
-                        inline-block px-2 py-1 rounded text-xs font-medium whitespace-nowrap
+                        inline-block px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap
                         ${
                           stake.requirementMet
-                            ? 'bg-purple-100 text-purple-700 border border-purple-300'
+                            ? 'bg-amber-100 text-amber-700 border border-amber-300'
                             : 'bg-zinc-100 text-zinc-600 border border-zinc-300'
                         }
                       `}
                       layout
                     >
-                      {stake.title}
+                      {stake.title} 🏆
                     </motion.span>
                   </motion.div>
                 )}

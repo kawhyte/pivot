@@ -370,7 +370,7 @@ const QuestPage = () => {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex flex-1 flex-col px-6 pt-20 pb-32">
+      <main className="flex flex-1 flex-col px-6 pt-20 pb-24">
         <AnimatePresence mode="wait">
           <motion.div
             key={puzzle.id}

@@ -114,7 +114,7 @@ const VaultHub = () => {
       {/* Floating Help Button - Top Right */}
       <motion.button
         onClick={() => setShowHowToPlay(true)}
-        className="fixed top-6 right-6 z-40 hand-drawn bg-starbucks-green text-white p-4 shadow-2xl hover:scale-110 transition-transform"
+        className="fixed top-6 right-6 z-40 hand-drawn bg-starbucks-green text-white p-4 shadow-2xl "
         whileHover={{
           scale: 1.1,
           rotate: [0, -10, 10, -10, 0],
