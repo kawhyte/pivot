@@ -13,7 +13,7 @@ export async function getOrCreateSession(profileId: number, pathId: PathId) {
       .from('active_sessions')
       .select('*')
       .eq('profile_id', profileId)
-      .eq('active_path_id', pathId)
+      .eq('path_id', pathId)
       .single();
 
     if (existing && !fetchError) {
@@ -25,7 +25,7 @@ export async function getOrCreateSession(profileId: number, pathId: PathId) {
       .from('active_sessions')
       .insert({
         profile_id: profileId,
-        active_path_id: pathId,
+        path_id: pathId,
         current_puzzle_id: null,
         shuffled_queue: null,
         attempts_made: 0,
@@ -67,7 +67,7 @@ export async function syncSessionProgress(
       .from('active_sessions')
       .upsert({
         profile_id: profileId,
-        active_path_id: pathId,
+        path_id: pathId,
         current_puzzle_id: updates.currentPuzzleId,
         shuffled_queue: updates.shuffledQueue,
         attempts_made: updates.attemptsMade,
@@ -184,5 +184,342 @@ export async function fetchProfile(profileId: number) {
   } catch (error) {
     console.error('Error fetching profile:', error);
     return null;
+  }
+}
+
+/**
+ * Initialize quest progress and active session for a path
+ */
+export async function initializePathProgress(
+  profileId: number,
+  pathId: PathId,
+  totalQuestions: number
+) {
+  if (!supabase) return false;
+
+  try {
+    // Initialize quest_progress
+    const { error: progressError } = await supabase
+      .from('quest_progress')
+      .upsert({
+        profile_id: profileId,
+        path_id: pathId,
+        total_questions: totalQuestions,
+      }, {
+        onConflict: 'profile_id,path_id',
+        ignoreDuplicates: true,
+      });
+
+    if (progressError) {
+      console.error('Error initializing quest progress:', progressError);
+      return false;
+    }
+
+    // Initialize active_sessions
+    const { error: sessionError } = await supabase
+      .from('active_sessions')
+      .upsert({
+        profile_id: profileId,
+        path_id: pathId,
+        shuffled_queue: { remaining: [], skipped: [] },
+      }, {
+        onConflict: 'profile_id,path_id',
+        ignoreDuplicates: true,
+      });
+
+    if (sessionError) {
+      console.error('Error initializing active session:', sessionError);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error initializing path progress:', error);
+    return false;
+  }
+}
+
+/**
+ * Record a question attempt in the database
+ */
+export async function recordQuestionAttempt(
+  profileId: number,
+  pathId: PathId,
+  questionId: string,
+  attemptNumber: number,
+  answerGiven: string,
+  isCorrect: boolean,
+  wasClose: boolean
+) {
+  if (!supabase) return false;
+
+  try {
+    const { error } = await supabase
+      .from('question_attempts')
+      .insert({
+        profile_id: profileId,
+        path_id: pathId,
+        question_id: questionId,
+        attempt_number: attemptNumber,
+        answer_given: answerGiven,
+        is_correct: isCorrect,
+        was_close: wasClose,
+      });
+
+    if (error) {
+      console.error('Error recording attempt:', error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error recording attempt:', error);
+    return false;
+  }
+}
+
+/**
+ * Update quest progress after correct answer
+ */
+export async function updateQuestProgress(
+  profileId: number,
+  pathId: PathId,
+  questionId: string,
+  attemptsUsed: number,
+  wasReattempted: boolean
+) {
+  if (!supabase) return false;
+
+  try {
+    const field =
+      attemptsUsed === 1 ? 'correct_first_try' :
+      attemptsUsed === 2 ? 'correct_second_try' :
+      'correct_after_reattempt';
+
+    const { error } = await supabase.rpc('increment_quest_stat', {
+      p_profile_id: profileId,
+      p_path_id: pathId,
+      p_field: field,
+      p_question_id: questionId,
+      p_attempts_used: attemptsUsed,
+      p_was_reattempted: wasReattempted,
+    });
+
+    if (error) {
+      console.error('Error updating quest progress:', error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error updating quest progress:', error);
+    return false;
+  }
+}
+
+/**
+ * Move question to skipped queue after 2 failed attempts
+ */
+export async function moveQuestionToSkipped(
+  profileId: number,
+  pathId: PathId,
+  questionId: string
+) {
+  if (!supabase) return false;
+
+  try {
+    const { error } = await supabase.rpc('move_to_skipped', {
+      p_profile_id: profileId,
+      p_path_id: pathId,
+      p_question_id: questionId,
+    });
+
+    if (error) {
+      console.error('Error moving to skipped:', error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error moving to skipped:', error);
+    return false;
+  }
+}
+
+/**
+ * Remove question from skipped queue after successful re-attempt
+ */
+export async function removeFromSkipped(
+  profileId: number,
+  pathId: PathId,
+  questionId: string
+) {
+  if (!supabase) return false;
+
+  try {
+    const { error } = await supabase.rpc('remove_from_skipped', {
+      p_profile_id: profileId,
+      p_path_id: pathId,
+      p_question_id: questionId,
+    });
+
+    if (error) {
+      console.error('Error removing from skipped:', error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error removing from skipped:', error);
+    return false;
+  }
+}
+
+/**
+ * Check for new achievements and return them
+ */
+export async function checkAchievements(
+  profileId: number,
+  pathId: PathId
+): Promise<Array<{ type: string; data: any }>> {
+  if (!supabase) return [];
+
+  try {
+    const { data, error } = await supabase.rpc('check_achievements', {
+      p_profile_id: profileId,
+      p_path_id: pathId,
+    });
+
+    if (error) {
+      console.error('Error checking achievements:', error);
+      return [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('Error checking achievements:', error);
+    return [];
+  }
+}
+
+/**
+ * Mark achievements as displayed
+ */
+export async function markAchievementsDisplayed(
+  profileId: number,
+  achievementTypes: string[]
+) {
+  if (!supabase) return false;
+
+  try {
+    const { error } = await supabase
+      .from('achievements')
+      .update({ was_displayed: true })
+      .eq('profile_id', profileId)
+      .in('achievement_type', achievementTypes);
+
+    if (error) {
+      console.error('Error marking achievements as displayed:', error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error marking achievements as displayed:', error);
+    return false;
+  }
+}
+
+/**
+ * Get skipped questions for a path
+ */
+export async function getSkippedQuestions(
+  profileId: number,
+  pathId: PathId
+): Promise<string[]> {
+  if (!supabase) return [];
+
+  try {
+    const { data, error } = await supabase
+      .from('active_sessions')
+      .select('shuffled_queue')
+      .eq('profile_id', profileId)
+      .eq('path_id', pathId)
+      .single();
+
+    if (error || !data) {
+      console.error('Error fetching skipped questions:', error);
+      return [];
+    }
+
+    return (data.shuffled_queue as any)?.skipped || [];
+  } catch (error) {
+    console.error('Error fetching skipped questions:', error);
+    return [];
+  }
+}
+
+/**
+ * Get current puzzle attempt count
+ */
+export async function getCurrentAttemptCount(
+  profileId: number,
+  pathId: PathId,
+  questionId: string
+): Promise<number> {
+  if (!supabase) return 0;
+
+  try {
+    const { data, error } = await supabase
+      .from('question_attempts')
+      .select('attempt_number')
+      .eq('profile_id', profileId)
+      .eq('path_id', pathId)
+      .eq('question_id', questionId)
+      .order('attempt_number', { ascending: false })
+      .limit(1);
+
+    if (error || !data || data.length === 0) {
+      return 0;
+    }
+
+    return data[0].attempt_number;
+  } catch (error) {
+    console.error('Error fetching attempt count:', error);
+    return 0;
+  }
+}
+
+/**
+ * Update active session current puzzle
+ */
+export async function updateActiveSession(
+  profileId: number,
+  pathId: PathId,
+  currentPuzzleId: string | null,
+  currentAttempts: number
+) {
+  if (!supabase) return false;
+
+  try {
+    const { error } = await supabase
+      .from('active_sessions')
+      .update({
+        current_puzzle_id: currentPuzzleId,
+        current_puzzle_attempts: currentAttempts,
+        last_activity_at: new Date().toISOString(),
+      })
+      .eq('profile_id', profileId)
+      .eq('path_id', pathId);
+
+    if (error) {
+      console.error('Error updating active session:', error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error updating active session:', error);
+    return false;
   }
 }

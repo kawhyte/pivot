@@ -1,269 +1,117 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Terminal, AlertCircle } from 'lucide-react';
-import { verifyPasscode, type AgentProfile } from '@/lib/auth';
-import { useQuestStore } from '@/store/useQuestStore';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+  import { useNavigate } from 'react-router-dom';
+  import { supabase } from '@/db';
+  import { useQuestStore } from '@/store/useQuestStore';
+  import { initializePathProgress } from '@/lib/supabase-sync';
 
-interface TerminalLine {
-  text: string;
-  type: 'input' | 'output' | 'error' | 'success';
-  timestamp?: string;
-}
+  const VALID_CODES = ['BIRTHDAY2026', 'KENNY2026', 'TEST2026'];
 
-export const AccessTerminal = () => {
-  const navigate = useNavigate();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  export const AccessTerminal = () => {
+    const navigate = useNavigate();
+    const { setAuthentication } = useQuestStore();
+    const [code, setCode] = useState('');
+    const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [lines, setLines] = useState<TerminalLine[]>([
-    { text: '> INITIALIZING SECURE TERMINAL...', type: 'output' },
-    { text: '> SYSTEM READY', type: 'success' },
-    { text: '> ENTER ACCESS CODE:', type: 'output' },
-  ]);
-  const [inputValue, setInputValue] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [showCursor, setShowCursor] = useState(true);
-  const [shakeTrigger, setShakeTrigger] = useState(false);
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setError('');
+      setIsSubmitting(true);
 
-  const { setAuthentication } = useQuestStore();
+      console.log('Attempting login with code:', code.toUpperCase());
 
-  // Blinking cursor effect
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setShowCursor((prev) => !prev);
-    }, 500);
-    return () => clearInterval(interval);
-  }, []);
+      try {
+        const upperCode = code.toUpperCase().trim();
 
-  // Auto-scroll to bottom
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [lines]);
+        // Check if code is valid
+        if (!VALID_CODES.includes(upperCode)) {
+          setError('Invalid access code. Try: TEST2026, KENNY2026, or BIRTHDAY2026');
+          setIsSubmitting(false);
+          return;
+        }
 
-  // Focus input on mount
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+        // Check Supabase connection
+        if (!supabase) {
+          setError('Database connection failed. Check console for errors.');
+          console.error('Supabase is not initialized!');
+          setIsSubmitting(false);
+          return;
+        }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+        // Query database
+        console.log('Querying database for code:', upperCode);
+        const { data, error: dbError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('secret_code', upperCode)
+          .single();
 
-    if (!inputValue.trim() || isProcessing) return;
+        console.log('Database response:', { data, error: dbError });
 
-    const code = inputValue.trim();
-    setInputValue('');
-    setIsProcessing(true);
+        if (dbError || !data) {
+          setError(`Database error: ${dbError?.message || 'User not found'}`);
+          console.error('Database error:', dbError);
+          setIsSubmitting(false);
+          return;
+        }
 
-    // Add input line
-    setLines((prev) => [
-      ...prev,
-      { text: `> ${code}`, type: 'input' },
-      { text: '> DECRYPTING...', type: 'output' },
-    ]);
+        console.log('User found:', data);
 
-    // Simulate decryption with random character cycling (1200ms)
-    const decryptionChars = '█▓▒░ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*';
-    let decryptionInterval: NodeJS.Timeout;
-    let decryptionText = '';
+        // Set authentication in Zustand
+        setAuthentication(
+          true,
+          data.agent_name,
+          data.is_tester ? 'Tester' : 'Agent',
+          data.id,
+          data.is_tester
+        );
 
-    decryptionInterval = setInterval(() => {
-      decryptionText = Array.from({ length: code.length }, () =>
-        decryptionChars[Math.floor(Math.random() * decryptionChars.length)]
-      ).join('');
-
-      setLines((prev) => {
-        const newLines = [...prev];
-        newLines[newLines.length - 1] = {
-          text: `> DECRYPTING... ${decryptionText}`,
-          type: 'output',
-        };
-        return newLines;
-      });
-    }, 50);
-
-    // Wait 1200ms for decryption animation
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-    clearInterval(decryptionInterval);
-
-    // Verify the passcode
-    const profile: AgentProfile | null = await verifyPasscode(code);
-
-    if (profile) {
-      // SUCCESS
-      setLines((prev) => [
-        ...prev.slice(0, -1), // Remove "DECRYPTING..." line
-        { text: '> IDENTITY CONFIRMED', type: 'success' },
-        { text: `> WELCOME, ${profile.name}`, type: 'success' },
-        { text: `> ROLE: ${profile.role}`, type: 'output' },
-        { text: '> DEPLOYING QUEST_PROTOCOL...', type: 'output' },
-      ]);
-
-      // Save authentication to store
-      setAuthentication(true, profile.name, profile.role || 'Agent', profile.id, profile.isTester);
-
-      // Redirect to hub after 1 second
-      setTimeout(() => {
-        navigate('/hub');
-      }, 1000);
-    } else {
-      // FAILURE
-      setLines((prev) => [
-        ...prev.slice(0, -1), // Remove "DECRYPTING..." line
-        { text: '> ERROR: UNAUTHORIZED ACCESS ATTEMPT', type: 'error' },
-        { text: '> ACCESS DENIED. SHUTTING DOWN.', type: 'error' },
-      ]);
-
-      // Trigger shake animation
-      setShakeTrigger(true);
-      setTimeout(() => setShakeTrigger(false), 500);
-
-      // Reset after 2 seconds
-      setTimeout(() => {
-        setLines([
-          { text: '> SYSTEM RESTARTING...', type: 'output' },
-          { text: '> ENTER ACCESS CODE:', type: 'output' },
+        // Initialize all paths
+        console.log('Initializing paths for user:', data.id);
+        await Promise.all([
+          initializePathProgress(data.id, 1, 15),
+          initializePathProgress(data.id, 2, 15),
+          initializePathProgress(data.id, 3, 15),
         ]);
-        setIsProcessing(false);
-      }, 2000);
-    }
-  };
 
-  return (
-    <div className="flex min-h-screen flex-col bg-zinc-950 px-6 py-12 font-['JetBrains_Mono']">
-      {/* Scanline overlay */}
-      <div className="pointer-events-none absolute inset-0 z-10 opacity-10">
-        <div
-          className="h-full w-full"
-          style={{
-            backgroundImage: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 1px, transparent 1px, transparent 2px)',
-          }}
+        console.log('Login successful! Navigating to hub...');
+        navigate('/hub');
+      } catch (err) {
+        console.error('Login error:', err);
+        setError(`Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+
+    return (
+      <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
+        <input
+          type="text"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          placeholder="Enter access code"
+          className="w-full rounded-lg border-2 border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder:text-zinc-500"
+          disabled={isSubmitting}
         />
-      </div>
 
-      {/* Terminal Container */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{
-          opacity: 1,
-          scale: 1,
-          x: shakeTrigger ? [0, -10, 10, -10, 10, 0] : 0,
-        }}
-        transition={{ duration: 0.3 }}
-        className="relative mx-auto w-full max-w-2xl"
-      >
-        {/* Terminal Header */}
-        <div className="flex items-center gap-2 rounded-t-lg border border-zinc-800 bg-zinc-900 px-4 py-3">
-          <Terminal className="h-4 w-4 text-emerald-500" />
-          <span className="font-mono text-xs uppercase tracking-wider text-zinc-400">
-            Secure Access Terminal v2.7.1
-          </span>
-          <div className="ml-auto flex gap-2">
-            <div className="h-3 w-3 rounded-full bg-red-500/50" />
-            <div className="h-3 w-3 rounded-full bg-yellow-500/50" />
-            <div className="h-3 w-3 rounded-full bg-emerald-500/50" />
+        {error && (
+          <div className="rounded-lg bg-red-500/10 border border-red-500 px-4 py-3 text-red-400 text-sm">
+            {error}
           </div>
-        </div>
-
-        {/* Terminal Body */}
-        <div
-          ref={scrollRef}
-          className="h-96 overflow-y-auto rounded-b-lg border border-t-0 border-zinc-800 bg-zinc-950 p-4"
-          style={{
-            backgroundImage: 'radial-gradient(circle at center, rgba(16, 185, 129, 0.03) 0%, transparent 70%)',
-          }}
-        >
-          {/* Terminal Lines */}
-          <div className="space-y-1">
-            {lines.map((line, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.15 }}
-                className={`font-mono text-sm ${
-                  line.type === 'input'
-                    ? 'text-zinc-300'
-                    : line.type === 'error'
-                    ? 'text-red-500'
-                    : line.type === 'success'
-                    ? 'text-emerald-500'
-                    : 'text-zinc-500'
-                }`}
-                style={
-                  line.type === 'success' || line.type === 'error'
-                    ? {
-                        textShadow: `0 0 10px ${
-                          line.type === 'success'
-                            ? 'rgba(16, 185, 129, 0.4)'
-                            : 'rgba(239, 68, 68, 0.4)'
-                        }`,
-                      }
-                    : undefined
-                }
-              >
-                {line.text}
-              </motion.div>
-            ))}
-
-            {/* Input Form */}
-            {!isProcessing && (
-              <form onSubmit={handleSubmit} className="flex items-center gap-2">
-                <span className="font-mono text-sm text-zinc-500">&gt;</span>
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  disabled={isProcessing}
-                  className="flex-1 border-none bg-transparent font-mono text-sm text-zinc-300 outline-none placeholder:text-zinc-700"
-                  placeholder="ENTER CODE..."
-                  autoComplete="off"
-                  spellCheck="false"
-                />
-                {showCursor && (
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="font-mono text-sm text-emerald-500"
-                  >
-                    _
-                  </motion.span>
-                )}
-              </form>
-            )}
-          </div>
-        </div>
-
-        {/* Warning Indicator */}
-        {shakeTrigger && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="mt-4 flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3"
-          >
-            <AlertCircle className="h-4 w-4 text-red-500" />
-            <span className="font-mono text-xs uppercase text-red-500">
-              Security breach attempt logged
-            </span>
-          </motion.div>
         )}
-      </motion.div>
 
-      {/* Footer */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="mt-8 text-center"
-      >
-        <p className="font-mono text-xs text-zinc-700 uppercase tracking-widest">
-          Authorized Personnel Only
+        <button
+          type="submit"
+          disabled={isSubmitting || !code}
+          className="w-full rounded-lg bg-cyan-600 px-4 py-3 font-semibold text-white hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isSubmitting ? 'Authenticating...' : 'Access System'}
+        </button>
+
+        <p className="text-center text-xs text-zinc-500">
+          Test codes: TEST2026 | KENNY2026 | BIRTHDAY2026
         </p>
-      </motion.div>
-    </div>
-  );
-};
+      </form>
+    );
+  };

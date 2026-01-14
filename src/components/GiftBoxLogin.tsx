@@ -5,6 +5,7 @@ import { verifyPasscode, type AgentProfile } from '@/lib/auth';
 import { useQuestStore } from '@/store/useQuestStore';
 import { useNavigate } from 'react-router-dom';
 import confetti from 'canvas-confetti';
+import { initializePathProgress } from '@/lib/supabase-sync';
 
 export const GiftBoxLogin = () => {
   const navigate = useNavigate();
@@ -53,31 +54,52 @@ export const GiftBoxLogin = () => {
     // Simulate "processing" animation
     await new Promise((resolve) => setTimeout(resolve, 800));
 
-    // Verify the passcode
-    const profile: AgentProfile | null = await verifyPasscode(code);
+    try {
+      // Verify the passcode
+      const profile: AgentProfile | null = await verifyPasscode(code);
 
-    if (profile) {
-      // SUCCESS
-      setAgentProfile(profile);
-      setShowSuccess(true);
+      if (profile) {
+        // SUCCESS
+        setAgentProfile(profile);
+        setShowSuccess(true);
 
-      // Big celebration confetti
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#FFD700', '#FF6B6B', '#2E7D32'],
-      });
+        // Big celebration confetti
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#FFD700', '#FF6B6B', '#2E7D32'],
+        });
 
-      // Save authentication to store
-      setAuthentication(true, profile.name, profile.role, profile.id);
+        // Save authentication to store (with isTester flag)
+        setAuthentication(true, profile.name, profile.role, profile.id, profile.isTester);
 
-      // Redirect to hub after celebration
-      setTimeout(() => {
-        navigate('/hub');
-      }, 2000);
-    } else {
-      // FAILURE
+        // Initialize all 3 paths for this user
+        console.log('Initializing paths for user:', profile.id);
+        await Promise.all([
+          initializePathProgress(profile.id, 1, 15),
+          initializePathProgress(profile.id, 2, 15),
+          initializePathProgress(profile.id, 3, 15),
+        ]);
+
+        // Redirect to hub after celebration
+        setTimeout(() => {
+          navigate('/hub');
+        }, 2000);
+      } else {
+        // FAILURE
+        setShowError(true);
+        setShakeTrigger(true);
+        setTimeout(() => setShakeTrigger(false), 500);
+
+        // Reset after 2 seconds
+        setTimeout(() => {
+          setShowError(false);
+          setIsProcessing(false);
+        }, 2000);
+      }
+    } catch (err) {
+      console.error('Login error:', err);
       setShowError(true);
       setShakeTrigger(true);
       setTimeout(() => setShakeTrigger(false), 500);
