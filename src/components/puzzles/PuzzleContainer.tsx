@@ -31,11 +31,11 @@ export const PuzzleContainer = ({
   const getDifficultyStyles = () => {
     switch (difficulty) {
       case 'easy':
-        return 'bg-green-500 text-white border-green-500';
+        return 'duo-badge-green';
       case 'medium':
-        return 'bg-yellow-500 text-white border-yellow-500';
+        return 'duo-badge-yellow';
       case 'hard':
-        return 'bg-red-500 text-white border-red-500';
+        return 'duo-badge-red';
     }
   };
 
@@ -44,7 +44,7 @@ export const PuzzleContainer = ({
   };
 
   return (
-    <div className="mx-auto w-full max-w-lg px-4 sm:px-0">
+    <div className="mx-auto w-full max-w-lg px-6 sm:px-0">
       {/* Question with Difficulty Badge */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -54,13 +54,13 @@ export const PuzzleContainer = ({
         layout
       >
         <div className="flex flex-wrap items-start gap-3">
-          {/* Difficulty Badge - Inline-Flex */}
-          <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold shadow-sm flex-shrink-0 ${getDifficultyStyles()}`}>
+          {/* Difficulty Badge */}
+          <span className={`duo-badge flex-shrink-0 ${getDifficultyStyles()}`}>
             <Zap className="h-3 w-3" />
             {getDifficultyLabel()}
           </span>
           {/* Question Text */}
-          <h2 className="text-2xl font-display leading-tight text-festive-brown flex-1">
+          <h2 className="text-2xl font-bold leading-tight text-neutral-900 flex-1">
             {question}
           </h2>
         </div>
@@ -85,11 +85,11 @@ export const PuzzleContainer = ({
           className="mt-6 overflow-hidden"
           layout
         >
-          <div className="flex gap-3 bg-amber-50 p-5 border border-amber-200 rounded-lg">
-            <HelpCircle className="h-5 w-5 flex-shrink-0 text-amber-600" />
+          <div className="duo-card flex gap-3 bg-blue-50 border-blue-200 p-5">
+            <HelpCircle className="h-5 w-5 flex-shrink-0 text-blue-600" />
             <div>
-              <p className="text-sm font-semibold text-amber-900 mb-1">Hint</p>
-              <p className="text-sm font-accent text-amber-800">{hint}</p>
+              <p className="text-sm font-bold text-blue-900 mb-1">Hint</p>
+              <p className="text-sm font-semibold text-blue-800">{hint}</p>
             </div>
           </div>
         </motion.div>
