@@ -69,9 +69,8 @@ const QuestPage = () => {
     (p) => p.id === currentPuzzleId
   );
 
-  // GAUNTLET MODE: 93% threshold to claim key
-  const claimKeyThreshold = Math.ceil(targetScore * 0.93);
-  const canClaimKey = currentScore >= claimKeyThreshold && !isPathCompleted;
+  // GAUNTLET MODE: 93% threshold (TARGET_SCORES already represent 93% of max points)
+  const canClaimKey = currentScore >= targetScore && !isPathCompleted;
 
   // Progress percentage for glow button
   const scoreProgress = Math.round((currentScore / targetScore) * 100);

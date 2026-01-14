@@ -5,10 +5,13 @@ import { PATH_IDS, type PathId } from '@/store/useQuestStore';
  * START DATE: January 20, 2026
  * This is the birthday date when the quest begins
  *
- * TESTING: Currently set to Jan 5, 2026 for testing (all paths unlocked since today is Jan 11)
- * PRODUCTION: Change to new Date('2026-01-20T00:00:00') before launch
+ * PRODUCTION: Set to the actual birthday
+ * Daily Drop Schedule:
+ *   Day 1 (Jan 20): Pop Culture unlocks
+ *   Day 2 (Jan 21): Renaissance unlocks
+ *   Day 3 (Jan 22): Heart unlocks
  */
-export const START_DATE = new Date('2026-01-11T00:00:00');
+export const START_DATE = new Date('2026-01-13T00:00:00');
 
 /**
  * Daily Drop Schedule
