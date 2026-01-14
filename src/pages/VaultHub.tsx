@@ -164,14 +164,21 @@ const VaultHub = () => {
               Collect 3 keys to unlock your birthday surprise
             </p>
             {agentName && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="mt-2 font-accent text-sm text-starbucks-green/70"
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3, type: 'spring', stiffness: 300, damping: 20 }}
+                className="mt-4"
               >
-                Agent: <strong>{agentName}</strong>
-              </motion.p>
+                <div className="hand-drawn-card bg-starbucks-green/10 border-2 border-starbucks-green/30 px-4 py-2.5 inline-block">
+                  <p className="font-accent text-sm text-deep-brown/70">
+                    Logged in as
+                  </p>
+                  <p className="font-display text-lg text-starbucks-green font-bold">
+                    {agentName}
+                  </p>
+                </div>
+              </motion.div>
             )}
           </motion.div>
         </div>
