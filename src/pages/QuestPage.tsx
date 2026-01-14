@@ -16,6 +16,22 @@ import { BonusCoupon } from '@/components/puzzles/BonusCoupon';
 import { AchievementStakes } from '@/components/quest/AchievementStakes';
 import type { ValidationResult } from '@/types/puzzle';
 
+/**
+ * Get themed pun message for one-strike skip based on path theme
+ */
+const getThemedSkipMessage = (pathId: PathId): string => {
+  switch (pathId) {
+    case 1: // Pop Culture
+      return "Pivot! You only get one guess here. We'll put this on 'break' and come back to it later! ☕";
+    case 2: // Renaissance
+      return "Your flight has been delayed! You get one shot per terminal. We'll re-route you back here later! ✈️";
+    case 3: // Heart
+      return "No 'Whyte House' secrets revealed yet! One guess per memory. We'll save this for a future date! ❤️";
+    default:
+      return "One guess per question! Moving on...";
+  }
+};
+
 const QuestPage = () => {
   const navigate = useNavigate();
   const { pathId: pathIdString } = useParams<{ pathId: string }>();
@@ -54,10 +70,10 @@ const QuestPage = () => {
   const currentScore = getPathScore(pathId);
   const targetScore = TARGET_SCORES[pathId];
 
-  // Dynamic Vanishing Navigation: Filter out completed puzzles
+  // Dynamic Vanishing Navigation: Filter out completed & skipped puzzles
   const allPuzzles = getPathPuzzles(pathId)?.puzzles || [];
   const remainingPuzzles = allPuzzles.filter(
-    (p) => !progress.completedIds.includes(p.id)
+    (p) => !progress.completedIds.includes(p.id) && !progress.skippedIds.includes(p.id)
   );
 
   // Calculate completion percentage (for visual progress, not for counter)
@@ -218,24 +234,49 @@ const QuestPage = () => {
           setShowHint(false);
         }
       }, 1500);
-    } else if (result.status === 'close') {
-      // Track "close" as 0.5 mistakes
-      await submitAnswer(pathId, currentPuzzleId, false, 0.5);
-      recordMistake(); // Update live achievement stakes
-
-      // Don't show feedback for "close" - handled by puzzle component
-      if (result.showHint) {
-        setTimeout(() => setShowHint(true), 500);
-      }
     } else {
-      // Status is "incorrect" - track as 1.0 mistake
-      await submitAnswer(pathId, currentPuzzleId, false, 1.0);
+      // ONE-STRIKE SKIP: Both "close" and "incorrect" trigger skip
+      const mistakeWeight = result.status === 'close' ? 0.5 : 1.0;
+
+      // Track mistake in store
+      await submitAnswer(pathId, currentPuzzleId, false, mistakeWeight);
       recordMistake(); // Update live achievement stakes
 
-      setFeedback({ type: 'error', message: result.message });
-      if (result.showHint) {
-        setTimeout(() => setShowHint(true), 500);
-      }
+      // Show themed skip pun message
+      const themedPun = getThemedSkipMessage(pathId);
+      setFeedback({ type: 'error', message: themedPun });
+
+      // Auto-skip this puzzle (remove from remaining)
+      skipPuzzle(pathId, currentPuzzleId);
+
+      // Wait 2 seconds for user to read the pun, then auto-navigate
+      setTimeout(() => {
+        const nextPuzzle = getNextUnsolvedPuzzle(pathId);
+        if (nextPuzzle) {
+          handleNavigate(nextPuzzle);
+        } else {
+          // No more unsolved puzzles - check if path is complete
+          const allCompleted = progress.completedIds.length === totalPuzzles;
+          if (allCompleted) {
+            const accuracy = calculateAccuracy(totalPuzzles, progress.mistakes);
+            const themedTitle = getThemedTitle(pathId, accuracy);
+            const stats = {
+              completionTime: 0,
+              accuracy,
+              mistakes: progress.mistakes,
+              themedTitle,
+              completedAt: Date.now(),
+            };
+            setShowCompletion(true);
+            if (!keysCollected.includes(pathId)) {
+              addKey(pathId, stats);
+            }
+          }
+        }
+        setFeedback(null);
+        setValidationResult(null);
+        setShowHint(false);
+      }, 2000);
     }
 
     setIsSubmitting(false);
