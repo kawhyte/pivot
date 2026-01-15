@@ -79,6 +79,9 @@ export const questProgress = pgTable('quest_progress', {
   // Perfect run tracking (NEW)
   perfectRunCompleted: boolean('perfect_run_completed').default(false).notNull(),
   thresholdDecision: text('threshold_decision'), // '91%' | '100%' | 'abandoned'
+
+  // Completion-based unlock system (NEW)
+  nextPathUnlockAt: timestamp('next_path_unlock_at'), // When next path unlocks (8am day after completion)
 }, (table) => ({
   questProgressProfilePathIdx: uniqueIndex('quest_progress_profile_path_idx').on(table.profileId, table.pathId),
 }));

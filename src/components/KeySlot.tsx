@@ -3,7 +3,7 @@
 import { Key, Clock, Sparkles, Tv, BookOpen, Heart as HeartIcon } from 'lucide-react';
 import { PATH_METADATA, type PathId } from '@/lib/paths';
 import type { PathStats } from '@/store/useQuestStore';
-import { getCountdownText, isPathUnlocked } from '@/lib/daily-drop';
+import { getCountdownText, isPathUnlocked, getDependencyName } from '@/lib/path-unlock';
 import { formatTime } from '@/lib/themed-titles';
 import { TARGET_SCORES, getTotalPuzzles } from '@/data/puzzles';
 
@@ -16,6 +16,9 @@ interface KeySlotProps {
   // NEW: Progress data for started quizzes
   currentScore?: number;
   completedCount?: number;
+  // NEW: Completion-based unlock system
+  completedPathsData: Array<{ pathId: PathId; completedAt: string; nextPathUnlockAt?: string }>;
+  pathNumber: number; // 1, 2, or 3 for Day badges
 }
 
 export const KeySlot = ({
@@ -26,10 +29,13 @@ export const KeySlot = ({
   isTester = false,
   currentScore = 0,
   completedCount = 0,
+  completedPathsData,
+  pathNumber,
 }: KeySlotProps) => {
   const path = PATH_METADATA[pathId];
-  const unlocked = isPathUnlocked(pathId, isTester);
-  const countdownText = getCountdownText(pathId, isTester);
+  const unlocked = isPathUnlocked(pathId, completedPathsData, isTester);
+  const countdownText = getCountdownText(pathId, completedPathsData, isTester);
+  const dependencyName = getDependencyName(pathId);
 
   const isClickable = unlocked && !isCollected;
 
@@ -70,6 +76,16 @@ export const KeySlot = ({
             : 'url(/images/heart-thumb.jpg)'
         }}
       />
+
+      {/* Day Number Badge */}
+      <div className="absolute top-4 left-4 z-20">
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full border-2 border-neutral-300 shadow-sm">
+          <span className="text-xs font-bold text-neutral-600">DAY</span>
+          <span className="text-lg font-black" style={{ color: path.colors.primary }}>
+            {pathNumber}
+          </span>
+        </div>
+      </div>
 
       {/* Icon Section */}
       <div className="mb-4 flex items-center justify-center relative">

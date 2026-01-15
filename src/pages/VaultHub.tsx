@@ -5,9 +5,9 @@ import confetti from 'canvas-confetti';
 import { KeyRound, Sparkles, HelpCircle, Share2, Check, LogOut } from 'lucide-react';
 import { useQuestStore } from '@/store/useQuestStore';
 import { PATH_IDS } from '@/lib/paths';
-import { getUnlockedPaths } from '@/lib/daily-drop';
 import { KeySlot } from '@/components/KeySlot';
 import { HowToPlayDialog } from '@/components/HowToPlayDialog';
+import { WelcomeModal } from '@/components/WelcomeModal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Toast } from '@/components/ui/Toast';
 import { Button } from '@/components/ui/button';
@@ -17,10 +17,14 @@ const VaultHub = () => {
   const navigate = useNavigate();
   const hasTriggeredConfetti = useRef(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [showShareToast, setShowShareToast] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
+  const [hasSeenWelcome, setHasSeenWelcome] = useState(
+    () => localStorage.getItem('birthday-quest-seen-welcome') === 'true'
+  );
   const {
     _hasHydrated,
     keysCollected,
@@ -36,6 +40,8 @@ const VaultHub = () => {
     // NEW: Get path progress data
     pathProgress,
     getPathScore,
+    // NEW: Completion-based unlock system
+    completedPathsData,
   } = useQuestStore();
 
   // Redirect if not authenticated (only after hydration to prevent loops)
@@ -45,11 +51,21 @@ const VaultHub = () => {
     }
   }, [_hasHydrated, isAuthenticated, navigate]);
 
-  // Update unlocked paths based on current date (GOD MODE: testers bypass restrictions)
+  // Unlocked paths are now calculated in useQuestStore based on completion
+  // No need to update them here - they update automatically when keys are collected
+
+  // Show welcome modal on first visit (only once per browser)
   useEffect(() => {
-    const unlocked = getUnlockedPaths(isTester);
-    setUnlockedPaths(unlocked);
-  }, [setUnlockedPaths, isTester]);
+    if (!hasSeenWelcome && _hasHydrated && isAuthenticated) {
+      setShowWelcomeModal(true);
+    }
+  }, [hasSeenWelcome, _hasHydrated, isAuthenticated]);
+
+  const handleDismissWelcome = () => {
+    localStorage.setItem('birthday-quest-seen-welcome', 'true');
+    setHasSeenWelcome(true);
+    setShowWelcomeModal(false);
+  };
 
   // Fire confetti when vault is unlocked (reduced particles)
   useEffect(() => {
@@ -115,6 +131,13 @@ const VaultHub = () => {
 
       {/* How to Play Dialog */}
       <HowToPlayDialog open={showHowToPlay} onOpenChange={setShowHowToPlay} />
+
+      {/* Welcome Modal (first-time onboarding) */}
+      <WelcomeModal
+        open={showWelcomeModal}
+        onOpenChange={handleDismissWelcome}
+        agentName={agentName}
+      />
 
       {/* Logout Confirmation Dialog */}
       <ConfirmDialog
@@ -192,30 +215,36 @@ const VaultHub = () => {
           <div className="space-y-4">
             <KeySlot
               pathId={PATH_IDS.POP_CULTURE}
+              pathNumber={1}
               isCollected={keysCollected.includes(PATH_IDS.POP_CULTURE)}
               onClick={() => handlePathClick(PATH_IDS.POP_CULTURE)}
               stats={getPathStats(PATH_IDS.POP_CULTURE)}
               isTester={isTester}
               currentScore={getPathScore(PATH_IDS.POP_CULTURE)}
               completedCount={pathProgress[PATH_IDS.POP_CULTURE]?.completedIds?.length || 0}
+              completedPathsData={completedPathsData || []}
             />
             <KeySlot
               pathId={PATH_IDS.RENAISSANCE}
+              pathNumber={2}
               isCollected={keysCollected.includes(PATH_IDS.RENAISSANCE)}
               onClick={() => handlePathClick(PATH_IDS.RENAISSANCE)}
               stats={getPathStats(PATH_IDS.RENAISSANCE)}
               isTester={isTester}
               currentScore={getPathScore(PATH_IDS.RENAISSANCE)}
               completedCount={pathProgress[PATH_IDS.RENAISSANCE]?.completedIds?.length || 0}
+              completedPathsData={completedPathsData || []}
             />
             <KeySlot
               pathId={PATH_IDS.HEART}
+              pathNumber={3}
               isCollected={keysCollected.includes(PATH_IDS.HEART)}
               onClick={() => handlePathClick(PATH_IDS.HEART)}
               stats={getPathStats(PATH_IDS.HEART)}
               isTester={isTester}
               currentScore={getPathScore(PATH_IDS.HEART)}
               completedCount={pathProgress[PATH_IDS.HEART]?.completedIds?.length || 0}
+              completedPathsData={completedPathsData || []}
             />
           </div>
 

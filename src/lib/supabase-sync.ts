@@ -177,6 +177,8 @@ export async function savePathCompletion(
     avgTimePerQuestion?: number;
     perfectRunCompleted?: boolean;
     thresholdDecision?: string;
+    // NEW: Completion-based unlock system
+    nextPathUnlockAt?: string;
   }
 ) {
   if (!supabase) return false;
@@ -205,6 +207,8 @@ export async function savePathCompletion(
         avg_time_per_question: data.avgTimePerQuestion,
         perfect_run_completed: data.perfectRunCompleted,
         threshold_decision: data.thresholdDecision,
+        // NEW: Completion-based unlock system
+        next_path_unlock_at: data.nextPathUnlockAt,
         updated_at: new Date().toISOString(),
       }, {
         onConflict: 'profile_id,path_id',

@@ -10,6 +10,7 @@ import {
   syncSessionProgress,
   savePathCompletion,
 } from '@/lib/supabase-sync';
+import { calculateNextPathUnlockTime, getUnlockedPaths } from '@/lib/path-unlock';
 
 // Re-export for backward compatibility
 export type { PathId };
@@ -96,6 +97,13 @@ interface QuestState {
   // Unlocked paths based on daily drops
   unlockedPaths: PathId[];
 
+  // Completed paths data for unlock calculation (NEW)
+  completedPathsData: Array<{
+    pathId: PathId;
+    completedAt: string;
+    nextPathUnlockAt?: string;
+  }>;
+
   // Non-linear progress tracking per path
   pathProgress: Record<PathId, PathProgress>;
 
@@ -164,6 +172,7 @@ const initialState = {
   activePath: null,
   keysCollected: [],
   unlockedPaths: [],
+  completedPathsData: [],
   pathProgress: {
     [PATH_IDS.POP_CULTURE]: {
       completedIds: [],
@@ -250,11 +259,15 @@ export const useQuestStore = create<QuestState>()(
         get().checkVaultStatus();
 
         // SUPABASE SYNC: Save path completion to database
-        const { agentId, pathProgress } = get();
+        const { agentId, pathProgress, isTester } = get();
         if (agentId) {
           try {
             const progress = pathProgress[pathId];
             const score = get().getPathScore(pathId);
+
+            // Calculate next path unlock time (8am next day)
+            const completedAt = new Date();
+            const nextPathUnlockAt = calculateNextPathUnlockTime(completedAt);
 
             await savePathCompletion(agentId, pathId, {
               completedIds: progress.completedIds,
@@ -263,6 +276,34 @@ export const useQuestStore = create<QuestState>()(
               accuracy: stats?.accuracy || 100,
               mistakes: progress.mistakes,
               themedTitle: stats?.themedTitle || 'Completed',
+              timeTaken: stats?.completionTime,
+              totalQuestions: stats?.totalQuestions,
+              firstTryCount: stats?.firstTryCount,
+              firstTryRate: stats?.firstTryRate,
+              skippedCount: stats?.skippedCount,
+              avgTimePerQuestion: stats?.avgTimePerQuestion,
+              perfectRunCompleted: stats?.perfectRunCompleted,
+              thresholdDecision: stats?.thresholdDecision,
+              nextPathUnlockAt: nextPathUnlockAt.toISOString(),
+            });
+
+            // Re-fetch quest progress to update completedPathsData
+            const allCompletedPaths = await fetchQuestProgress(agentId);
+            const completedPathsData = allCompletedPaths
+              .filter(p => p.is_completed)
+              .map(p => ({
+                pathId: p.path_id as PathId,
+                completedAt: p.completed_at!,
+                nextPathUnlockAt: p.next_path_unlock_at,
+              }));
+
+            // Re-calculate unlocked paths based on completion
+            const newUnlockedPaths = getUnlockedPaths(completedPathsData, isTester);
+
+            // Update store with new data
+            set({
+              completedPathsData,
+              unlockedPaths: newUnlockedPaths,
             });
           } catch (error) {
             console.error('Failed to sync key collection:', error);
@@ -516,8 +557,20 @@ export const useQuestStore = create<QuestState>()(
           // 2. Fetch quest progress (completed paths)
           const questProgressData = await fetchQuestProgress(agentId);
           const completedPaths = questProgressData
-            .filter((p) => p.isCompleted)
-            .map((p) => p.pathId as PathId);
+            .filter((p) => p.is_completed)
+            .map((p) => p.path_id as PathId);
+
+          // NEW: Create completedPathsData for unlock calculation
+          const completedPathsData = questProgressData
+            .filter((p) => p.is_completed)
+            .map((p) => ({
+              pathId: p.path_id as PathId,
+              completedAt: p.completed_at!,
+              nextPathUnlockAt: p.next_path_unlock_at,
+            }));
+
+          // NEW: Calculate unlocked paths based on completion
+          const unlockedPaths = getUnlockedPaths(completedPathsData, profile.isTester);
 
           // 3. Fetch active sessions for all paths
           const sessions: Record<PathId, any> = {};
@@ -617,6 +670,8 @@ export const useQuestStore = create<QuestState>()(
             isTester: profile.isTester,
             userId: profile.id,
             keysCollected: completedPaths,
+            completedPathsData,
+            unlockedPaths,
             pathProgress,
             _hasHydrated: true,
           });
