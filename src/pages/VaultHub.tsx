@@ -12,6 +12,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Toast } from '@/components/ui/Toast';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { DebugPanel } from '@/components/debug/DebugPanel';
 
 const VaultHub = () => {
   const navigate = useNavigate();
@@ -322,6 +323,9 @@ const VaultHub = () => {
           </div>
         </div>
       </footer>
+
+      {/* Debug Panel (Tester Only) */}
+      <DebugPanel isEnabled={isTester} />
     </div>
   );
 };
