@@ -371,6 +371,94 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
+  /* ========================================
+     MODAL & OVERLAY UTILITIES
+     ======================================== */
+
+  /* Modal Overlay */
+  .duo-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+  }
+
+  /* Modal Container */
+  .duo-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    max-width: 28rem;
+    width: 90%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+  }
+
+  /* Perfect Run Banner */
+  .duo-perfect-run-banner {
+    position: fixed;
+    top: 3.5rem;
+    left: 0;
+    right: 0;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(90deg, #FF9600, #FFC800);
+    color: white;
+    font-weight: 800;
+    font-size: 0.875rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(255, 150, 0, 0.3);
+    z-index: 40;
+  }
+
+  /* Stats Card */
+  .duo-stats-card {
+    border-radius: 1rem;
+    background: white;
+    border: 2px solid var(--neutral-200);
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease;
+  }
+
+  .duo-stats-card:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Streak Pulse Animation (subtle) */
+  .duo-streak-pulse {
+    animation: streakPulse 0.6s ease;
+  }
+
+  @keyframes streakPulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.15);
+    }
+  }
+
+  /* Modal Fade In (subtle) */
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -48%) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  .duo-modal {
+    animation: modalFadeIn 0.3s ease;
+  }
 }
 
 /* ========================================

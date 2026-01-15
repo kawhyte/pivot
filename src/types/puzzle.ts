@@ -77,15 +77,42 @@ export interface ValidationResult {
 }
 
 /**
+ * Per-puzzle attempt data for granular stats tracking
+ */
+export interface PuzzleAttemptData {
+  attempts: number;               // Total attempts on this puzzle
+  totalTimeSpent: number;         // Milliseconds spent on this puzzle
+  isFirstTry: boolean;            // Solved on first attempt?
+  isCompleted: boolean;           // Successfully answered
+  lastAttemptTime: number | null; // Timestamp of last attempt
+}
+
+/**
  * Path Progress - Non-linear navigation tracking
  * Replaces the linear "currentLevel" model
  */
 export interface PathProgress {
+  // Core progress tracking
   completedIds: string[];      // Puzzle IDs answered correctly
   skippedIds: string[];         // Puzzle IDs skipped (can return later)
   mistakes: number;             // Running mistake count (0.5 for close, 1.0 for wrong)
   startTime: number | null;     // Session start timestamp
   bestTime?: number;            // Personal best completion time
+
+  // Per-puzzle tracking (NEW)
+  puzzleAttempts: Record<string, PuzzleAttemptData>;
+
+  // Perfect run state (NEW)
+  isPerfectRunActive: boolean;
+  perfectRunStartScore: number;
+  perfectRunStartTime: number | null;
+  perfectRunStreak: number;
+  hasSeenThresholdModal: boolean;  // Prevent modal re-showing
+
+  // Time tracking (NEW)
+  totalTimeSpent: number;          // Milliseconds (paused time excluded)
+  isPaused: boolean;
+  lastResumeTime: number | null;
 }
 
 /**

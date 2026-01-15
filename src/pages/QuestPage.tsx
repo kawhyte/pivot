@@ -16,6 +16,11 @@ import { PerformanceSummary } from '@/components/quest/PerformanceSummary';
 import { KeyUnlockedToast } from '@/components/quest/KeyUnlockedToast';
 import { BonusCoupon } from '@/components/puzzles/BonusCoupon';
 import { AchievementStakes } from '@/components/quest/AchievementStakes';
+import { ThresholdDecisionModal } from '@/components/quest/ThresholdDecisionModal';
+import { PerfectRunBanner } from '@/components/quest/PerfectRunBanner';
+import { PerfectRunFailureModal } from '@/components/quest/PerfectRunFailureModal';
+import { DetailedStatsScreen } from '@/components/quest/DetailedStatsScreen';
+import { QuestionSkippedToast } from '@/components/quest/QuestionSkippedToast';
 import type { ValidationResult } from '@/types/puzzle';
 
 /**
@@ -72,6 +77,14 @@ const QuestPage = () => {
     resetRun,
     currentRun,
     isTester, // GOD MODE / GHOST MODE
+    // NEW: Perfect Run & Time Tracking
+    startPerfectRun,
+    endPerfectRun,
+    startPathTimer,
+    pausePathTimer,
+    resumePathTimer,
+    recordThresholdDecision,
+    setHasSeenThresholdModal,
   } = useQuestStore();
 
   const [showHint, setShowHint] = useState(false);
@@ -83,6 +96,16 @@ const QuestPage = () => {
   const [showSuccessOverlay, setShowSuccessOverlay] = useState(false);
   const [attempts, setAttempts] = useState(0);
   const [shake, setShake] = useState(false);
+
+  // NEW: Threshold & Perfect Run modals
+  const [showThresholdModal, setShowThresholdModal] = useState(false);
+  const [showPerfectRunFailure, setShowPerfectRunFailure] = useState(false);
+
+  // NEW: Question Skipped Toast
+  const [showSkippedToast, setShowSkippedToast] = useState(false);
+
+  // NEW: Per-puzzle time tracking
+  const [puzzleStartTime, setPuzzleStartTime] = useState<number>(Date.now());
 
   const totalPuzzles = getTotalPuzzles(pathId);
   const puzzle = currentPuzzleId ? getPuzzleById(pathId, currentPuzzleId) : null;
@@ -153,6 +176,46 @@ const QuestPage = () => {
     setShake(false);
   }, [currentPuzzleId]);
 
+  // NEW: 91% Threshold Detection - Show modal when user reaches 91% (not in perfect run, key not collected, modal not seen)
+  useEffect(() => {
+    const score = getPathScore(pathId);
+    const threshold = TARGET_SCORES[pathId]; // Now 91%
+
+    // Show modal if: score >= 91% AND not in perfect run AND key not collected AND modal not seen
+    if (
+      score >= threshold &&
+      !progress.isPerfectRunActive &&
+      !keysCollected.includes(pathId) &&
+      !progress.hasSeenThresholdModal
+    ) {
+      setShowThresholdModal(true);
+      setHasSeenThresholdModal(pathId, true); // Prevent re-showing
+    }
+  }, [currentScore, pathId, progress.isPerfectRunActive, progress.hasSeenThresholdModal, keysCollected, getPathScore, setHasSeenThresholdModal]);
+
+  // NEW: Reset timer when puzzle changes
+  useEffect(() => {
+    if (currentPuzzleId) {
+      setPuzzleStartTime(Date.now());
+    }
+  }, [currentPuzzleId]);
+
+  // NEW: Pause timer on tab switch, resume on return
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        pausePathTimer(pathId);
+      } else {
+        resumePathTimer(pathId);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [pathId, pausePathTimer, resumePathTimer]);
+
 
   // Fire confetti (reduced to 50 particles, single burst)
   const fireConfetti = () => {
@@ -184,11 +247,59 @@ const QuestPage = () => {
     }
   };
 
+  // NEW: Handle 91% threshold decision
+  const handleThresholdDecision = (decision: 'claim' | 'perfect-run') => {
+    setShowThresholdModal(false);
+
+    if (decision === 'claim') {
+      // User chose to claim key and stop - navigate to detailed stats screen
+      recordThresholdDecision(pathId, '91%');
+      const accuracy = calculateAccuracy(totalPuzzles, progress.mistakes);
+      const themedTitle = getThemedTitle(pathId, accuracy);
+
+      // Calculate detailed stats
+      const firstTryCount = Object.values(progress.puzzleAttempts).filter((p) => p.isFirstTry).length;
+      const firstTryRate = totalPuzzles > 0 ? Math.round((firstTryCount / totalPuzzles) * 100) : 0;
+      const skippedCount = progress.skippedIds.length;
+      const avgTimePerQuestion = progress.totalTimeSpent > 0 && totalPuzzles > 0
+        ? Math.round(progress.totalTimeSpent / totalPuzzles)
+        : 0;
+
+      const stats = {
+        completionTime: progress.totalTimeSpent,
+        accuracy,
+        mistakes: progress.mistakes,
+        themedTitle,
+        completedAt: Date.now(),
+        totalQuestions: totalPuzzles,
+        firstTryCount,
+        firstTryRate,
+        skippedCount,
+        avgTimePerQuestion,
+        perfectRunCompleted: false,
+        thresholdDecision: '91%' as const,
+      };
+
+      setShowCompletion(true);
+      if (!keysCollected.includes(pathId)) {
+        addKey(pathId, stats);
+      }
+    } else {
+      // User chose to go for 100% - start perfect run mode
+      recordThresholdDecision(pathId, '100%');
+      startPerfectRun(pathId);
+      startPathTimer(pathId);
+    }
+  };
+
   const handleSubmit = async (answer: string | number) => {
     if (!puzzle || !currentPuzzleId || isSubmitting) return;
 
     setIsSubmitting(true);
     setFeedback(null);
+
+    // NEW: Calculate time spent on this puzzle
+    const timeSpent = Date.now() - puzzleStartTime;
 
     // Simulate network delay for better UX
     await new Promise((resolve) => setTimeout(resolve, 600));
@@ -205,31 +316,51 @@ const QuestPage = () => {
 
       fireConfetti();
 
-      // Submit correct answer to store
-      await submitAnswer(pathId, currentPuzzleId, true);
+      // NEW: Submit correct answer with time tracking
+      await submitAnswer(pathId, currentPuzzleId, true, 1.0, timeSpent);
 
-      // Check if key just unlocked (score >= targetScore)
-      const wasAlreadyUnlocked = keysCollected.includes(pathId);
-      const isNowUnlocked = getPathScore(pathId) >= targetScore;
-      if (!wasAlreadyUnlocked && isNowUnlocked) {
-        setShowKeyUnlockedToast(true);
+      // NEW: Reset timer for next puzzle
+      setPuzzleStartTime(Date.now());
+
+      // Check if key just unlocked (score >= targetScore) - BUT NOT during perfect run
+      if (!progress.isPerfectRunActive) {
+        const wasAlreadyUnlocked = keysCollected.includes(pathId);
+        const isNowUnlocked = getPathScore(pathId) >= targetScore;
+        if (!wasAlreadyUnlocked && isNowUnlocked) {
+          setShowKeyUnlockedToast(true);
+        }
       }
 
-      // Check if all puzzles are now completed (Perfect Run scenario)
+      // Check if all puzzles are now completed
       const allCompleted = progress.completedIds.length + 1 === totalPuzzles;
 
       setTimeout(() => {
         if (allCompleted) {
-          // Show completion screen - Perfect Run Bonus applies here
+          // NEW: Perfect Run completion - award key with detailed stats
           const accuracy = calculateAccuracy(totalPuzzles, progress.mistakes);
           const themedTitle = getThemedTitle(pathId, accuracy);
 
+          // Calculate detailed stats
+          const firstTryCount = Object.values(progress.puzzleAttempts).filter((p) => p.isFirstTry).length;
+          const firstTryRate = totalPuzzles > 0 ? Math.round((firstTryCount / totalPuzzles) * 100) : 0;
+          const skippedCount = progress.skippedIds.length;
+          const avgTimePerQuestion = progress.totalTimeSpent > 0 && totalPuzzles > 0
+            ? Math.round(progress.totalTimeSpent / totalPuzzles)
+            : 0;
+
           const stats = {
-            completionTime: 0,
+            completionTime: progress.totalTimeSpent,
             accuracy,
             mistakes: progress.mistakes,
             themedTitle,
             completedAt: Date.now(),
+            totalQuestions: totalPuzzles,
+            firstTryCount,
+            firstTryRate,
+            skippedCount,
+            avgTimePerQuestion,
+            perfectRunCompleted: progress.isPerfectRunActive, // TRUE if in perfect run mode
+            thresholdDecision: progress.isPerfectRunActive ? '100%' as const : '91%' as const,
           };
 
           setShowCompletion(true);
@@ -237,7 +368,7 @@ const QuestPage = () => {
             addKey(pathId, stats);
           }
         } else {
-          // Move to next unsolved puzzle - do NOT auto-complete
+          // Move to next unsolved puzzle
           const nextPuzzle = getNextUnsolvedPuzzle(pathId);
           if (nextPuzzle) {
             handleNavigate(nextPuzzle);
@@ -248,12 +379,25 @@ const QuestPage = () => {
         }
       }, 1500);
     } else {
+      // WRONG ANSWER
+
+      // NEW: Perfect Run failure check - ONE wrong answer ends attempt
+      if (progress.isPerfectRunActive) {
+        endPerfectRun(pathId, false);
+        setShowPerfectRunFailure(true);
+        setIsSubmitting(false);
+        return; // Exit early, modal will handle navigation
+      }
+
       // TWO-STRIKE MERCY: First wrong answer is a warning, second is a skip
       const mistakeWeight = result.status === 'close' ? 0.5 : 1.0;
 
-      // Track mistake in store
-      await submitAnswer(pathId, currentPuzzleId, false, mistakeWeight);
+      // NEW: Track mistake with time spent
+      await submitAnswer(pathId, currentPuzzleId, false, mistakeWeight, timeSpent);
       recordMistake(); // Update live achievement stakes
+
+      // NEW: Reset timer
+      setPuzzleStartTime(Date.now());
 
       if (attempts === 0) {
         // FIRST STRIKE: Show warning pun and shake animation
@@ -268,14 +412,16 @@ const QuestPage = () => {
         setAttempts(1);
       } else {
         // SECOND STRIKE: Auto-skip and move to next puzzle
-        const secondStrikePun = getSecondStrikeMessage(pathId);
-        setFeedback({ type: 'error', message: secondStrikePun });
+        // Show prominent skip toast instead of subtle feedback
+        setShowSkippedToast(true);
 
         // Auto-skip this puzzle (remove from remaining)
         skipPuzzle(pathId, currentPuzzleId);
 
-        // Wait 1.5 seconds for user to read the pun, then auto-navigate
+        // Wait 2.5 seconds for user to read the toast, then auto-navigate
         setTimeout(() => {
+          setShowSkippedToast(false);
+
           const nextPuzzle = getNextUnsolvedPuzzle(pathId);
           if (nextPuzzle) {
             handleNavigate(nextPuzzle);
@@ -285,12 +431,28 @@ const QuestPage = () => {
             if (allCompleted) {
               const accuracy = calculateAccuracy(totalPuzzles, progress.mistakes);
               const themedTitle = getThemedTitle(pathId, accuracy);
+
+              // Calculate detailed stats
+              const firstTryCount = Object.values(progress.puzzleAttempts).filter((p) => p.isFirstTry).length;
+              const firstTryRate = totalPuzzles > 0 ? Math.round((firstTryCount / totalPuzzles) * 100) : 0;
+              const skippedCount = progress.skippedIds.length;
+              const avgTimePerQuestion = progress.totalTimeSpent > 0 && totalPuzzles > 0
+                ? Math.round(progress.totalTimeSpent / totalPuzzles)
+                : 0;
+
               const stats = {
-                completionTime: 0,
+                completionTime: progress.totalTimeSpent,
                 accuracy,
                 mistakes: progress.mistakes,
                 themedTitle,
                 completedAt: Date.now(),
+                totalQuestions: totalPuzzles,
+                firstTryCount,
+                firstTryRate,
+                skippedCount,
+                avgTimePerQuestion,
+                perfectRunCompleted: false,
+                thresholdDecision: '91%' as const,
               };
               setShowCompletion(true);
               if (!keysCollected.includes(pathId)) {
@@ -301,7 +463,7 @@ const QuestPage = () => {
           setFeedback(null);
           setValidationResult(null);
           setShowHint(false);
-        }, 1500);
+        }, 2500);
       }
     }
 
@@ -313,9 +475,23 @@ const QuestPage = () => {
   };
 
 
-  // Path completion screen
+  // Path completion screen - NEW: Using DetailedStatsScreen
   if (showCompletion || isPathCompleted) {
     const stats = getPathStats(pathId);
+
+    if (stats) {
+      return (
+        <DetailedStatsScreen
+          pathId={pathId}
+          stats={stats}
+          onReturnToHub={handleBackToVault}
+          showPerfectRunBadge={stats.perfectRunCompleted || false}
+          isTester={isTester}
+        />
+      );
+    }
+
+    // Fallback to old completion screen if stats not available
     const isPerfect = isPerfectRun(pathId);
     const bonusCoupon = isPerfect ? getRandomCoupon(pathId) : null;
 
@@ -426,7 +602,10 @@ const QuestPage = () => {
                 transition={{ duration: 0.5, ease: "easeOut" }}
               />
               <div className="duo-progress-streak">
-                {currentScore} / {targetScore} PTS
+                {/* Mobile: Percentage only */}
+                <span className="sm:hidden">{scoreProgress}%</span>
+                {/* Desktop: Percentage + Points */}
+                <span className="hidden sm:inline">{scoreProgress}% • {currentScore} / {targetScore} PTS</span>
               </div>
             </div>
           </div>
@@ -444,12 +623,63 @@ const QuestPage = () => {
       {/* Spacer for fixed header */}
       <div className="h-14" />
 
+      {/* Perfect Run Banner (shows when in perfect run mode) */}
+      {progress.isPerfectRunActive && (
+        <PerfectRunBanner
+          streak={progress.perfectRunStreak}
+          remainingPuzzles={remainingPuzzles.length}
+          pathId={pathId}
+          isTester={isTester}
+        />
+      )}
+
+      {/* Threshold Decision Modal (91% choice) */}
+      <AnimatePresence>
+        {showThresholdModal && (
+          <ThresholdDecisionModal
+            pathId={pathId}
+            currentScore={currentScore}
+            targetScore={targetScore}
+            remainingPuzzles={remainingPuzzles.length}
+            onDecision={handleThresholdDecision}
+            isTester={isTester}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Perfect Run Failure Modal */}
+      <AnimatePresence>
+        {showPerfectRunFailure && (
+          <PerfectRunFailureModal
+            pathId={pathId}
+            streak={progress.perfectRunStreak}
+            remainingPuzzles={remainingPuzzles.length}
+            onClose={() => {
+              setShowPerfectRunFailure(false);
+              navigate('/hub');
+            }}
+            isTester={isTester}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Key Unlocked Toast */}
       <AnimatePresence>
         {showKeyUnlockedToast && (
           <KeyUnlockedToast
             pathId={pathId}
             onDismiss={() => setShowKeyUnlockedToast(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Question Skipped Toast */}
+      <AnimatePresence>
+        {showSkippedToast && (
+          <QuestionSkippedToast
+            pathId={pathId}
+            onDismiss={() => setShowSkippedToast(false)}
+            isTester={isTester}
           />
         )}
       </AnimatePresence>

@@ -48,6 +48,7 @@ export async function getOrCreateSession(profileId: number, pathId: PathId) {
 /**
  * Update active session with current progress
  * Uses upsert for atomic updates
+ * NEW: Now includes perfect run, time tracking, and puzzle attempts
  */
 export async function syncSessionProgress(
   profileId: number,
@@ -58,12 +59,36 @@ export async function syncSessionProgress(
     attemptsMade?: number;
     score?: number;
     mistakes?: number;
+    // NEW: Real-time progress tracking
+    completedIds?: string[];
+    skippedIds?: string[];
+    // NEW: Perfect run tracking
+    isPerfectRunActive?: boolean;
+    perfectRunStartScore?: number;
+    perfectRunStreak?: number;
+    hasSeenThresholdModal?: boolean;
+    // NEW: Time tracking
+    totalTimeSpent?: number;
+    isPaused?: boolean;
+    // NEW: Per-puzzle attempts (JSONB)
+    puzzleAttempts?: Record<string, any>;
   }
 ) {
-  if (!supabase) return false;
+  if (!supabase) {
+    console.error('❌ Supabase client not initialized!');
+    return false;
+  }
+
+  console.log('🔄 Syncing to Supabase:', {
+    profileId,
+    pathId,
+    completedIds: updates.completedIds,
+    skippedIds: updates.skippedIds,
+    score: updates.score,
+  });
 
   try {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('active_sessions')
       .upsert({
         profile_id: profileId,
@@ -71,19 +96,36 @@ export async function syncSessionProgress(
         current_puzzle_id: updates.currentPuzzleId,
         shuffled_queue: updates.shuffledQueue,
         attempts_made: updates.attemptsMade,
+        score: updates.score,
+        mistakes: updates.mistakes,
+        // NEW: Real-time progress (critical for mid-quiz persistence)
+        completed_ids: updates.completedIds,
+        skipped_ids: updates.skippedIds,
+        // NEW: Perfect run fields
+        is_perfect_run_active: updates.isPerfectRunActive,
+        perfect_run_start_score: updates.perfectRunStartScore,
+        perfect_run_streak: updates.perfectRunStreak,
+        has_seen_threshold_modal: updates.hasSeenThresholdModal,
+        // NEW: Time tracking
+        total_time_spent: updates.totalTimeSpent,
+        is_paused: updates.isPaused,
+        // NEW: Puzzle attempts
+        puzzle_attempts: updates.puzzleAttempts,
         updated_at: new Date().toISOString(),
       }, {
-        onConflict: 'profile_id',
-      });
+        onConflict: 'profile_id,path_id',
+      })
+      .select();
 
     if (error) {
-      console.error('Error syncing session progress:', error);
+      console.error('❌ Supabase sync error:', error);
       return false;
     }
 
+    console.log('✅ Supabase sync successful:', data);
     return true;
   } catch (error) {
-    console.error('Error syncing session progress:', error);
+    console.error('❌ Supabase sync exception:', error);
     return false;
   }
 }
@@ -114,6 +156,7 @@ export async function fetchQuestProgress(profileId: number) {
 
 /**
  * Save completed path to quest_progress table
+ * NEW: Now includes detailed stats (first-try rate, avg time, perfect run tracking)
  */
 export async function savePathCompletion(
   profileId: number,
@@ -125,6 +168,15 @@ export async function savePathCompletion(
     accuracy: number;
     mistakes: number;
     themedTitle: string;
+    timeTaken?: number;
+    // NEW: Detailed stats
+    totalQuestions?: number;
+    firstTryCount?: number;
+    firstTryRate?: number;
+    skippedCount?: number;
+    avgTimePerQuestion?: number;
+    perfectRunCompleted?: boolean;
+    thresholdDecision?: string;
   }
 ) {
   if (!supabase) return false;
@@ -136,10 +188,23 @@ export async function savePathCompletion(
         profile_id: profileId,
         path_id: pathId,
         is_completed: true,
-        score: data.finalScore,
+        completed_ids: data.completedIds,
+        skipped_ids: data.skippedIds,
+        final_score: data.finalScore,
         completed_at: new Date().toISOString(),
+        // Performance tracking (existing)
+        time_taken: data.timeTaken,
+        accuracy: data.accuracy,
         mistakes: data.mistakes,
         themed_title: data.themedTitle,
+        // NEW: Detailed stats
+        total_questions: data.totalQuestions,
+        first_try_count: data.firstTryCount,
+        first_try_rate: data.firstTryRate,
+        skipped_count: data.skippedCount,
+        avg_time_per_question: data.avgTimePerQuestion,
+        perfect_run_completed: data.perfectRunCompleted,
+        threshold_decision: data.thresholdDecision,
         updated_at: new Date().toISOString(),
       }, {
         onConflict: 'profile_id,path_id',
