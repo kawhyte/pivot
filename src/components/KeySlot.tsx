@@ -5,6 +5,7 @@ import { PATH_METADATA, type PathId } from '@/lib/paths';
 import type { PathStats } from '@/store/useQuestStore';
 import { getCountdownText, isPathUnlocked } from '@/lib/daily-drop';
 import { formatTime } from '@/lib/themed-titles';
+import { TARGET_SCORES, getTotalPuzzles } from '@/data/puzzles';
 
 interface KeySlotProps {
   pathId: PathId;
@@ -12,14 +13,31 @@ interface KeySlotProps {
   onClick: () => void;
   stats?: PathStats;
   isTester?: boolean;
+  // NEW: Progress data for started quizzes
+  currentScore?: number;
+  completedCount?: number;
 }
 
-export const KeySlot = ({ pathId, isCollected, onClick, stats, isTester = false }: KeySlotProps) => {
+export const KeySlot = ({
+  pathId,
+  isCollected,
+  onClick,
+  stats,
+  isTester = false,
+  currentScore = 0,
+  completedCount = 0,
+}: KeySlotProps) => {
   const path = PATH_METADATA[pathId];
   const unlocked = isPathUnlocked(pathId, isTester);
   const countdownText = getCountdownText(pathId, isTester);
 
   const isClickable = unlocked && !isCollected;
+
+  // Calculate progress for started quizzes
+  const targetScore = TARGET_SCORES[pathId];
+  const totalPuzzles = getTotalPuzzles(pathId);
+  const scoreProgress = Math.round((currentScore / targetScore) * 100);
+  const hasStarted = completedCount > 0 && !isCollected;
 
   // Get thematic icon for each path
   const getPathIcon = () => {
@@ -102,6 +120,35 @@ export const KeySlot = ({ pathId, isCollected, onClick, stats, isTester = false 
             <div className="flex items-center gap-1 text-neutral-700">
               <Sparkles className="h-3.5 w-3.5" />
               <span className="font-medium">{stats.accuracy}%</span>
+            </div>
+          </div>
+        </div>
+      ) : hasStarted ? (
+        /* Progress for Started Quizzes */
+        <div className="mt-4 space-y-3 relative z-10">
+          <div className="flex items-center justify-between px-2">
+            <span className="text-sm font-semibold text-neutral-700">In Progress</span>
+            <span className="text-sm font-bold" style={{ color: path.colors.primary }}>
+              {scoreProgress}%
+            </span>
+          </div>
+          <div className="relative h-3 bg-neutral-200 rounded-full overflow-hidden">
+            <div
+              className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
+              style={{
+                width: `${Math.min(scoreProgress, 100)}%`,
+                background: `linear-gradient(90deg, ${path.colors.primary}, ${path.colors.secondary})`,
+              }}
+            />
+          </div>
+          <div className="text-center">
+            <span className="text-xs text-neutral-600">
+              {completedCount} / {totalPuzzles} questions completed
+            </span>
+          </div>
+          <div className="flex justify-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-duolingo-green text-white">
+              <span>Continue →</span>
             </div>
           </div>
         </div>

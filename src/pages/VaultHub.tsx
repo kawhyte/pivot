@@ -33,6 +33,9 @@ const VaultHub = () => {
     setUnlockedPaths,
     getPathStats,
     resetQuest,
+    // NEW: Get path progress data
+    pathProgress,
+    getPathScore,
   } = useQuestStore();
 
   // Redirect if not authenticated (only after hydration to prevent loops)
@@ -193,6 +196,8 @@ const VaultHub = () => {
               onClick={() => handlePathClick(PATH_IDS.POP_CULTURE)}
               stats={getPathStats(PATH_IDS.POP_CULTURE)}
               isTester={isTester}
+              currentScore={getPathScore(PATH_IDS.POP_CULTURE)}
+              completedCount={pathProgress[PATH_IDS.POP_CULTURE]?.completedIds?.length || 0}
             />
             <KeySlot
               pathId={PATH_IDS.RENAISSANCE}
@@ -200,6 +205,8 @@ const VaultHub = () => {
               onClick={() => handlePathClick(PATH_IDS.RENAISSANCE)}
               stats={getPathStats(PATH_IDS.RENAISSANCE)}
               isTester={isTester}
+              currentScore={getPathScore(PATH_IDS.RENAISSANCE)}
+              completedCount={pathProgress[PATH_IDS.RENAISSANCE]?.completedIds?.length || 0}
             />
             <KeySlot
               pathId={PATH_IDS.HEART}
@@ -207,6 +214,8 @@ const VaultHub = () => {
               onClick={() => handlePathClick(PATH_IDS.HEART)}
               stats={getPathStats(PATH_IDS.HEART)}
               isTester={isTester}
+              currentScore={getPathScore(PATH_IDS.HEART)}
+              completedCount={pathProgress[PATH_IDS.HEART]?.completedIds?.length || 0}
             />
           </div>
 
