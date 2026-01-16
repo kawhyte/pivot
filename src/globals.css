@@ -32,12 +32,12 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans text-lg font-medium antialiased;
+    @apply bg-background text-foreground font-doodle text-lg font-medium antialiased;
     line-height: 1.6;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-sans font-bold tracking-tight text-neutral-900;
+    @apply font-doodle font-bold tracking-tight text-neutral-900;
   }
 
   /* Define sizes individually to avoid PostCSS processing errors */
@@ -55,6 +55,10 @@
   .marker-highlight {
     @apply px-2 py-0.5 -rotate-1 inline-block font-sans rounded-sm;
     background-color: rgba(255, 215, 0, 0.4);
+  }
+
+  .duo-card {
+    @apply doodle-sticker p-6 transition-all;
   }
 
   /* CORE DESIGN UTILITIES */
