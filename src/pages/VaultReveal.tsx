@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { VaultReveal as VaultRevealComponent } from '@/components/vault/VaultReveal';
 import { useQuestStore } from '@/store/useQuestStore';
+import { cn } from '@/lib/utils';
 
 const VaultRevealPage = () => {
   const navigate = useNavigate();
