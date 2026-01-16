@@ -260,9 +260,9 @@ const VaultHub = () => {
             </Card>
           </div> */}
 
-          {/* Key Slots */}
-          <div className="space-y-4">
-            <div className="rotate-1">
+          {/* Key Slots - Staggered Doodle Layout */}
+          <div className="flex flex-col space-y-10">
+            <div className="rotate-[-1.5deg] translate-x-[-12px]">
               <KeySlot
                 pathId={PATH_IDS.POP_CULTURE}
                 pathNumber={1}
@@ -275,7 +275,7 @@ const VaultHub = () => {
                 completedPathsData={completedPathsData || []}
               />
             </div>
-            <div className="-rotate-1">
+            <div className="rotate-[2deg] translate-x-[12px]">
               <KeySlot
                 pathId={PATH_IDS.RENAISSANCE}
                 pathNumber={2}
@@ -288,7 +288,7 @@ const VaultHub = () => {
                 completedPathsData={completedPathsData || []}
               />
             </div>
-            <div className="rotate-1">
+            <div className="rotate-[-1deg] translate-x-[-6px]">
               <KeySlot
                 pathId={PATH_IDS.HEART}
                 pathNumber={3}

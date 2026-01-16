@@ -244,23 +244,14 @@ const QuestPage = () => {
     if (!currentPuzzleId) return;
     const skippedPuzzleId = currentPuzzleId;
 
-    console.log('🔄 Skipping puzzle:', skippedPuzzleId);
-
     // Await skip operation to ensure state is updated
     await skipPuzzle(pathId, skippedPuzzleId);
-
-    console.log('✅ Skip completed, getting next puzzle...');
 
     // Navigate to next unsolved (exclude the puzzle we just skipped)
     const nextPuzzle = getNextUnsolvedPuzzle(pathId, skippedPuzzleId);
 
-    console.log('🎯 Next puzzle:', nextPuzzle);
-
     if (nextPuzzle) {
       handleNavigate(nextPuzzle);
-      console.log('📍 Navigated to:', nextPuzzle);
-    } else {
-      console.log('❌ No next puzzle found');
     }
   };
 
@@ -387,16 +378,10 @@ const QuestPage = () => {
         } else {
           // Move to next unsolved puzzle (exclude current one to ensure fresh puzzle)
           const completedPuzzleId = currentPuzzleId;
-          console.log('✅ Answer correct, completed puzzle:', completedPuzzleId);
-
           const nextPuzzle = getNextUnsolvedPuzzle(pathId, completedPuzzleId);
-          console.log('🎯 Next puzzle after correct answer:', nextPuzzle);
 
           if (nextPuzzle) {
             handleNavigate(nextPuzzle);
-            console.log('📍 Navigated to next puzzle:', nextPuzzle);
-          } else {
-            console.log('❌ No next puzzle found after correct answer');
           }
           setFeedback(null);
           setValidationResult(null);
@@ -880,7 +865,7 @@ const QuestPage = () => {
       </main>
 
       {/* Question Navigator - Fixed Mission Log */}
-      {currentPuzzleId && allPuzzles.length > 0 && (
+      {/* {currentPuzzleId && allPuzzles.length > 0 && (
         <QuestionNavigator
           pathId={pathId}
           currentPuzzleId={currentPuzzleId}
@@ -888,7 +873,7 @@ const QuestPage = () => {
           completedIds={progress.completedIds}
           onNavigate={handleNavigate}
         />
-      )}
+      )} */}
 
       {/* Quest Simulation Toolbar (Tester Mode Only) */}
       {isTester && currentPuzzleId && (
