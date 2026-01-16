@@ -240,14 +240,27 @@ const QuestPage = () => {
     setShowHint(false);
   };
 
-  const handleSkip = () => {
+  const handleSkip = async () => {
     if (!currentPuzzleId) return;
-    skipPuzzle(pathId, currentPuzzleId);
+    const skippedPuzzleId = currentPuzzleId;
 
-    // Navigate to next unsolved
-    const nextPuzzle = getNextUnsolvedPuzzle(pathId);
+    console.log('🔄 Skipping puzzle:', skippedPuzzleId);
+
+    // Await skip operation to ensure state is updated
+    await skipPuzzle(pathId, skippedPuzzleId);
+
+    console.log('✅ Skip completed, getting next puzzle...');
+
+    // Navigate to next unsolved (exclude the puzzle we just skipped)
+    const nextPuzzle = getNextUnsolvedPuzzle(pathId, skippedPuzzleId);
+
+    console.log('🎯 Next puzzle:', nextPuzzle);
+
     if (nextPuzzle) {
       handleNavigate(nextPuzzle);
+      console.log('📍 Navigated to:', nextPuzzle);
+    } else {
+      console.log('❌ No next puzzle found');
     }
   };
 
@@ -372,10 +385,18 @@ const QuestPage = () => {
             addKey(pathId, stats);
           }
         } else {
-          // Move to next unsolved puzzle
-          const nextPuzzle = getNextUnsolvedPuzzle(pathId);
+          // Move to next unsolved puzzle (exclude current one to ensure fresh puzzle)
+          const completedPuzzleId = currentPuzzleId;
+          console.log('✅ Answer correct, completed puzzle:', completedPuzzleId);
+
+          const nextPuzzle = getNextUnsolvedPuzzle(pathId, completedPuzzleId);
+          console.log('🎯 Next puzzle after correct answer:', nextPuzzle);
+
           if (nextPuzzle) {
             handleNavigate(nextPuzzle);
+            console.log('📍 Navigated to next puzzle:', nextPuzzle);
+          } else {
+            console.log('❌ No next puzzle found after correct answer');
           }
           setFeedback(null);
           setValidationResult(null);
@@ -420,13 +441,14 @@ const QuestPage = () => {
         setShowSkippedToast(true);
 
         // Auto-skip this puzzle (remove from remaining)
-        skipPuzzle(pathId, currentPuzzleId);
+        const autoSkippedPuzzleId = currentPuzzleId;
+        await skipPuzzle(pathId, autoSkippedPuzzleId);
 
         // Wait 2.5 seconds for user to read the toast, then auto-navigate
         setTimeout(() => {
           setShowSkippedToast(false);
 
-          const nextPuzzle = getNextUnsolvedPuzzle(pathId);
+          const nextPuzzle = getNextUnsolvedPuzzle(pathId, autoSkippedPuzzleId);
           if (nextPuzzle) {
             handleNavigate(nextPuzzle);
           } else {

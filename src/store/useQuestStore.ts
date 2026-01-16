@@ -128,13 +128,13 @@ interface QuestState {
   setUnlockedPaths: (paths: PathId[]) => void;
   setCurrentPuzzle: (puzzleId: string | null) => void;
   submitAnswer: (pathId: PathId, puzzleId: string, isCorrect: boolean, mistakeWeight?: number, timeSpent?: number) => Promise<void>;
-  skipPuzzle: (pathId: PathId, puzzleId: string) => void;
+  skipPuzzle: (pathId: PathId, puzzleId: string) => Promise<void>;
   setPathStats: (pathId: PathId, stats: PathStats) => void;
   getPathStats: (pathId: PathId) => PathStats | undefined;
   getPathScore: (pathId: PathId) => number;
   isPerfectRun: (pathId: PathId) => boolean;
   isPathUnlocked: (pathId: PathId) => boolean;
-  getNextUnsolvedPuzzle: (pathId: PathId) => string | null;
+  getNextUnsolvedPuzzle: (pathId: PathId, excludeId?: string) => string | null;
   hydrateFromDatabase: (agentId: number) => Promise<void>;
   checkVaultStatus: () => void;
   startNewRun: () => void;
@@ -518,21 +518,64 @@ export const useQuestStore = create<QuestState>()(
         return score >= threshold;
       },
 
-      getNextUnsolvedPuzzle: (pathId) => {
+      getNextUnsolvedPuzzle: (pathId, excludeId) => {
         const progress = get().pathProgress[pathId];
         const pathConfig = getPathPuzzles(pathId);
-        if (!pathConfig) return null;
+        if (!pathConfig) {
+          console.log('❌ No path config found for pathId:', pathId);
+          return null;
+        }
 
-        // GAUNTLET MODE: Collect all unsolved puzzles and return random one
-        const unsolvedPuzzles = pathConfig.puzzles.filter(
+        console.log('🔍 Getting next unsolved puzzle for path:', pathId);
+        console.log('📊 Completed IDs:', progress.completedIds);
+        console.log('⏭️  Skipped IDs:', progress.skippedIds);
+        console.log('🚫 Exclude ID:', excludeId);
+
+        // GAUNTLET MODE: First try to get fresh puzzles (not completed, not skipped)
+        let freshPuzzles = pathConfig.puzzles.filter(
           (p) => !progress.completedIds.includes(p.id) && !progress.skippedIds.includes(p.id)
         );
 
-        if (unsolvedPuzzles.length === 0) return null;
+        console.log('🆕 Fresh puzzles before exclude:', freshPuzzles.map(p => p.id));
 
-        // Return random puzzle from unsolved pool
-        const randomIndex = Math.floor(Math.random() * unsolvedPuzzles.length);
-        return unsolvedPuzzles[randomIndex].id;
+        // Exclude the current puzzle ID if provided
+        if (excludeId) {
+          freshPuzzles = freshPuzzles.filter((p) => p.id !== excludeId);
+          console.log('🆕 Fresh puzzles after exclude:', freshPuzzles.map(p => p.id));
+        }
+
+        // If we have fresh puzzles, pick one
+        if (freshPuzzles.length > 0) {
+          const randomIndex = Math.floor(Math.random() * freshPuzzles.length);
+          const selectedPuzzle = freshPuzzles[randomIndex].id;
+          console.log('✨ Selected fresh puzzle:', selectedPuzzle);
+          return selectedPuzzle;
+        }
+
+        console.log('⚠️ No fresh puzzles, looking for skipped puzzles to retry...');
+
+        // If no fresh puzzles, allow retrying skipped puzzles
+        let skippedPuzzles = pathConfig.puzzles.filter(
+          (p) => !progress.completedIds.includes(p.id) && progress.skippedIds.includes(p.id)
+        );
+
+        console.log('🔄 Skipped puzzles available for retry:', skippedPuzzles.map(p => p.id));
+
+        // Exclude the current puzzle ID if provided
+        if (excludeId) {
+          skippedPuzzles = skippedPuzzles.filter((p) => p.id !== excludeId);
+          console.log('🔄 Skipped puzzles after exclude:', skippedPuzzles.map(p => p.id));
+        }
+
+        if (skippedPuzzles.length > 0) {
+          const randomIndex = Math.floor(Math.random() * skippedPuzzles.length);
+          const selectedPuzzle = skippedPuzzles[randomIndex].id;
+          console.log('✨ Selected skipped puzzle for retry:', selectedPuzzle);
+          return selectedPuzzle;
+        }
+
+        console.log('❌ No puzzles remaining (all completed)');
+        return null;
       },
 
       setPathStats: (pathId, stats) => {
