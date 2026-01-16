@@ -50,11 +50,11 @@ export const KeySlot = ({
   const getPathIcon = () => {
     switch (pathId) {
       case 1: // Pop Culture
-        return <Tv className="h-16 w-16" strokeWidth={1.5} style={{ color: path.colors.primary }} />;
+        return <img  src='/images/cup.png'/>// <Tv className="h-16 w-16" strokeWidth={1.5} style={{ color: path.colors.primary }} />;
       case 2: // Renaissance
-        return <BookOpen className="h-16 w-16" strokeWidth={1.5} style={{ color: path.colors.primary }} />;
+        return <img  src='/images/green-shape.png'/> //<BookOpen className="h-16 w-16" strokeWidth={1.5} style={{ color: path.colors.primary }} />;
       case 3: // Heart
-        return <HeartIcon className="h-16 w-16" strokeWidth={1.5} fill={path.colors.primary} style={{ color: path.colors.primary }} />;
+        return <img className="h-20 w-20"  src='/images/heart.svg'/>  //<HeartIcon className="h-16 w-16" strokeWidth={1.5} fill={path.colors.primary} style={{ color: path.colors.primary }} />;
       default:
         return null;
     }

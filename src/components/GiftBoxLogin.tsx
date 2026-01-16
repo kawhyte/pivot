@@ -128,7 +128,7 @@ export const GiftBoxLogin = () => {
                 <div
                 
                   className="mb-8 flex justify-center"
-                > <img className=' w-60 ' src='/images/lady.png'/>
+                > <img className=' w-60 ' src='/images/lady.svg'/>
                
                 </div>
 
@@ -232,7 +232,7 @@ export const GiftBoxLogin = () => {
                 {/* Login Card */}
                 <div className="duo-card bg-white p-8 shadow-xl">
                   
-<img className='mx-auto mb-4 h-11 w-11' src='images/small-heart.png'/>
+<img className='mx-auto mb-4 h-16 w-16' src='images/smile-yellow.svg'/>
                   <h2 className="mb-2 text-2xl font-black text-neutral-900">
                     Enter Your Code
                   </h2>
