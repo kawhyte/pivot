@@ -125,24 +125,12 @@ export const GiftBoxLogin = () => {
               /* Hero Section */
               <>
                 {/* Icon */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1 }}
+                <div
+                
                   className="mb-8 flex justify-center"
-                >
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-duolingo-green/30 rounded-3xl blur-3xl" />
-                    <div
-                      className="relative rounded-3xl p-8 shadow-lg"
-                      style={{
-                        background: 'linear-gradient(135deg, #58CC02 0%, #46A302 100%)',
-                      }}
-                    >
-                      <Gift className="h-24 w-24 text-white" strokeWidth={1.5} />
-                    </div>
-                  </div>
-                </motion.div>
+                > <img className=' w-60 ' src='/images/lady.png'/>
+               
+                </div>
 
                 {/* Title */}
                 <motion.h1
@@ -190,7 +178,7 @@ export const GiftBoxLogin = () => {
                 </motion.button>
 
                 {/* Features */}
-                <motion.div
+                {/* <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.6 }}
@@ -223,7 +211,7 @@ export const GiftBoxLogin = () => {
                     <h3 className="text-lg font-bold text-neutral-900 mb-2">Made With Love</h3>
                     <p className="text-sm text-neutral-600">A handcrafted adventure designed just for you</p>
                   </div>
-                </motion.div>
+                </motion.div> */}
               </>
             ) : (
               /* Login Form */
@@ -236,15 +224,15 @@ export const GiftBoxLogin = () => {
                 {/* Back Button */}
                 <button
                   onClick={() => setShowLoginForm(false)}
-                  className="mb-4 text-sm font-semibold text-neutral-600 hover:text-neutral-900 transition-colors"
+                  className="mb-4 text-lg font-semibold text-neutral-600 hover:text-neutral-900 transition-colors"
                 >
                   ← Back
                 </button>
 
                 {/* Login Card */}
                 <div className="duo-card bg-white p-8 shadow-xl">
-                  <Lock className="mx-auto mb-4 h-12 w-12 text-duolingo-green" />
-
+                  
+<img className='mx-auto mb-4 h-11 w-11' src='images/small-heart.png'/>
                   <h2 className="mb-2 text-2xl font-black text-neutral-900">
                     Enter Your Code
                   </h2>

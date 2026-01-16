@@ -350,7 +350,7 @@
     outline-offset: 2px;
   }
 
-  /* Text Inputs - Apply duo-input class */
+  /* Text Inputs - Inherit duo-input styles */
   input[type="text"],
   input[type="email"],
   input[type="password"],
@@ -359,7 +359,26 @@
   input[type="url"],
   input[type="number"],
   textarea {
-    @apply duo-input;
+    border-radius: 1rem;
+    border: 2px solid var(--neutral-200);
+    padding: 1rem 1.5rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+    background: white;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus,
+  input[type="search"]:focus,
+  input[type="tel"]:focus,
+  input[type="url"]:focus,
+  input[type="number"]:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--duolingo-green);
+    box-shadow: 0 0 0 4px rgba(88, 204, 2, 0.1);
   }
 
   /* Hide scrollbar while allowing scrolling */
@@ -527,5 +546,121 @@ button:focus-visible {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* ========================================
+   TESTER MODE CONTRAST FIXES
+   ======================================== */
+
+/* High-contrast text styling for tester mode on dark backgrounds */
+.tester-mode-quest {
+  /* Question text - high contrast with cyan glow */
+  h2.text-2xl {
+    color: #FFFFFF !important;
+    text-shadow: 0 0 10px rgba(6, 182, 212, 0.5),
+                 0 0 20px rgba(6, 182, 212, 0.3);
+    font-weight: 700 !important;
+  }
+
+  /* Answer pills - enhanced visibility */
+  .duo-answer-pill {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 2px solid #06B6D4 !important;
+    color: #FFFFFF !important;
+  }
+
+  .duo-answer-pill:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: #22D3EE !important;
+  }
+
+  .duo-answer-pill.selected {
+    background: rgba(6, 182, 212, 0.2) !important;
+    border: 3px solid #06B6D4 !important;
+    border-color: #22D3EE !important;
+  }
+
+  .duo-answer-pill span {
+    color: #FFFFFF !important;
+  }
+
+  /* Input fields - enhanced visibility */
+  .duo-input,
+  input[type="text"],
+  textarea {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 2px solid #06B6D4 !important;
+    color: #FFFFFF !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  .duo-input::placeholder,
+  input[type="text"]::placeholder,
+  textarea::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+
+  .duo-input:focus,
+  input[type="text"]:focus,
+  textarea:focus {
+    border-color: #22D3EE !important;
+    box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.3) !important;
+  }
+
+  /* Difficulty badges - high contrast */
+  .duo-badge {
+    background: rgba(6, 182, 212, 0.2) !important;
+    border: 2px solid #06B6D4 !important;
+    color: #FFFFFF !important;
+  }
+
+  .duo-badge svg {
+    color: #22D3EE !important;
+  }
+
+  /* Hint cards - tester theme */
+  .duo-card {
+    background: rgba(6, 182, 212, 0.1) !important;
+    border-color: #06B6D4 !important;
+  }
+
+  .duo-card p {
+    color: #FFFFFF !important;
+  }
+
+  .duo-card svg {
+    color: #22D3EE !important;
+  }
+
+  /* Feedback messages - high contrast */
+  .duo-card.bg-red-50 {
+    background: rgba(239, 68, 68, 0.2) !important;
+    border-color: #EF4444 !important;
+  }
+
+  .duo-card.bg-red-50,
+  .duo-card.text-neutral-900 {
+    color: #FFFFFF !important;
+  }
+
+  .duo-card.bg-success-bg {
+    background: rgba(88, 204, 2, 0.2) !important;
+    border-color: #58CC02 !important;
+    color: #FFFFFF !important;
+  }
+
+  /* Skip for Now button */
+  .text-zinc-500 {
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+
+  .text-zinc-500:hover {
+    color: #22D3EE !important;
+  }
+
+  /* All general text elements on dark background */
+  .text-neutral-900 {
+    color: #FFFFFF !important;
   }
 }

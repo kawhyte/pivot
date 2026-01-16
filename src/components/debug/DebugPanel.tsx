@@ -8,6 +8,7 @@ import { PathSimulator } from './DebugSections/PathSimulator';
 import { ScenarioRunner } from './DebugSections/ScenarioRunner';
 import { StateInspector } from './DebugSections/StateInspector';
 import { QuickActions } from './DebugSections/QuickActions';
+import { QuestSimulatorLauncher } from './DebugSections/QuestSimulatorLauncher';
 
 interface DebugPanelProps {
   isEnabled: boolean;
@@ -35,6 +36,7 @@ export const DebugPanel = ({ isEnabled }: DebugPanelProps) => {
 
   const sections = [
     { id: 'state-inspector', title: 'State Inspector', component: StateInspector },
+    { id: 'quest-simulator', title: 'Quest Simulator', component: QuestSimulatorLauncher },
     { id: 'date-time', title: 'Time Travel', component: DateTimeControl },
     { id: 'path-simulator', title: 'Path Auto-Complete', component: PathSimulator },
     { id: 'scenarios', title: 'One-Click Scenarios', component: ScenarioRunner },

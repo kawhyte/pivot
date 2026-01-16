@@ -37,7 +37,8 @@ export const KeySlot = ({
   const countdownText = getCountdownText(pathId, completedPathsData, isTester);
   const dependencyName = getDependencyName(pathId);
 
-  const isClickable = unlocked && !isCollected;
+  // GOD MODE: Testers can always click any path (even if collected) for testing
+  const isClickable = isTester ? unlocked : (unlocked && !isCollected);
 
   // Calculate progress for started quizzes
   const targetScore = TARGET_SCORES[pathId];
@@ -63,7 +64,7 @@ export const KeySlot = ({
     <button
       onClick={isClickable ? onClick : undefined}
       disabled={!isClickable}
-      className={`relative w-full duo-card p-6 ${isClickable ? 'hover:shadow-lg cursor-pointer' : 'cursor-default'} ${!unlocked ? 'opacity-60' : ''}`}
+      className={`relative w-full duo-card p-6 ${isClickable ? 'hover:shadow-lg cursor-pointer' : 'cursor-default'} ${!unlocked && !isTester ? 'opacity-60' : ''}`}
     >
       {/* Background Photo Overlay */}
       <div
@@ -138,6 +139,14 @@ export const KeySlot = ({
               <span className="font-medium">{stats.accuracy}%</span>
             </div>
           </div>
+          {/* GOD MODE: Show re-test button for collected paths */}
+          {isTester && (
+            <div className="flex justify-center mt-2">
+              <div className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-cyan-500 text-white">
+                <span>Re-Test Quest →</span>
+              </div>
+            </div>
+          )}
         </div>
       ) : hasStarted ? (
         /* Progress for Started Quizzes */

@@ -21,6 +21,7 @@ import { PerfectRunBanner } from '@/components/quest/PerfectRunBanner';
 import { PerfectRunFailureModal } from '@/components/quest/PerfectRunFailureModal';
 import { DetailedStatsScreen } from '@/components/quest/DetailedStatsScreen';
 import { QuestionSkippedToast } from '@/components/quest/QuestionSkippedToast';
+import { QuestSimulationToolbar } from '@/components/quest/QuestSimulationToolbar';
 import type { ValidationResult } from '@/types/puzzle';
 
 /**
@@ -575,7 +576,7 @@ const QuestPage = () => {
   return (
     <div className={`flex min-h-screen flex-col ${
       isTester
-        ? 'bg-zinc-950'
+        ? 'bg-zinc-950 tester-mode-quest'
         : 'bg-gradient-to-br from-festive-cream via-festive-peach/20 to-festive-cream'
     }`}>
       {/* Fixed Header - Slim Progress Bar */}
@@ -813,6 +814,21 @@ const QuestPage = () => {
           currentPuzzleId={currentPuzzleId}
           remainingPuzzles={remainingPuzzles}
           onNavigate={handleNavigate}
+        />
+      )}
+
+      {/* Quest Simulation Toolbar (Tester Mode Only) */}
+      {isTester && currentPuzzleId && (
+        <QuestSimulationToolbar
+          pathId={pathId}
+          currentPuzzleId={currentPuzzleId}
+          onSubmit={handleSubmit}
+          currentScore={currentScore}
+          targetScore={targetScore}
+          remainingPuzzles={remainingPuzzles.length}
+          attempts={attempts}
+          showThresholdModal={showThresholdModal}
+          showPerfectRunFailure={showPerfectRunFailure}
         />
       )}
     </div>
