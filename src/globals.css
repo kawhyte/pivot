@@ -678,5 +678,6 @@ button:focus-visible {
 
 /* Marker Highlight - Highlighter pen effect with slight tilt */
 .marker-highlight {
-  @apply bg-doodle-yellow/40 px-1 -rotate-1 inline-block font-doodle;
+  @apply px-1 -rotate-1 inline-block font-doodle;
+  background-color: rgba(255, 215, 0, 0.4);
 }
