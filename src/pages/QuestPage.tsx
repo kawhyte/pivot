@@ -857,12 +857,13 @@ const QuestPage = () => {
         </AnimatePresence>
       </main>
 
-      {/* Question Navigator - Dynamic Vanishing Navigation */}
-      {currentPuzzleId && remainingPuzzles.length > 0 && (
+      {/* Question Navigator - Fixed Mission Log */}
+      {currentPuzzleId && allPuzzles.length > 0 && (
         <QuestionNavigator
           pathId={pathId}
           currentPuzzleId={currentPuzzleId}
-          remainingPuzzles={remainingPuzzles}
+          allPuzzles={allPuzzles}
+          completedIds={progress.completedIds}
           onNavigate={handleNavigate}
         />
       )}

@@ -52,6 +52,10 @@
     @apply border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-white;
   }
 
+  .doodle-sticker-sm {
+    @apply border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-xl bg-white;
+  }
+
   .marker-highlight {
     @apply px-2 py-0.5 -rotate-1 inline-block font-sans rounded-sm;
     background-color: rgba(255, 215, 0, 0.4);
