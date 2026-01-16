@@ -11,6 +11,7 @@ export default {
         sans: ['var(--font-quicksand)', 'ui-sans-serif', 'system-ui'],
         display: ['var(--font-quicksand)', 'ui-sans-serif', 'system-ui'], // Use Quicksand for display too
         accent: ['var(--font-quicksand)', 'ui-sans-serif', 'system-ui'], // Consistent font family
+        doodle: ['Patrick Hand', 'cursive'],
       },
       colors: {
         // Duolingo Primary Colors
@@ -42,6 +43,13 @@ export default {
         'path-pop-purple': '#CE82FF',
         'path-renaissance-blue': '#1CB0F6',
         'path-heart-pink': '#FF4B4B',
+
+        // 90s Color Palette
+        '90s': {
+          'electric-pink': '#ff00ff',
+          'cyber-yellow': '#ffd700',
+          'bright-turquoise': '#00f5ff',
+        },
 
         // Semantic Tokens (mapped to CSS variables)
         background: 'var(--background)',
