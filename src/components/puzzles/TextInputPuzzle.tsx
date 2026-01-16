@@ -2,7 +2,7 @@
 
 import { useState, KeyboardEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lightbulb } from 'lucide-react';
+import { Lightbulb, ArrowLeft } from 'lucide-react';
 import type { TextInputPuzzle as TextInputPuzzleType, ValidationResult } from '@/types/puzzle';
 import { PuzzleContainer } from './PuzzleContainer';
 import type { PathId } from '@/lib/paths';
@@ -70,9 +70,9 @@ export const TextInputPuzzle = ({
       currentScore={currentScore}
       targetScore={targetScore}
     >
-      <div className="space-y-4">
-        {/* Text Input - Clean Duolingo Style */}
-        <div>
+      <div className="space-y-8">
+        {/* Text Input - Notepad Line Style */}
+        <div className="relative">
           <input
             type="text"
             value={answer}
@@ -80,9 +80,10 @@ export const TextInputPuzzle = ({
             onKeyDown={handleKeyPress}
             placeholder={puzzle.placeholder || 'Type your answer...'}
             disabled={isSubmitting}
-            className="duo-input h-16 w-full text-base"
+            className="duo-input font-doodle text-2xl w-full"
             autoFocus
           />
+          <ArrowLeft className="absolute bottom-0 right-0 h-4 w-4 text-neutral-300 rotate-180" />
         </div>
 
         {/* Feedback Message for "Close" Status */}

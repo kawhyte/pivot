@@ -50,20 +50,27 @@ export const PuzzleContainer = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="mb-8"
+        className="mb-8 space-y-4"
         layout
       >
-        <div className="flex flex-wrap items-start gap-3">
-          {/* Difficulty Badge */}
+        {/* Badge Row */}
+        <div className="flex items-center gap-3">
           <span className={`duo-badge flex-shrink-0 ${getDifficultyStyles()}`}>
             <Zap className="h-3 w-3" />
             {getDifficultyLabel()}
           </span>
-          {/* Question Text */}
-          <h2 className="text-2xl font-bold leading-tight text-neutral-900 flex-1">
-            {question}
-          </h2>
+          <span className="mission-label">
+            Mission Detail
+          </span>
         </div>
+
+        {/* Question Text */}
+        <h2 className="text-3xl font-doodle font-bold leading-tight text-neutral-900">
+          {question}
+        </h2>
+
+        {/* Decorative Divider */}
+        <div className="h-1 w-12 bg-neutral-200 rounded-full mt-4" />
       </motion.div>
 
       {/* Puzzle Content */}

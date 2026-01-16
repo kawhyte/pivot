@@ -106,6 +106,22 @@
   .duo-answer-pill.incorrect {
     @apply border-[3px] border-error-red bg-red-50;
   }
+
+  .duo-input {
+    @apply font-doodle text-lg px-2 py-2 outline-none;
+    background: transparent;
+    border: 0;
+    border-bottom: 3px solid theme('colors.neutral.200');
+    transition: border-color 0.2s ease;
+  }
+
+  .duo-input:focus {
+    border-color: theme('colors.duolingo-green');
+  }
+
+  .mission-label {
+    @apply text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 font-doodle;
+  }
 }
 
 /* TESTER MODE - Re-written without nesting to fix Vite/PostCSS error */
