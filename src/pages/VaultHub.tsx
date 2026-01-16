@@ -180,7 +180,7 @@ const VaultHub = () => {
           <img className="h-6 w-6" src='/images/lock.svg' alt="Vault" />
         </div>
         <div>
-          <h1 className="text-xl font-black text-duolingo-green leading-none font-doodle">
+          <h1 className="font-doodle text-4xl text-black leading-none">
             The Vault
           </h1>
           <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mt-1">
@@ -191,7 +191,7 @@ const VaultHub = () => {
 
       {/* Agent Profile Pill - Option 1 (The Profile Pill) */}
       {agentName && (
-        <div className="inline-flex items-center gap-2 rounded-full bg-success-bg/40 border border-duolingo-green/10 pl-1 pr-3 py-1">
+        <div className="doodle-sticker inline-flex items-center gap-2 pl-1 pr-3 py-1">
           <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-duolingo-green font-black text-[10px] border border-duolingo-green/20">
             {agentName[0]?.toUpperCase()}
           </div>
@@ -347,12 +347,9 @@ const VaultHub = () => {
         <Button
           onClick={handleShareProgress}
           disabled={!userId}
-          variant="outline"
+          variant="doodle"
           size="sm"
-          className={cn(
-            "flex-1 gap-2 h-10 rounded-2xl border-neutral-200 transition-all active:scale-95",
-            "bg-white font-bold text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 shadow-sm"
-          )}
+          className="flex-1 gap-2"
         >
           {linkCopied ? (
             <>
@@ -369,12 +366,9 @@ const VaultHub = () => {
 
         <Button
           onClick={handleLogout}
-          variant="ghost"
+          variant="doodle"
           size="sm"
-          className={cn(
-            "flex-1 gap-2 h-10 rounded-2xl transition-all active:scale-95",
-            "text-neutral-400 font-bold hover:bg-red-50 hover:text-error-red"
-          )}
+          className="flex-1 gap-2"
         >
           <LogOut className="h-4 w-4" strokeWidth={2.5} />
           <span>Logout</span>
