@@ -171,44 +171,78 @@ const VaultHub = () => {
       </AlertDialog>
 
       {/* Header */}
-      <header className="border-b-2 border-neutral-200 bg-white">
-        <div className="mx-auto max-w-md px-6 py-6">
-          <div className="text-center">
-            <div className="mb-2 flex items-center justify-center gap-2">
-              <KeyRound className="h-7 w-7 text-duolingo-green" strokeWidth={2.5} />
-              <h1 className="text-3xl font-bold text-duolingo-green">
-                The Vault
-              </h1>
-            </div>
-            <p className="text-base text-neutral-700">
-              Collect 3 keys to unlock your birthday surprise
-            </p>
-            {agentName && (
-              <div className="mt-4">
-                <Card className={cn(
-                  "bg-success-bg border-duolingo-green inline-block",
-                  "border-2 rounded-2xl shadow-sm"
-                )}>
-                  <CardContent className="px-4 py-2.5">
-                    <p className="text-sm text-neutral-700">
-                      Logged in as
-                    </p>
-                    <p className="text-lg text-duolingo-green font-bold">
-                      {agentName}
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-          </div>
+      <header className="border-b-2 border-neutral-100 bg-white/80 backdrop-blur-md sticky top-0 z-30">
+  <div className="mx-auto max-w-md px-6 py-5">
+    {/* Top Row: Mission Branding & Identity */}
+    <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center gap-3">
+        <div className="bg-neutral-50 p-2 rounded-xl border border-neutral-100 shadow-sm">
+          <img className="h-6 w-6" src='/images/lock.svg' alt="Vault" />
         </div>
-      </header>
+        <div>
+          <h1 className="text-xl font-black text-duolingo-green leading-none">
+            The Vault
+          </h1>
+          <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mt-1">
+            Mission: Birthday
+          </p>
+        </div>
+      </div>
+
+      {/* Agent Profile Pill - Option 1 (The Profile Pill) */}
+      {agentName && (
+        <div className="inline-flex items-center gap-2 rounded-full bg-success-bg/40 border border-duolingo-green/10 pl-1 pr-3 py-1">
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-duolingo-green font-black text-[10px] border border-duolingo-green/20">
+            {agentName[0]?.toUpperCase()}
+          </div>
+          <span className="text-xs font-bold text-duolingo-green-dark truncate max-w-[80px]">
+            {agentName}
+          </span>
+        </div>
+      )}
+    </div>
+
+    {/* Bottom Row: Goal & Integrated Progress */}
+    <div className="space-y-3">
+      <div className="flex items-end justify-between">
+        <p className="text-sm font-medium text-neutral-600 max-w-[200px] leading-tight">
+          Collect <span className="text-duolingo-green font-bold">3 keys</span> to unlock your surprise
+        </p>
+        <div className="text-right leading-none">
+          <span className="text-2xl font-black text-duolingo-green">
+            {keysCollected.length}
+            <span className="text-neutral-200 mx-0.5">/</span>
+            3
+          </span>
+        </div>
+      </div>
+
+      {/* Visual Key Tracker - Replaces the heavy Progress Bar */}
+      <div className="flex gap-2">
+        {[1, 2, 3].map((i) => {
+          const isCollected = keysCollected.length >= i;
+          return (
+            <div 
+              key={i}
+              className={cn(
+                "h-2.5 flex-1 rounded-full transition-all duration-700",
+                isCollected 
+                  ? "bg-duolingo-green shadow-[0_0_12px_rgba(88,204,2,0.3)]" 
+                  : "bg-neutral-100 border border-neutral-200"
+              )}
+            />
+          );
+        })}
+      </div>
+    </div>
+  </div>
+</header>
 
       {/* Main Content */}
       <main className="flex flex-1 flex-col px-6 py-8">
         <div className="mx-auto w-full max-w-md">
           {/* Progress Indicator */}
-          <div className="mb-8">
+          {/* <div className="mb-8">
             <Card className="bg-white border-2 rounded-2xl shadow-sm">
               <CardContent className="p-6">
                 <div className="mb-3 flex items-center justify-between">
@@ -225,7 +259,7 @@ const VaultHub = () => {
                 />
               </CardContent>
             </Card>
-          </div>
+          </div> */}
 
           {/* Key Slots */}
           <div className="space-y-4">
@@ -298,63 +332,63 @@ const VaultHub = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t-2 border-neutral-200 bg-white">
-        <div className="mx-auto max-w-md px-6 py-4">
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <p className="text-xs text-neutral-600">
-              A birthday quest made with love
-            </p>
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={handleShareProgress}
-                disabled={!userId}
-                variant="outline"
-                size="sm"
-                className={cn(
-                  "gap-1 bg-neutral-100 border-neutral-300 text-xs font-medium",
-                  "text-neutral-900 hover:bg-neutral-200 px-3 py-2 rounded-xl"
-                )}
-              >
-                {linkCopied ? (
-                  <>
-                    <Check className="h-3.5 w-3.5" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Share2 className="h-3.5 w-3.5" />
-                    Share
-                  </>
-                )}
-              </Button>
-              <Button
-                onClick={() => setShowHowToPlay(true)}
-                variant="outline"
-                size="sm"
-                className={cn(
-                  "gap-1 bg-neutral-100 border-neutral-300 text-xs font-medium",
-                  "text-neutral-900 hover:bg-neutral-200 px-3 py-2 rounded-xl"
-                )}
-              >
-                <HelpCircle className="h-3.5 w-3.5" />
-                Help
-              </Button>
-              <Button
-                onClick={handleLogout}
-                variant="outline"
-                size="sm"
-                className={cn(
-                  "gap-1 bg-red-50 border-error-red text-xs font-medium",
-                  "text-error-red hover:bg-red-100 px-3 py-2 rounded-xl"
-                )}
-              >
-                <LogOut className="h-3.5 w-3.5" />
-                Logout
-              </Button>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <footer className="border-t border-neutral-100 bg-white/50 backdrop-blur-sm mt-auto">
+  <div className="mx-auto max-w-md px-6 py-8">
+    <div className="flex flex-col items-center gap-6">
+      
+      {/* Action Buttons */}
+      <div className="flex items-center justify-center gap-3 w-full">
+        <Button
+          onClick={handleShareProgress}
+          disabled={!userId}
+          variant="outline"
+          size="sm"
+          className={cn(
+            "flex-1 gap-2 h-10 rounded-2xl border-neutral-200 transition-all active:scale-95",
+            "bg-white font-bold text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 shadow-sm"
+          )}
+        >
+          {linkCopied ? (
+            <>
+              <Check className="h-4 w-4 text-duolingo-green" strokeWidth={3} />
+              <span className="text-duolingo-green">Copied!</span>
+            </>
+          ) : (
+            <>
+              <Share2 className="h-4 w-4" strokeWidth={2.5} />
+              <span>Share Link</span>
+            </>
+          )}
+        </Button>
+
+        <Button
+          onClick={handleLogout}
+          variant="ghost"
+          size="sm"
+          className={cn(
+            "flex-1 gap-2 h-10 rounded-2xl transition-all active:scale-95",
+            "text-neutral-400 font-bold hover:bg-red-50 hover:text-error-red"
+          )}
+        >
+          <LogOut className="h-4 w-4" strokeWidth={2.5} />
+          <span>Logout</span>
+        </Button>
+      </div>
+
+      {/* Subtle "Made with Love" Branding */}
+      <div className="flex items-center gap-2 py-2 px-4 rounded-full bg-neutral-50/50 border border-neutral-100">
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">
+          Birthday Quest
+        </span>
+        <div className="w-1 h-1 rounded-full bg-neutral-300" />
+        <p className="text-[13px] font-bold text-neutral-400 flex items-center gap-1.5">
+          Made with <span className="text-error-red animate-pulse">❤️</span>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</footer>
 
       {/* Debug Panel (Tester Only) */}
       <DebugPanel isEnabled={isTester} />

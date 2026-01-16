@@ -6,6 +6,10 @@ import type { PathStats } from '@/store/useQuestStore';
 import { getCountdownText, isPathUnlocked, getDependencyName } from '@/lib/path-unlock';
 import { formatTime } from '@/lib/themed-titles';
 import { TARGET_SCORES, getTotalPuzzles } from '@/data/puzzles';
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
+import { Progress } from './ui/progress';
+import { cn } from '@/lib/utils';
 
 interface KeySlotProps {
   pathId: PathId;
@@ -80,12 +84,14 @@ export const KeySlot = ({
 
       {/* Day Number Badge */}
       <div className="absolute top-4 left-4 z-20">
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full border-2 border-neutral-300 shadow-sm">
+
+        <Badge>{pathNumber}</Badge>
+        {/* <div className="flex items-center gap-2 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full border-2 border-neutral-300 shadow-sm">
           <span className="text-xs font-bold text-neutral-600">DAY</span>
           <span className="text-lg font-black" style={{ color: path.colors.primary }}>
             {pathNumber}
           </span>
-        </div>
+        </div> */}
       </div>
 
       {/* Icon Section */}
@@ -157,24 +163,29 @@ export const KeySlot = ({
               {scoreProgress}%
             </span>
           </div>
-          <div className="relative h-3 bg-neutral-200 rounded-full overflow-hidden">
-            <div
-              className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
-              style={{
-                width: `${Math.min(scoreProgress, 100)}%`,
-                background: `linear-gradient(90deg, ${path.colors.primary}, ${path.colors.secondary})`,
-              }}
-            />
-          </div>
+          <Progress
+            value={Math.min(scoreProgress, 100)}
+            className="h-3 bg-neutral-200"
+            indicatorClassName="transition-all duration-500 rounded-full"
+            indicatorStyle={{
+              background: `linear-gradient(90deg, ${path.colors.primary}, ${path.colors.secondary})`,
+            }}
+          />
           <div className="text-center">
             <span className="text-xs text-neutral-600">
               {completedCount} / {totalPuzzles} questions completed
             </span>
           </div>
           <div className="flex justify-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-duolingo-green text-white">
-              <span>Continue →</span>
-            </div>
+            <Button
+              className={cn(
+                "gap-2 px-4 py-2 text-sm font-semibold rounded-lg",
+                "bg-duolingo-green text-white hover:bg-duolingo-green/90",
+                "pointer-events-none"
+              )}
+            >
+              Continue →
+            </Button>
           </div>
         </div>
       ) : (
