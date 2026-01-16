@@ -307,10 +307,7 @@ const VaultHub = () => {
           {/* Vault Unlock Status */}
           {isVaultUnlocked && (
             <div className="mt-8">
-              <Card className={cn(
-                "bg-duolingo-green border-[3px] border-duolingo-green-dark",
-                "rounded-2xl shadow-lg"
-              )}>
+              <Card variant="doodle" className="bg-duolingo-green">
                 <CardContent className="p-8 text-center">
                   <div className="mb-4 flex justify-center">
                     <Sparkles className="h-14 w-14 text-white" strokeWidth={2} fill="currentColor" />
@@ -323,10 +320,7 @@ const VaultHub = () => {
                   </p>
                   <Button
                     onClick={() => navigate('/vault')}
-                    className={cn(
-                      "bg-white text-duolingo-green px-8 py-4 text-xl font-black",
-                      "hover:bg-neutral-100 rounded-2xl shadow-md"
-                    )}
+                    variant="doodle"
                   >
                     Open Vault
                   </Button>

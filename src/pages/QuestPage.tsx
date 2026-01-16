@@ -808,11 +808,10 @@ const QuestPage = () => {
                       addKey(pathId, stats);
                     }
                   }}
+                  variant="doodle"
                   className={cn(
-                    "w-full py-4 text-xl font-black text-white rounded-2xl transition-colors",
-                    isTester
-                      ? 'bg-cyan-600 hover:bg-cyan-500'
-                      : 'bg-duolingo-green hover:bg-duolingo-green-dark'
+                    "w-full",
+                    isTester && 'bg-cyan-600 hover:bg-cyan-500'
                   )}
                 >
                   Finish & Claim Key
@@ -843,11 +842,11 @@ const QuestPage = () => {
               className="mx-auto mt-6 w-full max-w-lg"
             >
               <Card
+                variant="doodle"
                 className={cn(
-                  "border-2 rounded-2xl shadow-sm",
                   feedback.type === 'success'
-                    ? 'bg-success-bg border-duolingo-green'
-                    : 'bg-red-50 border-error-red'
+                    ? 'bg-success-bg'
+                    : 'bg-red-50'
                 )}
               >
                 <CardContent className="p-4 text-center font-bold text-neutral-900">
