@@ -7,6 +7,9 @@ import { useQuestStore } from '@/store/useQuestStore';
 import { PATH_METADATA, type PathId } from '@/lib/paths';
 import { getPuzzleById, getTotalPuzzles, getRandomCoupon, TARGET_SCORES, getPathPuzzles } from '@/data/puzzles';
 import { validateAnswer } from '@/lib/puzzle-validator';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { PuzzleRenderer } from '@/components/puzzles/PuzzleRenderer';
 import { QuestionNavigator } from '@/components/puzzles/QuestionNavigator';
 import { SuccessOverlay } from '@/components/puzzles/SuccessOverlay';
@@ -22,6 +25,7 @@ import { PerfectRunFailureModal } from '@/components/quest/PerfectRunFailureModa
 import { DetailedStatsScreen } from '@/components/quest/DetailedStatsScreen';
 import { QuestionSkippedToast } from '@/components/quest/QuestionSkippedToast';
 import { QuestSimulationToolbar } from '@/components/quest/QuestSimulationToolbar';
+import { cn } from '@/lib/utils';
 import type { ValidationResult } from '@/types/puzzle';
 
 /**
@@ -553,16 +557,16 @@ const QuestPage = () => {
               <Sparkles className="h-16 w-16 text-white" strokeWidth={2} />
             </div>
 
-            <motion.button
+            <Button
               onClick={handleBackToVault}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className={`w-full rounded-full px-8 py-4 font-semibold text-white ${
-                isTester ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-zinc-900'
-              }`}
+              size="lg"
+              className={cn(
+                "w-full rounded-full px-8 py-4 font-semibold text-white",
+                isTester ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-zinc-900 hover:bg-zinc-800'
+              )}
             >
               Return to Vault
-            </motion.button>
+            </Button>
           </motion.div>
         </div>
       </div>
@@ -583,15 +587,18 @@ const QuestPage = () => {
       <header className="fixed top-0 left-0 right-0 h-14 bg-zinc-900 z-50">
         <div className="h-full flex items-center justify-between px-4 gap-4">
           {/* Back Button */}
-          <motion.button
+          <Button
             onClick={handleBackToVault}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="duo-button flex items-center gap-2 text-sm bg-neutral-200 text-neutral-900 hover:bg-neutral-300 px-4 py-2 flex-shrink-0"
+            variant="secondary"
+            size="sm"
+            className={cn(
+              "flex items-center gap-2 text-sm bg-neutral-200 text-neutral-900",
+              "hover:bg-neutral-300 px-4 py-2 flex-shrink-0 rounded-xl"
+            )}
           >
             <ArrowLeft className="h-4 w-4" />
             <span className="hidden sm:inline">Back</span>
-          </motion.button>
+          </Button>
 
           {/* Progress Bar */}
           <div className="flex-1 mx-4">
@@ -720,16 +727,18 @@ const QuestPage = () => {
                 transition={{ delay: 0.4 }}
                 className="mx-auto mt-4 w-full max-w-lg"
               >
-                <button
+                <Button
                   onClick={handleSkip}
-                  className={`w-full text-center text-sm transition-colors ${
+                  variant="ghost"
+                  className={cn(
+                    "w-full text-center text-sm transition-colors",
                     isTester
-                      ? 'text-zinc-400 hover:text-cyan-400'
-                      : 'text-zinc-500 hover:text-zinc-700'
-                  }`}
+                      ? 'text-zinc-400 hover:text-cyan-400 hover:bg-transparent'
+                      : 'text-zinc-500 hover:text-zinc-700 hover:bg-transparent'
+                  )}
                 >
                   Skip for Now →
-                </button>
+                </Button>
               </motion.div>
             )}
 
@@ -741,7 +750,7 @@ const QuestPage = () => {
                 transition={{ delay: 0.5 }}
                 className="mx-auto mt-8 w-full max-w-lg"
               >
-                <button
+                <Button
                   onClick={() => {
                     const accuracy = Math.round(((progress.completedIds.length / totalPuzzles) * 100));
                     const stats = {
@@ -757,14 +766,15 @@ const QuestPage = () => {
                       addKey(pathId, stats);
                     }
                   }}
-                  className={`duo-button w-full py-4 text-xl font-black text-white ${
+                  className={cn(
+                    "w-full py-4 text-xl font-black text-white rounded-2xl transition-colors",
                     isTester
                       ? 'bg-cyan-600 hover:bg-cyan-500'
                       : 'bg-duolingo-green hover:bg-duolingo-green-dark'
-                  }`}
+                  )}
                 >
                   Finish & Claim Key
-                </button>
+                </Button>
 
                 {/* Hint Text - Only at 95%+ */}
                 {isCompletionistPending && (
@@ -790,18 +800,18 @@ const QuestPage = () => {
               exit={{ opacity: 0, y: -20 }}
               className="mx-auto mt-6 w-full max-w-lg"
             >
-              <div
-                className={`
-                  duo-card p-4 text-center font-bold
-                  ${
-                    feedback.type === 'success'
-                      ? 'bg-success-bg border-duolingo-green text-neutral-900'
-                      : 'bg-red-50 border-error-red text-neutral-900'
-                  }
-                `}
+              <Card
+                className={cn(
+                  "border-2 rounded-2xl shadow-sm",
+                  feedback.type === 'success'
+                    ? 'bg-success-bg border-duolingo-green'
+                    : 'bg-red-50 border-error-red'
+                )}
               >
-                {feedback.message}
-              </div>
+                <CardContent className="p-4 text-center font-bold text-neutral-900">
+                  {feedback.message}
+                </CardContent>
+              </Card>
             </motion.div>
           )}
         </AnimatePresence>
