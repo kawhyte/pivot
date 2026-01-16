@@ -7,11 +7,12 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
-      fontFamily: {
-        sans: ['var(--font-quicksand)', 'ui-sans-serif', 'system-ui'],
-        display: ['var(--font-quicksand)', 'ui-sans-serif', 'system-ui'], // Use Quicksand for display too
-        accent: ['var(--font-quicksand)', 'ui-sans-serif', 'system-ui'], // Consistent font family
-        doodle: ['Patrick Hand', 'cursive'],
+   fontFamily: {
+        
+        sans: ['"Patrick Hand"', 'cursive', 'ui-sans-serif', 'system-ui'],
+        display: ['"Patrick Hand"', 'cursive'], 
+        accent: ['"Patrick Hand"', 'cursive'],
+        doodle: ['"Patrick Hand"', 'cursive'],
       },
       colors: {
         // Duolingo Primary Colors
