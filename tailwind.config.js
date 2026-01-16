@@ -51,6 +51,11 @@ export default {
           'bright-turquoise': '#00f5ff',
         },
 
+        // Doodle Theme Colors
+        'doodle-pink': '#ff00ff',
+        'doodle-yellow': '#ffd700',
+        'doodle-blue': '#00f5ff',
+
         // Semantic Tokens (mapped to CSS variables)
         background: 'var(--background)',
         foreground: 'var(--foreground)',

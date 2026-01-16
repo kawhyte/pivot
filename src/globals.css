@@ -673,13 +673,10 @@ button:focus-visible {
 
 /* Doodle Sticker - Retro sticker effect with offset shadow */
 .doodle-sticker {
-  border: 4px solid white;
-  box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 1);
-  transform: rotate(-1deg);
+  @apply border-[3px] border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-xl bg-white;
 }
 
 /* Marker Highlight - Highlighter pen effect with slight tilt */
 .marker-highlight {
-  background-color: rgba(255, 215, 0, 0.2);
-  transform: skewX(-2deg);
+  @apply bg-doodle-yellow/40 px-1 -rotate-1 inline-block font-doodle;
 }
