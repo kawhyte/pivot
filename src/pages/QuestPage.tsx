@@ -514,7 +514,7 @@ const QuestPage = () => {
             <motion.div
               animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
               transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}
-              className="mb-6 flex justify-center"
+              className="mb-6 flex justify-center rotate-1"
             >
               <Trophy
                 className="h-24 w-24"
@@ -523,7 +523,7 @@ const QuestPage = () => {
               />
             </motion.div>
 
-            <h1 className={`mb-4 text-3xl font-bold ${isTester ? 'text-cyan-400' : 'text-zinc-900'}`}>
+            <h1 className={`mb-4 text-3xl font-bold font-doodle ${isTester ? 'text-cyan-400' : 'text-zinc-900'}`}>
               Path Complete!
             </h1>
             <p className={`mb-2 text-lg ${isTester ? 'text-zinc-300' : 'text-zinc-700'}`}>
@@ -548,7 +548,7 @@ const QuestPage = () => {
             )}
 
             <div
-              className="mx-auto mb-8 w-32 h-32 rounded-full flex items-center justify-center"
+              className="mx-auto mb-8 w-32 h-32 rounded-full flex items-center justify-center -rotate-1"
               style={{
                 background: `linear-gradient(135deg, ${pathMeta.colors.primary}, ${pathMeta.colors.secondary})`,
               }}
@@ -617,7 +617,7 @@ const QuestPage = () => {
           Path
         </span>
         <span className={cn(
-          "text-sm font-black uppercase tracking-wide",
+          "text-sm font-black uppercase tracking-wide font-doodle",
           isTester ? "text-zinc-300" : "text-neutral-800"
         )}>
           {pathMeta.name}
@@ -635,7 +635,7 @@ const QuestPage = () => {
           {scoreProgress}%
         </span>
         <span className={cn(
-          "hidden xs:inline text-[9px] font-bold",
+          "hidden xs:inline text-[9px] font-bold marker-highlight px-1.5 py-0.5 rounded",
           isTester ? "text-zinc-500" : "text-neutral-400"
         )}>
           {currentScore} / {targetScore} PTS

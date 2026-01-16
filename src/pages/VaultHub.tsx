@@ -180,7 +180,7 @@ const VaultHub = () => {
           <img className="h-6 w-6" src='/images/lock.svg' alt="Vault" />
         </div>
         <div>
-          <h1 className="text-xl font-black text-duolingo-green leading-none">
+          <h1 className="text-xl font-black text-duolingo-green leading-none font-doodle">
             The Vault
           </h1>
           <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mt-1">
@@ -209,7 +209,7 @@ const VaultHub = () => {
           Collect <span className="text-duolingo-green font-bold">3 keys</span> to unlock your surprise
         </p>
         <div className="text-right leading-none">
-          <span className="text-2xl font-black text-duolingo-green">
+          <span className="text-2xl font-black text-duolingo-green marker-highlight px-2 py-1 rounded">
             {keysCollected.length}
             <span className="text-neutral-200 mx-0.5">/</span>
             3
@@ -263,39 +263,45 @@ const VaultHub = () => {
 
           {/* Key Slots */}
           <div className="space-y-4">
-            <KeySlot
-              pathId={PATH_IDS.POP_CULTURE}
-              pathNumber={1}
-              isCollected={keysCollected.includes(PATH_IDS.POP_CULTURE)}
-              onClick={() => handlePathClick(PATH_IDS.POP_CULTURE)}
-              stats={getPathStats(PATH_IDS.POP_CULTURE)}
-              isTester={isTester}
-              currentScore={getPathScore(PATH_IDS.POP_CULTURE)}
-              completedCount={pathProgress[PATH_IDS.POP_CULTURE]?.completedIds?.length || 0}
-              completedPathsData={completedPathsData || []}
-            />
-            <KeySlot
-              pathId={PATH_IDS.RENAISSANCE}
-              pathNumber={2}
-              isCollected={keysCollected.includes(PATH_IDS.RENAISSANCE)}
-              onClick={() => handlePathClick(PATH_IDS.RENAISSANCE)}
-              stats={getPathStats(PATH_IDS.RENAISSANCE)}
-              isTester={isTester}
-              currentScore={getPathScore(PATH_IDS.RENAISSANCE)}
-              completedCount={pathProgress[PATH_IDS.RENAISSANCE]?.completedIds?.length || 0}
-              completedPathsData={completedPathsData || []}
-            />
-            <KeySlot
-              pathId={PATH_IDS.HEART}
-              pathNumber={3}
-              isCollected={keysCollected.includes(PATH_IDS.HEART)}
-              onClick={() => handlePathClick(PATH_IDS.HEART)}
-              stats={getPathStats(PATH_IDS.HEART)}
-              isTester={isTester}
-              currentScore={getPathScore(PATH_IDS.HEART)}
-              completedCount={pathProgress[PATH_IDS.HEART]?.completedIds?.length || 0}
-              completedPathsData={completedPathsData || []}
-            />
+            <div className="rotate-1">
+              <KeySlot
+                pathId={PATH_IDS.POP_CULTURE}
+                pathNumber={1}
+                isCollected={keysCollected.includes(PATH_IDS.POP_CULTURE)}
+                onClick={() => handlePathClick(PATH_IDS.POP_CULTURE)}
+                stats={getPathStats(PATH_IDS.POP_CULTURE)}
+                isTester={isTester}
+                currentScore={getPathScore(PATH_IDS.POP_CULTURE)}
+                completedCount={pathProgress[PATH_IDS.POP_CULTURE]?.completedIds?.length || 0}
+                completedPathsData={completedPathsData || []}
+              />
+            </div>
+            <div className="-rotate-1">
+              <KeySlot
+                pathId={PATH_IDS.RENAISSANCE}
+                pathNumber={2}
+                isCollected={keysCollected.includes(PATH_IDS.RENAISSANCE)}
+                onClick={() => handlePathClick(PATH_IDS.RENAISSANCE)}
+                stats={getPathStats(PATH_IDS.RENAISSANCE)}
+                isTester={isTester}
+                currentScore={getPathScore(PATH_IDS.RENAISSANCE)}
+                completedCount={pathProgress[PATH_IDS.RENAISSANCE]?.completedIds?.length || 0}
+                completedPathsData={completedPathsData || []}
+              />
+            </div>
+            <div className="rotate-1">
+              <KeySlot
+                pathId={PATH_IDS.HEART}
+                pathNumber={3}
+                isCollected={keysCollected.includes(PATH_IDS.HEART)}
+                onClick={() => handlePathClick(PATH_IDS.HEART)}
+                stats={getPathStats(PATH_IDS.HEART)}
+                isTester={isTester}
+                currentScore={getPathScore(PATH_IDS.HEART)}
+                completedCount={pathProgress[PATH_IDS.HEART]?.completedIds?.length || 0}
+                completedPathsData={completedPathsData || []}
+              />
+            </div>
           </div>
 
           {/* Vault Unlock Status */}
@@ -309,7 +315,7 @@ const VaultHub = () => {
                   <div className="mb-4 flex justify-center">
                     <Sparkles className="h-14 w-14 text-white" strokeWidth={2} fill="currentColor" />
                   </div>
-                  <h2 className="mb-2 text-3xl font-black text-white">
+                  <h2 className="mb-2 text-3xl font-black text-white font-doodle">
                     Vault Unlocked!
                   </h2>
                   <p className="mb-6 text-base text-white/90">
