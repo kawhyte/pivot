@@ -18,7 +18,6 @@ import { getThemedAchievement } from '@/lib/achievements';
 import { PerformanceSummary } from '@/components/quest/PerformanceSummary';
 import { KeyUnlockedToast } from '@/components/quest/KeyUnlockedToast';
 import { BonusCoupon } from '@/components/puzzles/BonusCoupon';
-import { AchievementStakes } from '@/components/quest/AchievementStakes';
 import { ThresholdDecisionModal } from '@/components/quest/ThresholdDecisionModal';
 import { PerfectRunBanner } from '@/components/quest/PerfectRunBanner';
 import { PerfectRunFailureModal } from '@/components/quest/PerfectRunFailureModal';
@@ -583,50 +582,93 @@ const QuestPage = () => {
         ? 'bg-zinc-950 tester-mode-quest'
         : 'bg-gradient-to-br from-festive-cream via-festive-peach/20 to-festive-cream'
     }`}>
-      {/* Fixed Header - Slim Progress Bar */}
-      <header className="fixed top-0 left-0 right-0 h-14 bg-zinc-900 z-50">
-        <div className="h-full flex items-center justify-between px-4 gap-4">
-          {/* Back Button */}
-          <Button
-            onClick={handleBackToVault}
-            variant="secondary"
-            size="sm"
-            className={cn(
-              "flex items-center gap-2 text-sm bg-neutral-200 text-neutral-900",
-              "hover:bg-neutral-300 px-4 py-2 flex-shrink-0 rounded-xl"
-            )}
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">Back</span>
-          </Button>
+      <header className={cn(
+  "fixed top-0 left-0 right-0 z-50 border-b backdrop-blur-md h-16 transition-colors duration-300",
+  isTester 
+    ? "bg-zinc-950/90 border-zinc-800" 
+    : "bg-white/90 border-neutral-100"
+)}>
+  <div className="mx-auto flex h-full max-w-3xl items-center justify-between px-4 sm:px-6 gap-4">
+    
+    {/* Left: Mission Exit & Identity */}
+    <div className="flex items-center gap-3">
+      <Button
+        onClick={handleBackToVault}
+        variant="ghost"
+        size="sm"
+        className={cn(
+          "group h-10 gap-2 rounded-2xl px-3 font-bold transition-all active:scale-95",
+          isTester 
+            ? "text-zinc-400 hover:bg-zinc-800 hover:text-cyan-400" 
+            : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
+        )}
+      >
+        <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-0.5" strokeWidth={2.5} />
+        <span className="hidden md:inline text-base">Exit Mission</span>
+      </Button>
+      
+      <div className={cn("h-6 w-px hidden sm:block", isTester ? "bg-zinc-800" : "bg-neutral-200")} />
+      
+      <div className="hidden sm:flex flex-col leading-none">
+        <span className={cn(
+          "text-[12px] font-black uppercase tracking-[0.3em]",
+          isTester ? "text-zinc-600" : "text-neutral-400"
+        )}>
+          Path
+        </span>
+        <span className={cn(
+          "text-sm font-black uppercase tracking-wide",
+          isTester ? "text-zinc-300" : "text-neutral-800"
+        )}>
+          {pathMeta.name}
+        </span>
+      </div>
+    </div>
 
-          {/* Progress Bar */}
-          <div className="flex-1 mx-4">
-            <div className="duo-progress-bar">
-              <motion.div
-                className="duo-progress-fill"
-                initial={{ width: 0 }}
-                animate={{ width: `${Math.min((currentScore / targetScore) * 100, 100)}%` }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-              />
-              <div className="duo-progress-streak">
-                {/* Mobile: Percentage only */}
-                <span className="sm:hidden">{scoreProgress}%</span>
-                {/* Desktop: Percentage + Points */}
-                <span className="hidden sm:inline">{scoreProgress}% • {currentScore} / {targetScore} PTS</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Side Container - Score & Achievement Stakes */}
-          <div className="flex items-center gap-4 flex-shrink-0">
-            <AchievementStakes
-              pathId={pathId}
-              completionPercentage={completionPercentage}
-            />
-          </div>
-        </div>
-      </header>
+    {/* Center: Tactical Progress */}
+    <div className="flex flex-1 flex-col items-center max-w-[180px] sm:max-w-xs">
+      <div className="mb-1.5 flex w-full items-end justify-between px-1">
+        <span className={cn(
+          "text-[10px] font-black uppercase tracking-widest",
+          isTester ? "text-cyan-400" : "text-duolingo-green"
+        )}>
+          {scoreProgress}%
+        </span>
+        <span className={cn(
+          "hidden xs:inline text-[9px] font-bold",
+          isTester ? "text-zinc-500" : "text-neutral-400"
+        )}>
+          {currentScore} / {targetScore} PTS
+        </span>
+      </div>
+      
+      {/* Refined Progress Bar */}
+      <Progress
+        value={Math.min((currentScore / targetScore) * 100, 100)}
+        className={cn(
+          "h-3.5 rounded-full p-0.5 border transition-all",
+          isTester ? "bg-zinc-900 border-zinc-800" : "bg-neutral-100 border-neutral-200/50 shadow-inner"
+        )}
+        indicatorClassName={cn(
+          "h-full rounded-full transition-all duration-700",
+          isTester ? "bg-cyan-500" : "bg-duolingo-green"
+        )}
+        indicatorStyle={{
+          transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+          boxShadow: scoreProgress >= 93
+            ? (isTester ? '0 0 12px rgba(6,182,212,0.4)' : '0 0 12px rgba(88,204,2,0.4)')
+            : 'none'
+        }}
+      />
+    </div>
+ 
+    {/* Right: Achievement Stakes */}
+    <div className="flex items-center min-w-fit">
+      <img src='/images/smile-yellow.svg' alt="Achievement" className="h-8 w-8" />
+    </div>
+    
+  </div>
+</header>
 
       {/* Spacer for fixed header */}
       <div className="h-14" />
