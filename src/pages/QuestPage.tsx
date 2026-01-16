@@ -629,7 +629,7 @@ const QuestPage = () => {
     <div className="flex flex-1 flex-col items-center max-w-[180px] sm:max-w-xs">
       <div className="mb-1.5 flex w-full items-end justify-between px-1">
         <span className={cn(
-          "text-[10px] font-black uppercase tracking-widest",
+          "text-[10px] font-black uppercase tracking-widest marker-highlight",
           isTester ? "text-cyan-400" : "text-duolingo-green"
         )}>
           {scoreProgress}%
@@ -809,6 +809,7 @@ const QuestPage = () => {
                     }
                   }}
                   variant="doodle"
+                  size="lg"
                   className={cn(
                     "w-full",
                     isTester && 'bg-cyan-600 hover:bg-cyan-500'
@@ -841,18 +842,16 @@ const QuestPage = () => {
               exit={{ opacity: 0, y: -20 }}
               className="mx-auto mt-6 w-full max-w-lg"
             >
-              <Card
-                variant="doodle"
+              <div
                 className={cn(
+                  "doodle-sticker p-4 text-center font-bold",
                   feedback.type === 'success'
                     ? 'bg-success-bg'
                     : 'bg-red-50'
                 )}
               >
-                <CardContent className="p-4 text-center font-bold text-neutral-900">
-                  {feedback.message}
-                </CardContent>
-              </Card>
+                {feedback.message}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
