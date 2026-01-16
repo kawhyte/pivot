@@ -134,11 +134,8 @@ const VaultHub = () => {
       {/* Floating Help Button - Top Right */}
       <Button
         onClick={() => setShowHowToPlay(true)}
-        className={cn(
-          "fixed top-6 right-6 z-40 p-4 rounded-2xl",
-          "bg-duolingo-green text-white hover:bg-duolingo-green/90",
-          "shadow-lg transition-all duration-200"
-        )}
+        variant="doodle"
+        className="fixed top-6 right-6 z-40 bg-duolingo-green text-white"
         aria-label="How to Play"
       >
         <HelpCircle className="h-6 w-6" strokeWidth={2.5} />
@@ -191,13 +188,15 @@ const VaultHub = () => {
 
       {/* Agent Profile Pill - Option 1 (The Profile Pill) */}
       {agentName && (
-        <div className="doodle-sticker inline-flex items-center gap-2 pl-1 pr-3 py-1">
-          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-duolingo-green font-black text-[10px] border border-duolingo-green/20">
-            {agentName[0]?.toUpperCase()}
+        <div className="doodle-sticker bg-success-bg px-4 py-2 inline-block">
+          <div className="inline-flex items-center gap-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-duolingo-green font-black text-[10px] border border-duolingo-green/20">
+              {agentName[0]?.toUpperCase()}
+            </div>
+            <span className="text-xs font-bold text-duolingo-green-dark truncate max-w-[80px]">
+              {agentName}
+            </span>
           </div>
-          <span className="text-xs font-bold text-duolingo-green-dark truncate max-w-[80px]">
-            {agentName}
-          </span>
         </div>
       )}
     </div>
@@ -338,14 +337,25 @@ const VaultHub = () => {
       
       {/* Action Buttons */}
       <div className="flex items-center justify-center gap-3 w-full">
-       <Button
-  onClick={handleShareProgress}
-  variant="doodle" 
-  size="sm"
-  className="px-6 py-2"
->
-  {linkCopied ? 'Copied!' : 'Share Link'}
-</Button>
+        <Button
+          onClick={handleShareProgress}
+          disabled={!userId}
+          variant="doodle"
+          size="sm"
+          className="flex-1 gap-2"
+        >
+          {linkCopied ? (
+            <>
+              <Check className="h-4 w-4" strokeWidth={3} />
+              <span>Copied!</span>
+            </>
+          ) : (
+            <>
+              <Share2 className="h-4 w-4" strokeWidth={2.5} />
+              <span>Share Link</span>
+            </>
+          )}
+        </Button>
 
         <Button
           onClick={handleLogout}
