@@ -1,18 +1,28 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { KeyRound, Sparkles, HelpCircle, Share2, Check, LogOut } from 'lucide-react';
+import { toast } from 'sonner';
 import { useQuestStore } from '@/store/useQuestStore';
 import { PATH_IDS } from '@/lib/paths';
 import { KeySlot } from '@/components/KeySlot';
 import { HowToPlayDialog } from '@/components/HowToPlayDialog';
 import { WelcomeModal } from '@/components/WelcomeModal';
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { Toast } from '@/components/ui/Toast';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { DebugPanel } from '@/components/debug/DebugPanel';
+import { cn } from '@/lib/utils';
 
 const VaultHub = () => {
   const navigate = useNavigate();
@@ -21,8 +31,6 @@ const VaultHub = () => {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
-  const [showShareToast, setShowShareToast] = useState(false);
-  const [shareUrl, setShareUrl] = useState('');
   const [hasSeenWelcome, setHasSeenWelcome] = useState(
     () => localStorage.getItem('birthday-quest-seen-welcome') === 'true'
   );
@@ -105,8 +113,10 @@ const VaultHub = () => {
     } catch (error) {
       console.error('Failed to copy link:', error);
       // Fallback: show toast with URL
-      setShareUrl(url);
-      setShowShareToast(true);
+      toast.info('Copy this link to continue on another device', {
+        description: url,
+        duration: 10000,
+      });
     }
   };
 
@@ -122,13 +132,17 @@ const VaultHub = () => {
   return (
     <div className="flex min-h-screen flex-col bg-warm-cream relative">
       {/* Floating Help Button - Top Right */}
-      <button
+      <Button
         onClick={() => setShowHowToPlay(true)}
-        className="fixed top-6 right-6 z-40 duo-button bg-duolingo-green text-white p-4"
+        className={cn(
+          "fixed top-6 right-6 z-40 p-4 rounded-2xl",
+          "bg-duolingo-green text-white hover:bg-duolingo-green/90",
+          "shadow-lg transition-all duration-200"
+        )}
         aria-label="How to Play"
       >
         <HelpCircle className="h-6 w-6" strokeWidth={2.5} />
-      </button>
+      </Button>
 
       {/* How to Play Dialog */}
       <HowToPlayDialog open={showHowToPlay} onOpenChange={setShowHowToPlay} />
@@ -141,26 +155,20 @@ const VaultHub = () => {
       />
 
       {/* Logout Confirmation Dialog */}
-      <ConfirmDialog
-        open={showLogoutConfirm}
-        onOpenChange={setShowLogoutConfirm}
-        title="Logout?"
-        description="Are you sure you want to logout? Your progress will be saved."
-        confirmText="Logout"
-        cancelText="Cancel"
-        onConfirm={confirmLogout}
-        variant="default"
-      />
-
-      {/* Share URL Toast (fallback if clipboard fails) */}
-      <Toast
-        open={showShareToast}
-        onOpenChange={setShowShareToast}
-        title="Copy this link to continue on another device"
-        description={shareUrl}
-        variant="info"
-        duration={10000}
-      />
+      <AlertDialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Logout?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to logout? Your progress will be saved.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmLogout}>Logout</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Header */}
       <header className="border-b-2 border-neutral-200 bg-white">
@@ -177,14 +185,19 @@ const VaultHub = () => {
             </p>
             {agentName && (
               <div className="mt-4">
-                <div className="duo-card bg-success-bg border-duolingo-green px-4 py-2.5 inline-block">
-                  <p className="text-sm text-neutral-700">
-                    Logged in as
-                  </p>
-                  <p className="text-lg text-duolingo-green font-bold">
-                    {agentName}
-                  </p>
-                </div>
+                <Card className={cn(
+                  "bg-success-bg border-duolingo-green inline-block",
+                  "border-2 rounded-2xl shadow-sm"
+                )}>
+                  <CardContent className="px-4 py-2.5">
+                    <p className="text-sm text-neutral-700">
+                      Logged in as
+                    </p>
+                    <p className="text-lg text-duolingo-green font-bold">
+                      {agentName}
+                    </p>
+                  </CardContent>
+                </Card>
               </div>
             )}
           </div>
@@ -196,20 +209,22 @@ const VaultHub = () => {
         <div className="mx-auto w-full max-w-md">
           {/* Progress Indicator */}
           <div className="mb-8">
-            <div className="duo-card bg-white p-6">
-              <div className="mb-3 flex items-center justify-between">
-                <span className="text-base font-semibold text-duolingo-green">
-                  Your Progress
-                </span>
-                <span className="text-3xl font-black text-duolingo-green">
-                  {keysCollected.length} / 3
-                </span>
-              </div>
-              <Progress
-                value={(keysCollected.length / 3) * 100}
-                className="h-4 bg-neutral-200"
-              />
-            </div>
+            <Card className="bg-white border-2 rounded-2xl shadow-sm">
+              <CardContent className="p-6">
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="text-base font-semibold text-duolingo-green">
+                    Your Progress
+                  </span>
+                  <span className="text-3xl font-black text-duolingo-green">
+                    {keysCollected.length} / 3
+                  </span>
+                </div>
+                <Progress
+                  value={(keysCollected.length / 3) * 100}
+                  className="h-4 bg-neutral-200"
+                />
+              </CardContent>
+            </Card>
           </div>
 
           {/* Key Slots */}
@@ -252,23 +267,31 @@ const VaultHub = () => {
           {/* Vault Unlock Status */}
           {isVaultUnlocked && (
             <div className="mt-8">
-              <div className="duo-card bg-duolingo-green p-8 text-center border-[3px] border-duolingo-green-dark">
-                <div className="mb-4 flex justify-center">
-                  <Sparkles className="h-14 w-14 text-white" strokeWidth={2} fill="currentColor" />
-                </div>
-                <h2 className="mb-2 text-3xl font-black text-white">
-                  Vault Unlocked!
-                </h2>
-                <p className="mb-6 text-base text-white/90">
-                  You've collected all 3 keys. Ready to see your surprise?
-                </p>
-                <button
-                  onClick={() => navigate('/vault')}
-                  className="duo-button bg-white text-duolingo-green px-8 py-4 text-xl font-black hover:bg-neutral-100"
-                >
-                  Open Vault
-                </button>
-              </div>
+              <Card className={cn(
+                "bg-duolingo-green border-[3px] border-duolingo-green-dark",
+                "rounded-2xl shadow-lg"
+              )}>
+                <CardContent className="p-8 text-center">
+                  <div className="mb-4 flex justify-center">
+                    <Sparkles className="h-14 w-14 text-white" strokeWidth={2} fill="currentColor" />
+                  </div>
+                  <h2 className="mb-2 text-3xl font-black text-white">
+                    Vault Unlocked!
+                  </h2>
+                  <p className="mb-6 text-base text-white/90">
+                    You've collected all 3 keys. Ready to see your surprise?
+                  </p>
+                  <Button
+                    onClick={() => navigate('/vault')}
+                    className={cn(
+                      "bg-white text-duolingo-green px-8 py-4 text-xl font-black",
+                      "hover:bg-neutral-100 rounded-2xl shadow-md"
+                    )}
+                  >
+                    Open Vault
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
           )}
         </div>
@@ -287,7 +310,10 @@ const VaultHub = () => {
                 disabled={!userId}
                 variant="outline"
                 size="sm"
-                className="gap-1 duo-button bg-neutral-100 border-neutral-300 text-xs font-medium text-neutral-900 hover:bg-neutral-200 px-3 py-2"
+                className={cn(
+                  "gap-1 bg-neutral-100 border-neutral-300 text-xs font-medium",
+                  "text-neutral-900 hover:bg-neutral-200 px-3 py-2 rounded-xl"
+                )}
               >
                 {linkCopied ? (
                   <>
@@ -305,7 +331,10 @@ const VaultHub = () => {
                 onClick={() => setShowHowToPlay(true)}
                 variant="outline"
                 size="sm"
-                className="gap-1 duo-button bg-neutral-100 border-neutral-300 text-xs font-medium text-neutral-900 hover:bg-neutral-200 px-3 py-2"
+                className={cn(
+                  "gap-1 bg-neutral-100 border-neutral-300 text-xs font-medium",
+                  "text-neutral-900 hover:bg-neutral-200 px-3 py-2 rounded-xl"
+                )}
               >
                 <HelpCircle className="h-3.5 w-3.5" />
                 Help
@@ -314,7 +343,10 @@ const VaultHub = () => {
                 onClick={handleLogout}
                 variant="outline"
                 size="sm"
-                className="gap-1 duo-button bg-red-50 border-error-red text-xs font-medium text-error-red hover:bg-red-100 px-3 py-2"
+                className={cn(
+                  "gap-1 bg-red-50 border-error-red text-xs font-medium",
+                  "text-error-red hover:bg-red-100 px-3 py-2 rounded-xl"
+                )}
               >
                 <LogOut className="h-3.5 w-3.5" />
                 Logout

@@ -5,6 +5,7 @@ import { useQuestStore } from '@/store/useQuestStore';
 import { QuestCountdown } from '@/components/QuestCountdown';
 import { GiftBoxLogin } from '@/components/GiftBoxLogin';
 import { MISSION_START_DATE } from '@/lib/mission';
+import { cn } from '@/lib/utils';
 
 const LandingPage = () => {
   const navigate = useNavigate();
