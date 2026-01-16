@@ -344,25 +344,14 @@ const VaultHub = () => {
       
       {/* Action Buttons */}
       <div className="flex items-center justify-center gap-3 w-full">
-        <Button
-          onClick={handleShareProgress}
-          disabled={!userId}
-          variant="doodle"
-          size="sm"
-          className="flex-1 gap-2"
-        >
-          {linkCopied ? (
-            <>
-              <Check className="h-4 w-4 text-duolingo-green" strokeWidth={3} />
-              <span className="text-duolingo-green">Copied!</span>
-            </>
-          ) : (
-            <>
-              <Share2 className="h-4 w-4" strokeWidth={2.5} />
-              <span>Share Link</span>
-            </>
-          )}
-        </Button>
+       <Button
+  onClick={handleShareProgress}
+  variant="doodle" 
+  size="sm"
+  className="px-6 py-2"
+>
+  {linkCopied ? 'Copied!' : 'Share Link'}
+</Button>
 
         <Button
           onClick={handleLogout}
