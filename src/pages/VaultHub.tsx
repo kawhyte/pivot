@@ -173,14 +173,14 @@ const VaultHub = () => {
     {/* Top Row: Mission Branding & Identity */}
     <div className="flex items-center justify-between mb-6">
       <div className="flex items-center gap-3">
-        <div className="bg-neutral-50 p-2 rounded-xl border border-neutral-100 shadow-sm">
-          <img className="h-6 w-6" src='/images/lock.svg' alt="Vault" />
+        <div className="bg-neutral-50 p-2   shadow-sm">
+          <img className="h-16 w-16" src='/images/lock.svg' alt="Vault" />
         </div>
         <div>
-          <h1 className="font-doodle text-4xl text-black leading-none">
+          <h1 className="font-doodle text-5xl text-black leading-none">
             The Vault
           </h1>
-          <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mt-1">
+          <p className="text-[13px] font-bold text-neutral-400 uppercase tracking-widest mt-1">
             Mission: Birthday
           </p>
         </div>
@@ -204,7 +204,7 @@ const VaultHub = () => {
     {/* Bottom Row: Goal & Integrated Progress */}
     <div className="space-y-3">
       <div className="flex items-end justify-between">
-        <p className="text-sm font-medium text-neutral-600 max-w-[200px] leading-tight">
+        <p className="text-lg font-medium text-neutral-600 max-w-[200px] leading-tight">
           Collect <span className="text-duolingo-green font-bold">3 keys</span> to unlock your surprise
         </p>
         <div className="text-right leading-none">
