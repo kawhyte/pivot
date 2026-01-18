@@ -349,18 +349,23 @@ export const useQuestStore = create<QuestState>()(
           if (progress.isPerfectRunActive) {
             get().incrementPerfectRunStreak(pathId);
 
-            // Check if 100% completion reached
-            const totalPuzzles = getTotalPuzzles(pathId);
-            const newCompletedCount = get().pathProgress[pathId].completedIds.length;
+            // Check if ALL RESERVED PUZZLES are completed (perfect run success condition)
+            const pathConfig = getPathPuzzles(pathId);
+            if (!pathConfig) return;
 
-            if (newCompletedCount === totalPuzzles) {
+            const reservedPuzzles = pathConfig.puzzles.filter((p) => p.isReserved === true);
+            const reservedPuzzleIds = reservedPuzzles.map((p) => p.id);
+            const newCompletedIds = get().pathProgress[pathId].completedIds;
+            const allReservedCompleted = reservedPuzzleIds.every((id) => newCompletedIds.includes(id));
+
+            if (allReservedCompleted) {
               // PERFECT RUN SUCCESS! 🎉
               // Calculate final stats and add key
               const finalProgress = get().pathProgress[pathId];
               const score = get().getPathScore(pathId);
 
               // Calculate detailed stats
-              const totalQuestions = totalPuzzles;
+              const totalQuestions = getTotalPuzzles(pathId);
               const firstTryCount = Object.values(finalProgress.puzzleAttempts)
                 .filter((a) => a.isFirstTry && a.isCompleted).length;
               const firstTryRate = Math.round((firstTryCount / totalQuestions) * 100);
@@ -523,9 +528,17 @@ export const useQuestStore = create<QuestState>()(
         const pathConfig = getPathPuzzles(pathId);
         if (!pathConfig) return null;
 
+        // RESERVED FINAL STREAK LOGIC:
+        // - If perfect run is active → show ONLY reserved puzzles
+        // - If perfect run is NOT active → show ONLY non-reserved puzzles
+        const targetReservedState = progress.isPerfectRunActive;
+
         // GAUNTLET MODE: First try to get fresh puzzles (not completed, not skipped)
         let freshPuzzles = pathConfig.puzzles.filter(
-          (p) => !progress.completedIds.includes(p.id) && !progress.skippedIds.includes(p.id)
+          (p) =>
+            !progress.completedIds.includes(p.id) &&
+            !progress.skippedIds.includes(p.id) &&
+            (progress.isPerfectRunActive ? p.isReserved === true : !p.isReserved)
         );
 
         // Exclude the current puzzle ID if provided
@@ -539,9 +552,12 @@ export const useQuestStore = create<QuestState>()(
           return freshPuzzles[randomIndex].id;
         }
 
-        // If no fresh puzzles, allow retrying skipped puzzles
+        // If no fresh puzzles, allow retrying skipped puzzles (same filtering rules)
         let skippedPuzzles = pathConfig.puzzles.filter(
-          (p) => !progress.completedIds.includes(p.id) && progress.skippedIds.includes(p.id)
+          (p) =>
+            !progress.completedIds.includes(p.id) &&
+            progress.skippedIds.includes(p.id) &&
+            (progress.isPerfectRunActive ? p.isReserved === true : !p.isReserved)
         );
 
         // Exclude the current puzzle ID if provided

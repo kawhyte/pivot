@@ -6,15 +6,45 @@ import { renaissancePath } from './renaissance';
 import { heartPath } from './heart';
 
 /**
- * Point-based unlock thresholds (MASTERY THRESHOLD: 91% of max available)
+ * Get puzzle configuration for a specific path
+ */
+export const getPathPuzzles = (pathId: number): PathConfig | null => {
+  switch (pathId) {
+    case PATH_IDS.POP_CULTURE:
+      return popCulturePath;
+    case PATH_IDS.RENAISSANCE:
+      return renaissancePath;
+    case PATH_IDS.HEART:
+      return heartPath;
+    default:
+      return null;
+  }
+};
+
+/**
+ * Calculate max points for NON-RESERVED puzzles only
+ * Reserved puzzles are excluded from the 91% threshold calculation
+ */
+export const getMaxNormalPoints = (pathId: PathId): number => {
+  const pathConfig = getPathPuzzles(pathId);
+  if (!pathConfig) return 0;
+
+  return pathConfig.puzzles
+    .filter((puzzle) => !puzzle.isReserved)
+    .reduce((total, puzzle) => total + (puzzle.points || 0), 0);
+};
+
+/**
+ * Point-based unlock thresholds (MASTERY THRESHOLD: 91% of max normal points)
  * These are minimum point targets to unlock keys
  * Easy=1pt, Medium=2pts, Hard=3pts per puzzle
  * GAUNTLET MODE: 91% threshold for key unlock (with optional 100% Perfect Run)
+ * NOTE: Reserved puzzles (for final streak) are EXCLUDED from this calculation
  */
 export const TARGET_SCORES: Record<PathId, number> = {
-  [PATH_IDS.POP_CULTURE]: 627,  // 91% of 689
-  [PATH_IDS.RENAISSANCE]: 532,  // 91% of 585
-  [PATH_IDS.HEART]: 378,        // 91% of 415
+  [PATH_IDS.POP_CULTURE]: Math.ceil(getMaxNormalPoints(PATH_IDS.POP_CULTURE) * 0.91),
+  [PATH_IDS.RENAISSANCE]: Math.ceil(getMaxNormalPoints(PATH_IDS.RENAISSANCE) * 0.91),
+  [PATH_IDS.HEART]: Math.ceil(getMaxNormalPoints(PATH_IDS.HEART) * 0.91),
 } as const;
 
 /**
@@ -70,22 +100,6 @@ export const COUPONS: Record<PathId, Coupon[]> = {
     },
   ],
 } as const;
-
-/**
- * Get puzzle configuration for a specific path
- */
-export const getPathPuzzles = (pathId: number): PathConfig | null => {
-  switch (pathId) {
-    case PATH_IDS.POP_CULTURE:
-      return popCulturePath;
-    case PATH_IDS.RENAISSANCE:
-      return renaissancePath;
-    case PATH_IDS.HEART:
-      return heartPath;
-    default:
-      return null;
-  }
-};
 
 /**
  * Get a specific puzzle by path and puzzle index

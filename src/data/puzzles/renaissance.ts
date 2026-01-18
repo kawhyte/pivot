@@ -29,7 +29,8 @@ export const renaissancePath: PathConfig = {
       placeholder: 'Enter 3 letters...',
       successMessage: 'Bingo! LAX is one of the busiest in the world. 🌴',
       points: 10,
-    difficulty: 'easy',
+      difficulty: 'easy',
+      isReserved: true,
     },
     {
       id: 'ren-8',
@@ -64,7 +65,8 @@ export const renaissancePath: PathConfig = {
       correctAnswer: 1,
       successMessage: 'Yes! Sangster International (MBJ) is the gateway to the sun! 🏖️',
       points: 10,
-    difficulty: 'easy',
+      difficulty: 'easy',
+      isReserved: true,
     },
     {
       id: 'ren-11',
@@ -121,7 +123,8 @@ export const renaissancePath: PathConfig = {
       placeholder: 'Enter city name...',
       successMessage: 'Correct! Charles de Gaulle Airport in France. 🇫🇷',
       points: 15,
-    difficulty: 'easy',
+      difficulty: 'easy',
+      isReserved: true,
     },
     {
       id: 'ren-16',

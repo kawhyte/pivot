@@ -280,7 +280,8 @@ export const popCulturePath: PathConfig = {
       placeholder: 'The man with hair as bright as the sun...',
       successMessage: 'Gunther Central Perk! ☀️',
       points: 15,
-    difficulty: 'easy',
+      difficulty: 'easy',
+      isReserved: true,
     },
     {
       id: 'pop-29',
@@ -292,7 +293,7 @@ export const popCulturePath: PathConfig = {
       acceptableAnswers: ['six', '6'],
       successMessage: 'Only 6? Must be a slow morning! ☕',
       points: 25,
-    difficulty: 'medium',
+      difficulty: 'medium',
     },
     {
       id: 'pop-30',
@@ -313,19 +314,20 @@ export const popCulturePath: PathConfig = {
       placeholder: 'He sings all the town news...',
       successMessage: 'The soundtrack of Stars Hollow! 🎸',
       points: 20,
-    difficulty: 'medium',
+      difficulty: 'medium',
     },
     {
       id: 'pop-32',
       type: 'image-reveal',
       imageUrl: '/puzzles/pop-culture/yellow-umbrella.jpg',
       imageAlt: 'A yellow umbrella',
-      question: 'While famous elsewhere, Lorelai famously said: "I have a ___ umbrella. It’s like a giant sunflower."',
+      question: 'While famous elsewhere, Lorelai famously said: "I have a ___ umbrella. It\'s like a giant sunflower."',
       correctAnswer: 'Yellow',
       acceptableAnswers: ['yellow'],
       successMessage: 'Bright like a sunflower! 🌻',
       points: 20,
-    difficulty: 'medium',
+      difficulty: 'medium',
+      isReserved: true,
     },
     {
       id: 'pop-33',
@@ -358,7 +360,8 @@ export const popCulturePath: PathConfig = {
       acceptableAnswers: ['a vulture', 'vulture'],
       successMessage: 'It really did look like a giant bird of prey! 🎓',
       points: 35,
-    difficulty: 'hard',
+      difficulty: 'hard',
+      isReserved: true,
     }
   ],
 };

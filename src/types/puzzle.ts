@@ -16,6 +16,7 @@ interface BasePuzzle {
   successMessage: string;
   points?: number;
   difficulty: 'easy' | 'medium' | 'hard';
+  isReserved?: boolean; // Reserved for perfect run final streak (91%+ threshold)
 }
 
 /**

@@ -22,10 +22,11 @@ export const heartPath: PathConfig = {
       correctAnswer: 'TheWhyteHouse',
       acceptableAnswers: ['thewhytehouse', 'the whyte house', 'whyte house'],
       placeholder: 'Our digital home name...',
-      hint: 'It’s a play on our last name and a famous building!',
+      hint: 'It\'s a play on our last name and a famous building!',
       successMessage: 'Correct! There is no place like #TheWhyteHouse with you. 🏠💻',
       points: 10,
-    difficulty: 'easy',
+      difficulty: 'easy',
+      isReserved: true,
     },
     {
       id: 'heart-7',
@@ -36,7 +37,8 @@ export const heartPath: PathConfig = {
       hint: 'Think about the "Jumpman" or the "Swoosh."',
       successMessage: 'You got it! We really do have a "sole-mate" connection! 👟❤️',
       points: 10,
-    difficulty: 'easy',
+      difficulty: 'easy',
+      isReserved: true,
     },
     {
       id: 'heart-8',
@@ -83,9 +85,10 @@ export const heartPath: PathConfig = {
       question: 'This was our very first trip together. What city were we in?',
       correctAnswer: 'Miami', // Replace with your first trip city
       acceptableAnswers: ['miami'],
-      successMessage: 'I’d travel anywhere in the world as long as it’s with you. ✈️🌍',
+      successMessage: 'I\'d travel anywhere in the world as long as it\'s with you. ✈️🌍',
       points: 25,
-    difficulty: 'medium',
+      difficulty: 'medium',
+      isReserved: true,
     },
     {
       id: 'heart-12',
