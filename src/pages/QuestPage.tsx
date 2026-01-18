@@ -618,13 +618,13 @@ const QuestPage = () => {
       
       <div className="hidden sm:flex flex-col leading-none">
         <span className={cn(
-          "text-[12px] font-black uppercase tracking-[0.3em]",
+          "text-[16px] font-black uppercase tracking-[0.3em]",
           isTester ? "text-zinc-600" : "text-neutral-400"
         )}>
           Path
         </span>
         <span className={cn(
-          "text-sm font-black uppercase tracking-wide font-doodle",
+          "text-lg font-black uppercase tracking-wide font-doodle",
           isTester ? "text-zinc-300" : "text-neutral-800"
         )}>
           {pathMeta.name}
@@ -636,13 +636,13 @@ const QuestPage = () => {
     <div className="flex flex-1 flex-col items-center max-w-[180px] sm:max-w-xs">
       <div className="mb-1.5 flex w-full items-end justify-between px-1">
         <span className={cn(
-          "text-[10px] font-black uppercase tracking-widest marker-highlight",
+          "text-[16px] font-black uppercase tracking-widest marker-highlight",
           isTester ? "text-cyan-400" : "text-duolingo-green"
         )}>
           {scoreProgress}%
         </span>
         <span className={cn(
-          "hidden xs:inline text-[9px] font-bold marker-highlight px-1.5 py-0.5 rounded",
+          "hidden xs:inline text-[16px] font-bold marker-highlight px-1.5 py-0.5 rounded",
           isTester ? "text-zinc-500" : "text-neutral-400"
         )}>
           {currentScore} / {targetScore} PTS
@@ -780,13 +780,13 @@ const QuestPage = () => {
                   onClick={handleSkip}
                   variant="ghost"
                   className={cn(
-                    "w-full text-center text-sm transition-colors",
+                    "w-full text-center text-base transition-colors",
                     isTester
                       ? 'text-zinc-400 hover:text-cyan-400 hover:bg-transparent'
                       : 'text-zinc-500 hover:text-zinc-700 hover:bg-transparent'
                   )}
                 >
-                  Skip for Now →
+                  Skip Question for Now →
                 </Button>
               </motion.div>
             )}

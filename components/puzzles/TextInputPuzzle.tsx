@@ -86,7 +86,7 @@ export const TextInputPuzzle = ({
             onKeyPress={handleKeyPress}
             placeholder={puzzle.placeholder || 'Type your answer...'}
             disabled={isSubmitting}
-            className="hand-drawn h-14 border-3 border-festive-brown/20 bg-white px-6 text-base text-festive-brown placeholder:text-festive-brown/40 focus:border-festive-coral focus:ring-4 focus:ring-festive-coral/20"
+            className="hand-drawn h-14 border-3 border-festive-brown/20 bg-white px-6 text-lg text-festive-brown placeholder:text-festive-brown/40 focus:border-festive-coral focus:ring-4 focus:ring-festive-coral/20"
             autoFocus
           />
         </motion.div>

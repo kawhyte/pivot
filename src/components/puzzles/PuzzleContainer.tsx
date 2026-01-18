@@ -55,17 +55,17 @@ export const PuzzleContainer = ({
       >
         {/* Badge Row */}
         <div className="flex items-center gap-3">
-          <span className={`duo-badge flex-shrink-0 ${getDifficultyStyles()}`}>
-            <Zap className="h-3 w-3" />
-            {getDifficultyLabel()}
-          </span>
           <span className="mission-label">
-            Mission Detail
+            Diffuculty:
+          </span>
+          <span className={`duo-badge bg-yellow-200 rounded-2xl p-3 flex-shrink-0 ${getDifficultyStyles()}`}>
+            {/* <Zap className="h-3 w-3" /> */}
+            {getDifficultyLabel()}
           </span>
         </div>
 
         {/* Question Text */}
-        <h2 className="text-3xl font-doodle font-bold leading-tight text-neutral-900">
+        <h2 className="text-4xl font-doodle font-bold  leading-normal tracking-wide text-neutral-900">
           {question}
         </h2>
 

@@ -128,7 +128,7 @@ export const ImageRevealPuzzle = ({
             onKeyDown={handleKeyPress}
             placeholder="Type your answer..."
             disabled={isSubmitting}
-            className="duo-input h-16 w-full text-base"
+            className="duo-input h-16 w-full text-lg"
           />
         </div>
 

@@ -120,21 +120,21 @@ export const KeySlot = ({
 
       {/* Path Info */}
       <div className="text-center relative z-10">
-        <h3 className="mb-1 text-xl font-bold text-neutral-900">
+        <h3 className="mb-1 text-2xl font-bold text-neutral-900">
           {path.name}
         </h3>
-        <p className="text-sm text-neutral-700">{path.subtitle}</p>
+        <p className="text-lg text-neutral-700">{path.subtitle}</p>
       </div>
 
       {/* Stats for Collected Paths */}
       {isCollected && stats ? (
         <div className="mt-4 space-y-3 relative z-10">
           <div className="flex items-center justify-center gap-1.5">
-            <p className="text-base font-semibold text-neutral-900">
+            <p className="text-lg font-semibold text-neutral-900">
               {stats.themedTitle}
             </p>
           </div>
-          <div className="flex items-center justify-center gap-4 text-sm">
+          <div className="flex items-center justify-center gap-4 text-lg">
             <div className="flex items-center gap-1 text-neutral-700">
               <Clock className="h-3.5 w-3.5" />
               <span className="font-medium">{formatTime(stats.completionTime)}</span>
@@ -148,7 +148,7 @@ export const KeySlot = ({
           {/* GOD MODE: Show re-test button for collected paths */}
           {isTester && (
             <div className="flex justify-center mt-2">
-              <div className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-cyan-500 text-white">
+              <div className="inline-flex items-center gap-2 px-4 py-2 text-base font-semibold rounded-lg bg-cyan-500 text-white">
                 <span>Re-Test Quest →</span>
               </div>
             </div>
@@ -158,8 +158,8 @@ export const KeySlot = ({
         /* Progress for Started Quizzes */
         <div className="mt-4 space-y-3 relative z-10">
           <div className="flex items-center justify-between px-2">
-            <span className="text-sm font-semibold text-neutral-700">In Progress</span>
-            <span className="text-sm font-bold" style={{ color: path.colors.primary }}>
+            <span className="text-basefont-semibold text-neutral-700">In Progress</span>
+            <span className="text-base font-bold" style={{ color: path.colors.primary }}>
               {scoreProgress}%
             </span>
           </div>
@@ -172,14 +172,14 @@ export const KeySlot = ({
             }}
           />
           <div className="text-center">
-            <span className="text-xs text-neutral-600">
+            <span className="text-base text-neutral-600">
               {completedCount} / {totalPuzzles} questions completed
             </span>
           </div>
           <div className="flex justify-center">
             <Button
               className={cn(
-                "gap-2 px-4 py-2 text-sm font-semibold rounded-lg",
+                "gap-2 px-4 py-2 text-base font-semibold rounded-lg",
                 "bg-duolingo-green text-white hover:bg-duolingo-green/90",
                 "pointer-events-none"
               )}

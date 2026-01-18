@@ -16,12 +16,12 @@ export const PATH_METADATA: Record<PathId, {
 }> = {
   [PATH_IDS.POP_CULTURE]: {
     name: "Pop Culture",
-    subtitle: "TV, Movies & Fun",
+    subtitle: "TV, Sitcom & Fun",
     colors: { primary: "#6366f1", secondary: "#fbbf24" }
   },
   [PATH_IDS.RENAISSANCE]: {
     name: "Renaissance",
-    subtitle: "Knowledge & Facts",
+    subtitle: "I Love to Travel",
     colors: { primary: "#065f46", secondary: "#d4af37" }
   },
   [PATH_IDS.HEART]: {
