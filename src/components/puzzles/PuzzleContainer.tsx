@@ -2,8 +2,11 @@
 
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { HelpCircle, Zap } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
 import type { PathId } from '@/lib/paths';
+import { Badge } from '@/components/ui/badge'; // Ensure this is installed
+import { cn } from '@/lib/utils';
+import { ShowBadge } from './ShowBadge';
 
 interface PuzzleContainerProps {
   question: string;
@@ -15,6 +18,7 @@ interface PuzzleContainerProps {
   currentScore: number;
   targetScore: number;
   children: ReactNode;
+  show?: 'friends' | 'gilmore';
 }
 
 export const PuzzleContainer = ({
@@ -22,26 +26,27 @@ export const PuzzleContainer = ({
   hint,
   showHint,
   difficulty,
-  pathId,
-  currentMistakes,
-  currentScore,
-  targetScore,
   children,
+  show,
 }: PuzzleContainerProps) => {
-  const getDifficultyStyles = () => {
-    switch (difficulty) {
-      case 'easy':
-        return 'duo-badge-green';
-      case 'medium':
-        return 'duo-badge-yellow';
-      case 'hard':
-        return 'duo-badge-red';
-    }
+  
+  // Mapping difficulty to shadcn-compatible Tailwind classes
+  const difficultyConfig = {
+    easy: {
+      label: 'Easy',
+      className: 'bg-green-500 hover:bg-green-600 text-white border-none',
+    },
+    medium: {
+      label: 'Medium',
+      className: 'bg-yellow-400 hover:bg-yellow-500 text-black border-none',
+    },
+    hard: {
+      label: 'Hard',
+      className: 'bg-red-500 hover:bg-red-600 text-white border-none',
+    },
   };
 
-  const getDifficultyLabel = () => {
-    return difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
-  };
+  const currentDifficulty = difficultyConfig[difficulty];
 
   return (
     <div className="mx-auto w-full max-w-lg px-6 sm:px-0">
@@ -54,18 +59,23 @@ export const PuzzleContainer = ({
         layout
       >
         {/* Badge Row */}
-        <div className="flex items-center gap-3">
-          <span className="mission-label">
-            Diffuculty:
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className="mission-label text-3xl font-medium text-neutral-700">
+            Difficulty:
           </span>
-          <span className={`duo-badge bg-yellow-200 rounded-2xl p-3 flex-shrink-0 ${getDifficultyStyles()}`}>
-            {/* <Zap className="h-3 w-3" /> */}
-            {getDifficultyLabel()}
-          </span>
+          <Badge
+            className={cn(
+              "rounded-2xl px-4 py-1 text-sm font-bold uppercase tracking-wider shadow-sm",
+              currentDifficulty.className
+            )}
+          >
+            {currentDifficulty.label}
+          </Badge>
+          <ShowBadge show={show} />
         </div>
 
         {/* Question Text */}
-        <h2 className="text-4xl font-doodle font-bold  leading-normal tracking-wide text-neutral-900">
+        <h2 className="text-4xl font-doodle font-bold leading-normal tracking-wide text-neutral-900">
           {question}
         </h2>
 
@@ -92,7 +102,7 @@ export const PuzzleContainer = ({
           className="mt-6 overflow-hidden"
           layout
         >
-          <div className="duo-card flex gap-3 bg-blue-50 border-blue-200 p-5">
+          <div className="duo-card flex gap-3 bg-blue-50 border-blue-200 p-5 rounded-xl border">
             <HelpCircle className="h-5 w-5 flex-shrink-0 text-blue-600" />
             <div>
               <p className="text-sm font-bold text-blue-900 mb-1">Hint</p>

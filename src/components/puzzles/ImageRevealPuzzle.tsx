@@ -70,6 +70,7 @@ export const ImageRevealPuzzle = ({
       currentMistakes={currentMistakes}
       currentScore={currentScore}
       targetScore={targetScore}
+      show={puzzle.metadata?.show}
     >
       <div className="space-y-6">
         {/* SVG Rough-Edge Mask Definition */}

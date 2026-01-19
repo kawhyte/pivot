@@ -49,6 +49,7 @@ export const MultipleChoicePuzzle = ({
       currentMistakes={currentMistakes}
       currentScore={currentScore}
       targetScore={targetScore}
+      show={puzzle.metadata?.show}
     >
       <div className="space-y-4">
         {puzzle.options.map((option, index) => {

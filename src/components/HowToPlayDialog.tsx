@@ -26,7 +26,7 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                className="text-2xl font-black text-white"
+                className="text-3xl font-black text-white"
               >
                 How to Play
               </motion.h2>
@@ -46,10 +46,10 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
             <div className="flex items-start gap-3">
               <Trophy className="h-6 w-6 text-duolingo-green flex-shrink-0 mt-0.5" />
               <div>
-                <h3 className="text-lg font-bold text-neutral-900 mb-1">
+                <h3 className="text-2xl font-bold text-neutral-900 mb-1">
                   Your Mission
                 </h3>
-                <p className="text-sm leading-relaxed text-neutral-700">
+                <p className="text-lg leading-relaxed text-neutral-700">
                   Complete 3 quest paths to collect keys and unlock the vault!
                 </p>
               </div>
@@ -66,10 +66,10 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
             <div className="flex items-start gap-3">
               <Target className="h-6 w-6 text-duolingo-green flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="text-lg font-bold text-neutral-900 mb-2">
+                <h3 className="text-2xl font-bold text-neutral-900 mb-2">
                   How Scoring Works
                 </h3>
-                <div className="space-y-1.5 text-sm">
+                <div className="space-y-1.5 text-lg">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-xs">
                       1
@@ -89,7 +89,7 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
                     <span>Hard = 3 points</span>
                   </div>
                 </div>
-                <p className="text-xs text-neutral-600 mt-3">
+                <p className="text-base text-neutral-600 mt-3">
                   Reach the target score to unlock each key!
                 </p>
               </div>
@@ -106,10 +106,10 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
             <div className="flex items-start gap-3">
               <Sparkles className="h-6 w-6 text-amber-600 flex-shrink-0 mt-0.5" />
               <div>
-                <h3 className="text-lg font-bold text-neutral-900 mb-1">
+                <h3 className="text-2xl font-bold text-neutral-900 mb-1">
                   Perfect Run Bonus
                 </h3>
-                <p className="text-sm leading-relaxed text-neutral-700">
+                <p className="text-lg leading-relaxed text-neutral-700">
                   Get every question right on your first try for a special surprise!
                 </p>
               </div>
@@ -121,7 +121,7 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="text-sm text-neutral-600 space-y-1.5"
+            className="text-lg text-neutral-600 space-y-1.5"
           >
             <p className="font-bold text-neutral-800">Quick Tips:</p>
             <ul className="space-y-1 ml-4 list-disc">
@@ -139,7 +139,7 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
           >
             <button
               onClick={() => onOpenChange(false)}
-              className="w-full duo-button bg-duolingo-green text-white px-6 py-3 text-lg font-black"
+              className="w-full duo-button bg-duolingo-green text-white px-6 py-3 text-xl font-black"
             >
               Got It!
             </button>

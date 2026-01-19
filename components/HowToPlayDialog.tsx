@@ -32,7 +32,7 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                className="text-3xl font-display text-starbucks-green mb-2"
+                className="text-4xl font-display text-starbucks-green mb-2"
               >
                 🎯 How to Play
               </motion.h2>

@@ -190,11 +190,11 @@ const VaultHub = () => {
       {agentName && (
         <div className="doodle-sticker bg-success-bg px-4 py-2 inline-block">
           <div className="inline-flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-duolingo-green font-black text-[10px] border border-duolingo-green/20">
+            {/* <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-duolingo-green font-black text-[10px] border border-duolingo-green/20">
               {agentName[0]?.toUpperCase()}
-            </div>
-            <span className="text-xs font-bold text-duolingo-green-dark truncate max-w-[80px]">
-              {agentName}
+            </div> */}
+            <span className="text-base font-bold text-duolingo-green-dark truncate max-w-[80px]">
+            Hi,  {agentName}
             </span>
           </div>
         </div>

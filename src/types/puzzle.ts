@@ -17,6 +17,9 @@ interface BasePuzzle {
   points?: number;
   difficulty: 'easy' | 'medium' | 'hard';
   isReserved?: boolean; // Reserved for perfect run final streak (91%+ threshold)
+  metadata?: {
+    show?: 'friends' | 'gilmore'; // Show-specific branding for Pop Culture path
+  };
 }
 
 /**

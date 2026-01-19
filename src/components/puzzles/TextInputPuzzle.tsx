@@ -69,6 +69,7 @@ export const TextInputPuzzle = ({
       currentMistakes={currentMistakes}
       currentScore={currentScore}
       targetScore={targetScore}
+      show={puzzle.metadata?.show}
     >
       <div className="space-y-8">
         {/* Text Input - Notepad Line Style */}
