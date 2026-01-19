@@ -592,3 +592,52 @@ export async function updateActiveSession(
     return false;
   }
 }
+
+/**
+ * HARD RESET: Delete all progress for a specific path
+ * Removes rows from both active_sessions and quest_progress tables
+ * Used for complete path reset in debug/testing scenarios
+ */
+export async function deletePathProgress(profileId: number, pathId: PathId) {
+  if (!supabase) {
+    console.error('❌ Supabase client not initialized!');
+    return false;
+  }
+
+  console.log('🗑️ Hard Reset: Deleting path progress for:', {
+    profileId,
+    pathId,
+  });
+
+  try {
+    // Delete from active_sessions
+    const { error: sessionError } = await supabase
+      .from('active_sessions')
+      .delete()
+      .eq('profile_id', profileId)
+      .eq('path_id', pathId);
+
+    if (sessionError) {
+      console.error('Error deleting active session:', sessionError);
+      return false;
+    }
+
+    // Delete from quest_progress
+    const { error: progressError } = await supabase
+      .from('quest_progress')
+      .delete()
+      .eq('profile_id', profileId)
+      .eq('path_id', pathId);
+
+    if (progressError) {
+      console.error('Error deleting quest progress:', progressError);
+      return false;
+    }
+
+    console.log('✅ Hard Reset: Successfully deleted all progress for path', pathId);
+    return true;
+  } catch (error) {
+    console.error('Error during hard reset:', error);
+    return false;
+  }
+}

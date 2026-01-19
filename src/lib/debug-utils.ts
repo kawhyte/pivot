@@ -6,8 +6,8 @@
 import type { PathId } from '@/lib/paths';
 import { PATH_IDS } from '@/lib/paths';
 import { calculateNextPathUnlockTime } from '@/lib/path-unlock';
-import { savePathCompletion } from '@/lib/supabase-sync';
-import { TARGET_SCORES, getTotalPuzzles } from '@/data/puzzles';
+import { savePathCompletion, deletePathProgress } from '@/lib/supabase-sync';
+import { TARGET_SCORES, getTotalPuzzles, getPathPuzzles } from '@/data/puzzles';
 
 /**
  * Tester Theme Colors (Cyan)
@@ -123,35 +123,51 @@ export const pathSimulator = {
 
   /**
    * Auto-complete path at threshold (93%)
+   * Programmatically selects puzzles until TARGET_SCORES threshold is reached
    */
   async completeThreshold(pathId: PathId, agentId: number) {
-    console.log(`📊 Auto-completing ${pathId} at 93% threshold...`);
+    console.log(`📊 Auto-completing ${pathId} at 91% threshold...`);
+
+    const pathConfig = getPathPuzzles(pathId);
+    if (!pathConfig) {
+      console.error('❌ Path config not found');
+      return;
+    }
+
+    const targetScore = TARGET_SCORES[pathId];
+    const completedIds: string[] = [];
+    let currentScore = 0;
+
+    // Select puzzles until we reach the target score
+    for (const puzzle of pathConfig.puzzles) {
+      if (currentScore >= targetScore) break;
+      completedIds.push(puzzle.id);
+      currentScore += puzzle.points || 0;
+    }
 
     const totalPuzzles = getTotalPuzzles(pathId);
-    const requiredCorrect = Math.ceil(totalPuzzles * 0.93);
-    const completedIds = Array.from({ length: requiredCorrect }, (_, i) => `${pathId}-${i + 1}`);
     const completedAt = new Date();
     const nextPathUnlockAt = calculateNextPathUnlockTime(completedAt);
 
     await savePathCompletion(agentId, pathId, {
       completedIds,
       skippedIds: [],
-      finalScore: TARGET_SCORES[pathId],
-      accuracy: 93,
-      mistakes: totalPuzzles - requiredCorrect,
+      finalScore: currentScore,
+      accuracy: Math.round((completedIds.length / totalPuzzles) * 100),
+      mistakes: 0,
       themedTitle: 'Threshold Master',
       timeTaken: 400,
       totalQuestions: totalPuzzles,
-      firstTryCount: requiredCorrect,
-      firstTryRate: 93,
+      firstTryCount: completedIds.length,
+      firstTryRate: Math.round((completedIds.length / totalPuzzles) * 100),
       skippedCount: 0,
       avgTimePerQuestion: 400 / totalPuzzles,
       perfectRunCompleted: false,
-      thresholdDecision: 'accept',
+      thresholdDecision: '91%',
       nextPathUnlockAt: nextPathUnlockAt.toISOString(),
     });
 
-    console.log('✅ Threshold completion saved!');
+    console.log(`✅ Threshold completion saved! Score: ${currentScore}/${targetScore}`);
   },
 
   /**
@@ -191,22 +207,28 @@ export const pathSimulator = {
   },
 
   /**
-   * Reset specific path progress
+   * HARD RESET: Delete all progress for a specific path
+   * Uses true database deletion for clean state
    */
   async reset(pathId: PathId, agentId: number) {
-    console.log(`🔄 Resetting progress for path ${pathId}...`);
+    console.log(`🗑️ Hard Reset: Deleting all progress for path ${pathId}...`);
 
-    await savePathCompletion(agentId, pathId, {
-      completedIds: [],
-      skippedIds: [],
-      finalScore: 0,
-      accuracy: 0,
-      mistakes: 0,
-      themedTitle: '',
-      nextPathUnlockAt: undefined,
-    });
+    await deletePathProgress(agentId, pathId);
 
-    console.log('✅ Path reset complete!');
+    console.log('✅ Hard Reset complete! Path returned to locked/0% state.');
+  },
+
+  /**
+   * Complete all three paths with perfect scores (God Mode)
+   */
+  async completeAllPerfect(agentId: number) {
+    console.log('🎯 God Mode: Completing all paths with perfect scores...');
+
+    await this.completePerfect(PATH_IDS.POP_CULTURE, agentId);
+    await this.completePerfect(PATH_IDS.RENAISSANCE, agentId);
+    await this.completePerfect(PATH_IDS.HEART, agentId);
+
+    console.log('✅ All paths completed perfectly! Vault should be unlocked.');
   },
 };
 

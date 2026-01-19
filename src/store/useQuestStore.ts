@@ -165,6 +165,9 @@ interface QuestState {
 
   // Streak-based dynamic messages
   getStreakMessage: () => string;
+
+  // God Mode: Solve current puzzle instantly
+  solveCurrentPuzzle: () => Promise<void>;
 }
 
 const initialState = {
@@ -1053,6 +1056,22 @@ export const useQuestStore = create<QuestState>()(
         const genericMessages = ["AWESOME!", "PERFECT!", "COMBO!", "UNSTOPPABLE!"];
         const index = Math.min(currentStreak - 1, genericMessages.length - 1);
         return genericMessages[Math.max(0, index)];
+      },
+
+      solveCurrentPuzzle: async () => {
+        const { activePath, currentPuzzleId } = get();
+
+        if (!activePath || !currentPuzzleId) {
+          console.warn('⚠️ No active puzzle to solve');
+          return;
+        }
+
+        console.log(`🎯 God Mode: Auto-solving puzzle ${currentPuzzleId} on path ${activePath}`);
+
+        // Submit answer as correct with minimal time
+        await get().submitAnswer(activePath, currentPuzzleId, true, 0, 1000);
+
+        console.log('✅ Puzzle solved!');
       },
     }),
     {

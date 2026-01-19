@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Zap, Target, SkipForward, Trash2 } from 'lucide-react';
+import { Zap, Target, SkipForward, Trash2, Wand2, Sparkles } from 'lucide-react';
 import { pathSimulator, TESTER_THEME } from '@/lib/debug-utils';
 import { useQuestStore } from '@/store/useQuestStore';
 import { PATH_IDS, PATH_METADATA } from '@/lib/paths';
 import type { PathId } from '@/lib/paths';
 
 export const PathSimulator = () => {
-  const { agentId, hydrateFromDatabase } = useQuestStore();
+  const { agentId, hydrateFromDatabase, solveCurrentPuzzle } = useQuestStore();
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedPath, setSelectedPath] = useState<PathId>(PATH_IDS.POP_CULTURE);
 
@@ -64,6 +64,50 @@ export const PathSimulator = () => {
     }
   };
 
+  const handleSolveCurrentQuestion = async () => {
+    if (!agentId) {
+      alert('Not logged in!');
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      await solveCurrentPuzzle();
+
+      // Re-hydrate from database
+      await hydrateFromDatabase(agentId);
+
+      alert('Current question solved!');
+    } catch (error) {
+      console.error('Solve current question failed:', error);
+      alert('Solve failed. Check console for details.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleSolveAllPaths = async () => {
+    if (!agentId) {
+      alert('Not logged in!');
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      await pathSimulator.completeAllPerfect(agentId);
+
+      // Re-hydrate from database
+      await hydrateFromDatabase(agentId);
+
+      alert('All paths completed perfectly! Vault unlocked!');
+    } catch (error) {
+      console.error('Solve all paths failed:', error);
+      alert('Solve all failed. Check console for details.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 mb-2">
@@ -75,6 +119,37 @@ export const PathSimulator = () => {
 
       <div className="text-xs text-neutral-600 mb-3">
         Instantly complete paths with different scenarios.
+      </div>
+
+      {/* God Mode Actions */}
+      <div className="space-y-2 p-3 rounded-lg border-2" style={{ borderColor: TESTER_THEME.border, backgroundColor: TESTER_THEME.bg }}>
+        <button
+          onClick={handleSolveCurrentQuestion}
+          disabled={isProcessing}
+          className="w-full px-4 py-3 text-xs font-bold rounded-lg border-2 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+          style={{
+            backgroundColor: TESTER_THEME.primary,
+            borderColor: TESTER_THEME.primaryDark,
+            color: 'white',
+          }}
+        >
+          <Wand2 className="h-4 w-4" />
+          Solve Current Question
+        </button>
+
+        <button
+          onClick={handleSolveAllPaths}
+          disabled={isProcessing}
+          className="w-full px-4 py-3 text-xs font-bold rounded-lg border-2 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+          style={{
+            backgroundColor: TESTER_THEME.primary,
+            borderColor: TESTER_THEME.primaryDark,
+            color: 'white',
+          }}
+        >
+          <Sparkles className="h-4 w-4" />
+          Solve All Paths
+        </button>
       </div>
 
       {/* Path Selector */}
@@ -119,7 +194,7 @@ export const PathSimulator = () => {
           }}
         >
           <Target className="h-3 w-3 mx-auto mb-1" />
-          Threshold 93%
+          Threshold 91%
         </button>
 
         <button
