@@ -149,8 +149,9 @@ export const popCulturePath: PathConfig = {
       options: ['Jack and Erica', 'Ben and Emma', 'Joey and Rachel', 'Frank and Alice'],
       correctAnswer: 0,
       successMessage: 'Jack (after her dad) and Erica (after the mom)!',
-      points: 20,
-      difficulty: 'medium',
+      points: 30,
+      difficulty: 'hard',
+      isReserved: true,
       metadata: { show: 'friends' },
     },
     {
@@ -227,7 +228,6 @@ export const popCulturePath: PathConfig = {
       successMessage: 'Gunther at Central Perk!',
       points: 15,
       difficulty: 'easy',
-      isReserved: true,
       metadata: { show: 'friends' },
     },
     {
@@ -367,6 +367,7 @@ export const popCulturePath: PathConfig = {
       successMessage: 'The Spring Fling! Don\'t get lost in the maze.',
       points: 30,
       difficulty: 'hard',
+      isReserved: true,
       metadata: { show: 'gilmore' },
     },
     {
@@ -380,7 +381,6 @@ export const popCulturePath: PathConfig = {
       successMessage: 'Bright like a sunflower!',
       points: 20,
       difficulty: 'medium',
-      isReserved: true,
       metadata: { show: 'gilmore' },
     },
     {

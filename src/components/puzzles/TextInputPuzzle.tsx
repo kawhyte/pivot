@@ -81,10 +81,10 @@ export const TextInputPuzzle = ({
             onKeyDown={handleKeyPress}
             placeholder={puzzle.placeholder || 'Type your answer...'}
             disabled={isSubmitting}
-            className="duo-input font-doodle text-2xl w-full"
+            className="duo-input font-doodle text-3xl w-full"
             autoFocus
           />
-          <ArrowLeft className="absolute bottom-0 right-0 h-4 w-4 text-neutral-300 rotate-180" />
+          <ArrowLeft className="absolute bottom-0 right-0 h-5 w-5 text-neutral-300 rotate-180" />
         </div>
 
         {/* Feedback Message for "Close" Status */}
@@ -97,8 +97,8 @@ export const TextInputPuzzle = ({
               transition={{ duration: 0.3 }}
               className="duo-card flex items-center gap-3 bg-blue-50 border-blue-200 px-4 py-3"
             >
-              <Lightbulb className="h-5 w-5 flex-shrink-0 text-blue-600" />
-              <p className="text-sm font-semibold text-blue-800">
+              <Lightbulb className="h-6 w-6 flex-shrink-0 text-blue-600" />
+              <p className="text-base font-semibold text-blue-800">
                 {validationResult.message}
               </p>
             </motion.div>
@@ -110,7 +110,7 @@ export const TextInputPuzzle = ({
           <button
             onClick={handleSubmit}
             disabled={answer.trim() === '' || isSubmitting}
-            className={`duo-button w-full py-4 text-lg font-bold text-white ${
+            className={`duo-button w-full py-4 text-xl font-bold text-white ${
               isTester
                 ? 'bg-cyan-700 hover:bg-cyan-600 disabled:bg-neutral-300 disabled:text-neutral-500'
                 : 'bg-duolingo-green hover:bg-duolingo-green-dark disabled:bg-neutral-300 disabled:text-neutral-500'

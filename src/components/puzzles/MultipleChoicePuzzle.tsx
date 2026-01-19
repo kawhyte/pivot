@@ -97,7 +97,7 @@ export const MultipleChoicePuzzle = ({
         <button
           onClick={handleSubmit}
           disabled={selectedOption === null || isSubmitting}
-          className={`duo-button w-full py-4 text-lg font-bold text-white ${
+          className={`duo-button w-full py-4 text-xl font-bold text-white ${
             isTester
               ? 'bg-cyan-700 hover:bg-cyan-600 disabled:bg-neutral-300 disabled:text-neutral-500'
               : 'bg-duolingo-green hover:bg-duolingo-green-dark disabled:bg-neutral-300 disabled:text-neutral-500'

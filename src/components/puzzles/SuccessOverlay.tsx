@@ -11,15 +11,17 @@ export const SuccessOverlay = ({ show, message = 'AWESOME!' }: SuccessOverlayPro
   return (
     <AnimatePresence>
       {show && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1.05 }}
-          exit={{ opacity: 0, scale: 1 }}
-          transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-          className="duo-success-overlay"
-        >
-          {message}
-        </motion.div>
+        <div className="fixed inset-0 flex items-center justify-center z-[100] pointer-events-none">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1.05 }}
+            exit={{ opacity: 0, scale: 1 }}
+            transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+            className="text-6xl font-bold text-duolingo-green drop-shadow-2xl"
+          >
+            {message}
+          </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );
