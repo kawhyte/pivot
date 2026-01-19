@@ -119,6 +119,9 @@ interface QuestState {
   // Current run tracking for live achievement stakes
   currentRun: CurrentRun;
 
+  // Streak tracking for dynamic success messages
+  currentStreak: number;
+
   // Actions
   setAuthentication: (isAuthenticated: boolean, agentName: string, agentRole: string, agentId: number, isTester: boolean) => void;
   setUserId: (id: number) => void;
@@ -159,6 +162,9 @@ interface QuestState {
   // NEW: Threshold Decision
   recordThresholdDecision: (pathId: PathId, decision: '91%' | '100%') => void;
   setHasSeenThresholdModal: (pathId: PathId, seen: boolean) => void;
+
+  // Streak-based dynamic messages
+  getStreakMessage: () => string;
 }
 
 const initialState = {
@@ -227,6 +233,7 @@ const initialState = {
     mistakes: 0,
     startTime: null,
   },
+  currentStreak: 0,
 };
 
 export const useQuestStore = create<QuestState>()(
@@ -339,6 +346,7 @@ export const useQuestStore = create<QuestState>()(
 
             return {
               pathProgress: { ...state.pathProgress, [pathId]: progress },
+              currentStreak: state.currentStreak + 1, // Increment streak on correct answer
             };
           });
 
@@ -403,6 +411,9 @@ export const useQuestStore = create<QuestState>()(
         } else {
           // WRONG ANSWER
 
+          // Reset streak on incorrect answer
+          set({ currentStreak: 0 });
+
           // Perfect run failure?
           if (progress.isPerfectRunActive) {
             // END PERFECT RUN (failure)
@@ -462,6 +473,9 @@ export const useQuestStore = create<QuestState>()(
       },
 
       skipPuzzle: async (pathId, puzzleId) => {
+        // Reset streak on skip
+        set({ currentStreak: 0 });
+
         set((state) => {
           const progress = { ...state.pathProgress[pathId] };
 
@@ -1011,6 +1025,34 @@ export const useQuestStore = create<QuestState>()(
             puzzleAttempts: currentProgress.puzzleAttempts,
           });
         }
+      },
+
+      getStreakMessage: () => {
+        const { currentStreak, activePath, currentPuzzleId } = get();
+
+        // Get current puzzle to check for show metadata
+        let show: 'friends' | 'gilmore' | undefined;
+        if (activePath && currentPuzzleId) {
+          const pathConfig = getPathPuzzles(activePath);
+          const currentPuzzle = pathConfig?.puzzles.find(p => p.id === currentPuzzleId);
+          show = currentPuzzle?.metadata?.show;
+        }
+
+        // Path ID 1 (Pop Culture) with show-specific messages
+        if (activePath === PATH_IDS.POP_CULTURE && currentStreak >= 2) {
+          if (currentStreak === 2) {
+            return show === 'friends' ? "YOU'RE HER LOBSTER!" : "COPPER BOOM!";
+          } else if (currentStreak === 3) {
+            return show === 'friends' ? "UNAGI!" : "OY WITH THE POODLES!";
+          } else if (currentStreak >= 4) {
+            return show === 'friends' ? "PIVOT!" : "IN OMNIA PARATUS!";
+          }
+        }
+
+        // Generic messages for all paths
+        const genericMessages = ["AWESOME!", "PERFECT!", "COMBO!", "UNSTOPPABLE!"];
+        const index = Math.min(currentStreak - 1, genericMessages.length - 1);
+        return genericMessages[Math.max(0, index)];
       },
     }),
     {

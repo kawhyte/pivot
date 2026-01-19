@@ -89,6 +89,8 @@ const QuestPage = () => {
     resumePathTimer,
     recordThresholdDecision,
     setHasSeenThresholdModal,
+    // Streak-based messages
+    getStreakMessage,
   } = useQuestStore();
 
   const [showHint, setShowHint] = useState(false);
@@ -742,7 +744,7 @@ const QuestPage = () => {
       </AnimatePresence>
 
       {/* Success Overlay */}
-      <SuccessOverlay show={showSuccessOverlay} message="AWESOME!" />
+      <SuccessOverlay show={showSuccessOverlay} message={getStreakMessage()} />
 
       {/* Main Content */}
       <main className="flex flex-1 flex-col px-6 pt-20 pb-24">
