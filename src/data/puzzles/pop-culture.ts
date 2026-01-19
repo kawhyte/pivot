@@ -350,7 +350,7 @@ export const popCulturePath: PathConfig = {
       type: 'text-input',
       question: 'What is the full name of the secret society Rory investigates at Yale?',
       correctAnswer: 'Life and Death Brigade',
-      acceptableAnswers: ['life and death brigade', 'the life and death brigade'],
+      acceptableAnswers: ['life and death brigade', 'the life and death brigade', 'Life & Death Brigade'],
       placeholder: 'In Omnia Paratus...',
       successMessage: 'In Omnia Paratus!',
       points: 30,
