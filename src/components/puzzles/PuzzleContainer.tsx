@@ -89,6 +89,7 @@ export const PuzzleContainer = ({
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.1 }}
         layout
+        className="text-xl"
       >
         {children}
       </motion.div>

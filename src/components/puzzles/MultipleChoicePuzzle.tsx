@@ -83,7 +83,7 @@ export const MultipleChoicePuzzle = ({
                 </div>
 
                 {/* Option Text */}
-                <span className="text-base font-semibold text-neutral-900">
+                <span className="text-xl font-semibold text-neutral-900">
                   {option}
                 </span>
               </div>
