@@ -87,7 +87,7 @@ export const DebugPanel = ({ isEnabled }: DebugPanelProps) => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Bug className="h-5 w-5 text-white" />
-                  <h2 className="text-base font-black text-white">
+                  <h2 className="text-2xl font-black text-white">
                     Debug Panel
                   </h2>
                 </div>
@@ -99,7 +99,7 @@ export const DebugPanel = ({ isEnabled }: DebugPanelProps) => {
                   <X className="h-4 w-4 text-white" />
                 </button>
               </div>
-              <div className="mt-1 text-xs text-white/80">
+              <div className="mt-1 text-base text-white/80">
                 Keyboard: Ctrl+Shift+D
               </div>
             </div>
@@ -122,7 +122,7 @@ export const DebugPanel = ({ isEnabled }: DebugPanelProps) => {
                         onClick={() => toggleSection(section.id)}
                         className="w-full px-4 py-3 flex items-center justify-between transition-colors hover:bg-gray-50"
                       >
-                        <span className="text-sm font-bold" style={{ color: TESTER_THEME.text }}>
+                        <span className="text-base font-bold" style={{ color: TESTER_THEME.text }}>
                           {section.title}
                         </span>
                         {isExpanded ? (
