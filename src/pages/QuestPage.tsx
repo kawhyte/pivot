@@ -662,8 +662,10 @@ const QuestPage = () => {
         size="sm"
         className={cn(
           "group h-10 gap-2 rounded-2xl px-3 font-bold transition-all active:scale-95",
-          isTester 
-            ? "text-zinc-400 hover:bg-zinc-800 hover:text-cyan-400" 
+          progress.isBonusMode
+            ? "text-zinc-400 hover:bg-zinc-800 hover:text-red-400"
+            : isTester
+            ? "text-zinc-400 hover:bg-zinc-800 hover:text-cyan-400"
             : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
         )}
       >
@@ -671,18 +673,18 @@ const QuestPage = () => {
         <span className="hidden md:inline text-base">Exit Mission</span>
       </Button>
       
-      <div className={cn("h-6 w-px hidden sm:block", isTester ? "bg-zinc-800" : "bg-neutral-200")} />
+      <div className={cn("h-6 w-px hidden sm:block", progress.isBonusMode || isTester ? "bg-zinc-800" : "bg-neutral-200")} />
       
       <div className="hidden sm:flex flex-col leading-none">
         <span className={cn(
           "text-[16px] font-black uppercase tracking-[0.3em]",
-          isTester ? "text-zinc-600" : "text-neutral-400"
+          progress.isBonusMode || isTester ? "text-zinc-600" : "text-neutral-400"
         )}>
           Path
         </span>
         <span className={cn(
           "text-lg font-black uppercase tracking-wide font-doodle",
-          isTester ? "text-zinc-300" : "text-neutral-800"
+          progress.isBonusMode || isTester ? "text-zinc-300" : "text-neutral-800"
         )}>
           {pathMeta.name}
         </span>
@@ -694,13 +696,17 @@ const QuestPage = () => {
       <div className="mb-1.5 flex w-full items-end justify-between px-1">
         <span className={cn(
           "text-[16px] font-black uppercase tracking-widest marker-highlight",
-          isTester ? "text-cyan-400" : "text-duolingo-green"
+          progress.isBonusMode
+            ? "text-red-400"
+            : isTester
+            ? "text-cyan-400"
+            : "text-duolingo-green"
         )}>
           {scoreProgress}%
         </span>
         <span className={cn(
           "hidden xs:inline text-[16px] font-bold marker-highlight px-1.5 py-0.5 rounded",
-          isTester ? "text-zinc-500" : "text-neutral-400"
+          progress.isBonusMode || isTester ? "text-zinc-500" : "text-neutral-400"
         )}>
           {currentScore} / {targetScore} PTS
         </span>
@@ -711,16 +717,24 @@ const QuestPage = () => {
         value={Math.min(scoreProgress, 100)}
         className={cn(
           "h-3.5 rounded-full p-0.5 border transition-all",
-          isTester ? "bg-zinc-900 border-zinc-800" : "bg-neutral-100 border-neutral-200/50 shadow-inner"
+          progress.isBonusMode || isTester ? "bg-zinc-900 border-zinc-800" : "bg-neutral-100 border-neutral-200/50 shadow-inner"
         )}
         indicatorClassName={cn(
           "h-full rounded-full transition-all duration-700",
-          isTester ? "bg-cyan-500" : "bg-duolingo-green"
+          progress.isBonusMode
+            ? "bg-red-500"
+            : isTester
+            ? "bg-cyan-500"
+            : "bg-duolingo-green"
         )}
         indicatorStyle={{
           transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
           boxShadow: scoreProgress >= 93
-            ? (isTester ? '0 0 12px rgba(6,182,212,0.4)' : '0 0 12px rgba(88,204,2,0.4)')
+            ? (progress.isBonusMode
+              ? '0 0 12px rgba(239,68,68,0.4)'
+              : isTester
+              ? '0 0 12px rgba(6,182,212,0.4)'
+              : '0 0 12px rgba(88,204,2,0.4)')
             : 'none'
         }}
       />

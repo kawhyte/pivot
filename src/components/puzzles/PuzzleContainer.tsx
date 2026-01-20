@@ -19,6 +19,7 @@ interface PuzzleContainerProps {
   targetScore: number;
   children: ReactNode;
   show?: 'friends' | 'gilmore';
+  isBonusMode?: boolean;
 }
 
 export const PuzzleContainer = ({
@@ -28,6 +29,7 @@ export const PuzzleContainer = ({
   difficulty,
   children,
   show,
+  isBonusMode = false,
 }: PuzzleContainerProps) => {
   
   // Mapping difficulty to shadcn-compatible Tailwind classes
@@ -44,6 +46,10 @@ export const PuzzleContainer = ({
       label: 'Hard',
       className: 'bg-red-500 hover:bg-red-600 text-white border-none',
     },
+    'very-hard': {
+    label: 'Legendary',
+    className: 'bg-purple-600 hover:bg-purple-700 text-white border-none animate-pulse',
+  },
   };
 
   const currentDifficulty = difficultyConfig[difficulty];
@@ -60,7 +66,10 @@ export const PuzzleContainer = ({
       >
         {/* Badge Row */}
         <div className="flex items-center gap-3 flex-wrap">
-          <span className="mission-label text-3xl font-medium text-neutral-700">
+          <span className={cn(
+            "mission-label text-3xl font-medium",
+            isBonusMode ? 'text-red-400/90' : 'text-neutral-700'
+          )}>
             Difficulty:
           </span>
           <Badge
@@ -75,12 +84,18 @@ export const PuzzleContainer = ({
         </div>
 
         {/* Question Text */}
-        <h2 className="text-4xl font-doodle font-bold leading-normal tracking-wide text-neutral-900">
+        <h2 className={cn(
+          "text-4xl font-doodle font-bold leading-normal tracking-wide",
+          isBonusMode ? 'text-white' : 'text-neutral-900'
+        )}>
           {question}
         </h2>
 
         {/* Decorative Divider */}
-        <div className="h-1 w-12 bg-neutral-200 rounded-full mt-4" />
+        <div className={cn(
+          "h-1 w-12 rounded-full mt-4",
+          isBonusMode ? 'bg-red-600' : 'bg-neutral-200'
+        )} />
       </motion.div>
 
       {/* Puzzle Content */}

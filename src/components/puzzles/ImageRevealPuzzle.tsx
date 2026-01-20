@@ -19,6 +19,7 @@ interface ImageRevealPuzzleProps {
   targetScore: number;
   shake?: boolean;
   isTester?: boolean;
+  isBonusMode?: boolean;
 }
 
 export const ImageRevealPuzzle = ({
@@ -33,6 +34,7 @@ export const ImageRevealPuzzle = ({
   targetScore,
   shake = false,
   isTester = false,
+  isBonusMode = false,
 }: ImageRevealPuzzleProps) => {
   const [answer, setAnswer] = useState('');
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -71,6 +73,7 @@ export const ImageRevealPuzzle = ({
       currentScore={currentScore}
       targetScore={targetScore}
       show={puzzle.metadata?.show}
+      isBonusMode={isBonusMode}
     >
       <div className="space-y-6">
         {/* SVG Rough-Edge Mask Definition */}

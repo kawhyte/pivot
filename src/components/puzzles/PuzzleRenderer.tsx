@@ -2,6 +2,7 @@
 
 import type { Puzzle, ValidationResult } from '@/types/puzzle';
 import type { PathId } from '@/lib/paths';
+import { useQuestStore } from '@/store/useQuestStore';
 import { MultipleChoicePuzzle } from './MultipleChoicePuzzle';
 import { TextInputPuzzle } from './TextInputPuzzle';
 import { ImageRevealPuzzle } from './ImageRevealPuzzle';
@@ -33,6 +34,9 @@ export const PuzzleRenderer = ({
   shake = false,
   isTester = false,
 }: PuzzleRendererProps) => {
+  const { pathProgress } = useQuestStore();
+  const isBonusMode = pathProgress[pathId]?.isBonusMode || false;
+
   switch (puzzle.type) {
     case 'multiple-choice':
       return (
@@ -47,6 +51,7 @@ export const PuzzleRenderer = ({
           targetScore={targetScore}
           shake={shake}
           isTester={isTester}
+          isBonusMode={isBonusMode}
         />
       );
 
@@ -64,6 +69,7 @@ export const PuzzleRenderer = ({
           targetScore={targetScore}
           shake={shake}
           isTester={isTester}
+          isBonusMode={isBonusMode}
         />
       );
 
@@ -81,6 +87,7 @@ export const PuzzleRenderer = ({
           targetScore={targetScore}
           shake={shake}
           isTester={isTester}
+          isBonusMode={isBonusMode}
         />
       );
 

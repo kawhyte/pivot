@@ -18,6 +18,7 @@ interface MultipleChoicePuzzleProps {
   targetScore: number;
   shake?: boolean;
   isTester?: boolean;
+  isBonusMode?: boolean;
 }
 
 export const MultipleChoicePuzzle = ({
@@ -31,6 +32,7 @@ export const MultipleChoicePuzzle = ({
   targetScore,
   shake = false,
   isTester = false,
+  isBonusMode = false,
 }: MultipleChoicePuzzleProps) => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
@@ -50,6 +52,7 @@ export const MultipleChoicePuzzle = ({
       currentScore={currentScore}
       targetScore={targetScore}
       show={puzzle.metadata?.show}
+      isBonusMode={isBonusMode}
     >
       <div className="space-y-4">
         {puzzle.options.map((option, index) => {

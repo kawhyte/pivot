@@ -19,6 +19,7 @@ interface TextInputPuzzleProps {
   targetScore: number;
   shake?: boolean;
   isTester?: boolean;
+  isBonusMode?: boolean;
 }
 
 export const TextInputPuzzle = ({
@@ -33,6 +34,7 @@ export const TextInputPuzzle = ({
   targetScore,
   shake = false,
   isTester = false,
+  isBonusMode = false,
 }: TextInputPuzzleProps) => {
   const [answer, setAnswer] = useState('');
   const [closeShake, setCloseShake] = useState(false);
@@ -70,6 +72,7 @@ export const TextInputPuzzle = ({
       currentScore={currentScore}
       targetScore={targetScore}
       show={puzzle.metadata?.show}
+      isBonusMode={isBonusMode}
     >
       <div className="space-y-8">
         {/* Text Input - Notepad Line Style */}
