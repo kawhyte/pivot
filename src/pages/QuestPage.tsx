@@ -627,7 +627,7 @@ const QuestPage = () => {
           const pathConfig = getPathPuzzles(pathId);
           const firstBonus = pathConfig?.puzzles.find(p => p.isBonus === true);
           if (firstBonus) {
-            handleNavigate(firstBonus.id);
+            setCurrentPuzzle(firstBonus.id);
           }
         }}
       />

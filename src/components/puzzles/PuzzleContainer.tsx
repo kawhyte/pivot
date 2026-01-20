@@ -52,7 +52,7 @@ export const PuzzleContainer = ({
   },
   };
 
-  const currentDifficulty = difficultyConfig[difficulty];
+  const currentDifficulty = difficultyConfig[difficulty as keyof typeof difficultyConfig] || difficultyConfig.hard;
 
   return (
     <div className="mx-auto w-full max-w-lg px-6 sm:px-0">

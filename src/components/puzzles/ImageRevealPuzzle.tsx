@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Lightbulb } from 'lucide-react';
 import type { ImageRevealPuzzle as ImageRevealPuzzleType, ValidationResult } from '@/types/puzzle';
 import { PuzzleContainer } from './PuzzleContainer';
+import { cn } from '@/lib/utils';
 import type { PathId } from '@/lib/paths';
 
 interface ImageRevealPuzzleProps {
@@ -132,7 +133,10 @@ export const ImageRevealPuzzle = ({
             onKeyDown={handleKeyPress}
             placeholder="Type your answer..."
             disabled={isSubmitting}
-            className="duo-input h-16 w-full text-2xl"
+            className={cn(
+              "duo-input h-16 w-full text-2xl",
+              isBonusMode && "bg-zinc-900/50 border-red-500/30 text-white placeholder:text-zinc-500"
+            )}
           />
         </div>
 
@@ -159,11 +163,14 @@ export const ImageRevealPuzzle = ({
           <button
             onClick={handleSubmit}
             disabled={answer.trim() === '' || isSubmitting}
-            className={`duo-button w-full py-4 text-xl font-bold text-white ${
-              isTester
+            className={cn(
+              "duo-button w-full py-4 text-xl font-bold text-white",
+              isBonusMode
+                ? 'bg-red-600 hover:bg-red-500 disabled:bg-zinc-800 disabled:text-zinc-600'
+                : isTester
                 ? 'bg-cyan-700 hover:bg-cyan-600 disabled:bg-neutral-300 disabled:text-neutral-500'
                 : 'bg-duolingo-green hover:bg-duolingo-green-dark disabled:bg-neutral-300 disabled:text-neutral-500'
-            }`}
+            )}
           >
             {isSubmitting ? 'Checking...' : 'Submit Answer'}
           </button>

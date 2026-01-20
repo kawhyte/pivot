@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Lightbulb, ArrowLeft } from 'lucide-react';
 import type { TextInputPuzzle as TextInputPuzzleType, ValidationResult } from '@/types/puzzle';
 import { PuzzleContainer } from './PuzzleContainer';
+import { cn } from '@/lib/utils';
 import type { PathId } from '@/lib/paths';
 
 interface TextInputPuzzleProps {
@@ -84,10 +85,16 @@ export const TextInputPuzzle = ({
             onKeyDown={handleKeyPress}
             placeholder={puzzle.placeholder || 'Type your answer...'}
             disabled={isSubmitting}
-            className="duo-input font-doodle text-3xl w-full"
+            className={cn(
+              "duo-input font-doodle text-3xl w-full",
+              isBonusMode && "bg-zinc-900/50 border-red-500/30 text-white placeholder:text-zinc-500"
+            )}
             autoFocus
           />
-          <ArrowLeft className="absolute bottom-0 right-0 h-5 w-5 text-neutral-300 rotate-180" />
+          <ArrowLeft className={cn(
+            "absolute bottom-0 right-0 h-5 w-5 rotate-180",
+            isBonusMode ? "text-red-500/50" : "text-neutral-300"
+          )} />
         </div>
 
         {/* Feedback Message for "Close" Status */}
@@ -113,11 +120,14 @@ export const TextInputPuzzle = ({
           <button
             onClick={handleSubmit}
             disabled={answer.trim() === '' || isSubmitting}
-            className={`duo-button w-full py-4 text-xl font-bold text-white ${
-              isTester
+            className={cn(
+              "duo-button w-full py-4 text-xl font-bold text-white",
+              isBonusMode
+                ? 'bg-red-600 hover:bg-red-500 disabled:bg-zinc-800 disabled:text-zinc-600'
+                : isTester
                 ? 'bg-cyan-700 hover:bg-cyan-600 disabled:bg-neutral-300 disabled:text-neutral-500'
                 : 'bg-duolingo-green hover:bg-duolingo-green-dark disabled:bg-neutral-300 disabled:text-neutral-500'
-            }`}
+            )}
           >
             {isSubmitting ? 'Checking...' : 'Submit Answer'}
           </button>

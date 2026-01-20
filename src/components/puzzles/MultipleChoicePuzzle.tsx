@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import type { MultipleChoicePuzzle as MultipleChoicePuzzleType } from '@/types/puzzle';
 import { PuzzleContainer } from './PuzzleContainer';
-
+import { cn } from '@/lib/utils';
 import type { PathId } from '@/lib/paths';
 
 interface MultipleChoicePuzzleProps {
@@ -65,28 +65,35 @@ export const MultipleChoicePuzzle = ({
               disabled={isSubmitting}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
-              className={`
-                duo-answer-pill w-full text-left
-                ${isSelected ? 'selected' : ''}
-                ${isSubmitting ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-              `}
+              className={cn(
+                "duo-answer-pill w-full text-left",
+                isSelected && 'selected',
+                isSubmitting && 'cursor-not-allowed opacity-50',
+                !isSubmitting && 'cursor-pointer',
+                isBonusMode && 'bg-zinc-900/50 border-red-500/30'
+              )}
             >
               <div className="flex items-center gap-4">
                 {/* Radio Circle - Clean Duolingo Style */}
                 <div
-                  className={`
-                    flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full border-2 transition-all
-                    ${
-                      isSelected
-                        ? 'border-duolingo-green border-[6px] bg-white'
-                        : 'border-neutral-300 bg-white'
-                    }
-                  `}
+                  className={cn(
+                    "flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full border-2 transition-all",
+                    isSelected
+                      ? isBonusMode
+                        ? 'border-red-500 border-[6px] bg-zinc-800'
+                        : 'border-duolingo-green border-[6px] bg-white'
+                      : isBonusMode
+                      ? 'border-red-500/50 bg-zinc-800'
+                      : 'border-neutral-300 bg-white'
+                  )}
                 >
                 </div>
 
                 {/* Option Text */}
-                <span className="text-xl font-semibold text-neutral-900">
+                <span className={cn(
+                  "text-xl font-semibold",
+                  isBonusMode ? 'text-white' : 'text-neutral-900'
+                )}>
                   {option}
                 </span>
               </div>
@@ -100,11 +107,14 @@ export const MultipleChoicePuzzle = ({
         <button
           onClick={handleSubmit}
           disabled={selectedOption === null || isSubmitting}
-          className={`duo-button w-full py-4 text-xl font-bold text-white ${
-            isTester
+          className={cn(
+            "duo-button w-full py-4 text-xl font-bold text-white",
+            isBonusMode
+              ? 'bg-red-600 hover:bg-red-500 disabled:bg-zinc-800 disabled:text-zinc-600'
+              : isTester
               ? 'bg-cyan-700 hover:bg-cyan-600 disabled:bg-neutral-300 disabled:text-neutral-500'
               : 'bg-duolingo-green hover:bg-duolingo-green-dark disabled:bg-neutral-300 disabled:text-neutral-500'
-          }`}
+          )}
         >
           {isSubmitting ? 'Checking...' : 'Submit Answer'}
         </button>
