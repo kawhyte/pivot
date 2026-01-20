@@ -263,13 +263,19 @@ const QuestPage = () => {
           <main className="flex flex-1 flex-col px-6 pt-10 pb-12">
             <div className="max-w-xl mx-auto w-full">
               <PuzzleRenderer 
-                puzzle={puzzle} 
-                onSubmit={handleSubmit} 
-                isSubmitting={isSubmitting} 
-                validationResult={validationResult} 
-                pathId={pathId} 
-                shake={shake} 
-                isBonusMode={progress.isBonusMode}
+             puzzle={puzzle} 
+  onSubmit={handleSubmit} 
+  isSubmitting={isSubmitting} 
+  validationResult={validationResult} 
+  pathId={pathId} 
+  shake={shake}
+  // FIX: Pass all required props defined in the interface
+  showHint={showHint}
+  currentMistakes={progress.mistakes}
+  currentScore={currentScore}
+  targetScore={targetScore}
+  isTester={isTester}
+  isBonusMode={progress.isBonusMode}
               />
             </div>
           </main>
