@@ -1,4 +1,4 @@
-import { addDays, setHours, setMinutes, setSeconds, setMilliseconds, isAfter } from 'date-fns';
+import { addDays,addMinutes, setHours, setMinutes, setSeconds, setMilliseconds, isAfter } from 'date-fns';
 import { PATH_IDS, PATH_METADATA, type PathId } from '@/lib/paths';
 
 /**
@@ -29,13 +29,14 @@ export const PATH_DEPENDENCIES: Record<PathId, PathId | null> = {
  */
 export const calculateNextPathUnlockTime = (completedAt: Date): Date => {
   // Get the next day at 8am
-  let unlockTime = addDays(completedAt, 1);
-  unlockTime = setHours(unlockTime, UNLOCK_HOUR);
-  unlockTime = setMinutes(unlockTime, 0);
-  unlockTime = setSeconds(unlockTime, 0);
-  unlockTime = setMilliseconds(unlockTime, 0);
+  // let unlockTime = addDays(completedAt, 1);
+  // unlockTime = setHours(unlockTime, UNLOCK_HOUR);
+  // unlockTime = setMinutes(unlockTime, 0);
+  // unlockTime = setSeconds(unlockTime, 0);
+  // unlockTime = setMilliseconds(unlockTime, 0);
 
-  return unlockTime;
+  // return unlockTime;
+  return addMinutes(completedAt, 1);
 };
 
 /**

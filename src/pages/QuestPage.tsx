@@ -2,20 +2,17 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { ArrowLeft, Trophy, Sparkles } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useQuestStore } from '@/store/useQuestStore';
 import { PATH_METADATA, type PathId } from '@/lib/paths';
-import { getPuzzleById, getTotalPuzzles, getTotalNonBonusPuzzles, getTotalBonusPuzzles, getRandomCoupon, TARGET_SCORES, getPathPuzzles } from '@/data/puzzles';
+import { getPuzzleById, getTotalPuzzles, getTotalNonBonusPuzzles, getTotalBonusPuzzles, TARGET_SCORES, getPathPuzzles } from '@/data/puzzles';
 import { validateAnswer } from '@/lib/puzzle-validator';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { PuzzleRenderer } from '@/components/puzzles/PuzzleRenderer';
 import { SuccessOverlay } from '@/components/puzzles/SuccessOverlay';
 import { calculateAccuracy, getThemedTitle } from '@/lib/themed-titles';
-import { getThemedAchievement } from '@/lib/achievements';
-import { PerformanceSummary } from '@/components/quest/PerformanceSummary';
 import { KeyUnlockedToast } from '@/components/quest/KeyUnlockedToast';
-import { BonusCoupon } from '@/components/puzzles/BonusCoupon';
 import { ThresholdDecisionModal } from '@/components/quest/ThresholdDecisionModal';
 import { PerfectRunBanner } from '@/components/quest/PerfectRunBanner';
 import { PerfectRunFailureModal } from '@/components/quest/PerfectRunFailureModal';
@@ -50,7 +47,6 @@ const QuestPage = () => {
     keysCollected,
     getPathStats,
     getPathScore,
-    isPerfectRun,
     getNextUnsolvedPuzzle,
     startNewRun,
     recordMistake,
@@ -144,17 +140,25 @@ const QuestPage = () => {
       setTimeout(() => setShowSuccessOverlay(false), 1200);
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
 
-      // Submit and await update to DB/Store
       await submitAnswer(pathId, currentPuzzleId, true, 1.0, timeSpent);
       setPuzzleStartTime(Date.now());
 
-      // FIX: Pull FRESH state after the await to check absolute latest completion
+      // Pull FRESH state from store after submission to check for completion
       const freshProgress = useQuestStore.getState().pathProgress[pathId];
       const allCompleted = freshProgress.completedIds.length === totalPuzzles;
 
       setTimeout(() => {
         if (allCompleted) {
           const accuracy = calculateAccuracy(totalPuzzles, freshProgress.mistakes);
+          
+          // Calculate all required statistics for PathStats
+          const firstTryCount = Object.values(freshProgress.puzzleAttempts).filter((p) => p.isFirstTry).length;
+          const firstTryRate = totalPuzzles > 0 ? Math.round((firstTryCount / totalPuzzles) * 100) : 0;
+          const skippedCount = freshProgress.skippedIds.length;
+          const avgTimePerQuestion = freshProgress.totalTimeSpent > 0 && totalPuzzles > 0
+            ? Math.round(freshProgress.totalTimeSpent / totalPuzzles)
+            : 0;
+
           const stats = {
             completionTime: freshProgress.totalTimeSpent,
             accuracy,
@@ -162,6 +166,10 @@ const QuestPage = () => {
             themedTitle: getThemedTitle(pathId, accuracy),
             completedAt: Date.now(),
             totalQuestions: totalPuzzles,
+            firstTryCount,
+            firstTryRate,
+            skippedCount,
+            avgTimePerQuestion,
             perfectRunCompleted: freshProgress.isBonusMode,
             thresholdDecision: freshProgress.isBonusMode ? '100%' as const : '91%' as const,
           };
@@ -258,27 +266,40 @@ const QuestPage = () => {
 
         <SuccessOverlay show={showSuccessOverlay} message={getStreakMessage()} />
 
-        {/* FIX: Gating logic allows content during Sudden Death */}
+        {/* Gating logic allowing gameplay content during Sudden Death */}
         {!showThresholdModal && !showCompletion && (!isPathCompleted || progress.isBonusMode) && (
           <main className="flex flex-1 flex-col px-6 pt-10 pb-12">
             <div className="max-w-xl mx-auto w-full">
               <PuzzleRenderer 
-             puzzle={puzzle} 
-  onSubmit={handleSubmit} 
-  isSubmitting={isSubmitting} 
-  validationResult={validationResult} 
-  pathId={pathId} 
-  shake={shake}
-  // FIX: Pass all required props defined in the interface
-  showHint={showHint}
-  currentMistakes={progress.mistakes}
-  currentScore={currentScore}
-  targetScore={targetScore}
-  isTester={isTester}
-  isBonusMode={progress.isBonusMode}
+                puzzle={puzzle} 
+                onSubmit={handleSubmit} 
+                isSubmitting={isSubmitting} 
+                validationResult={validationResult} 
+                pathId={pathId} 
+                shake={shake} 
+                isBonusMode={progress.isBonusMode}
+                showHint={showHint}
+                currentMistakes={progress.mistakes}
+                currentScore={currentScore}
+                targetScore={targetScore}
+                isTester={isTester}
               />
             </div>
           </main>
+        )}
+
+        {isTester && currentPuzzleId && (
+          <QuestSimulationToolbar
+            pathId={pathId}
+            currentPuzzleId={currentPuzzleId}
+            onSubmit={handleSubmit}
+            currentScore={currentScore}
+            targetScore={targetScore}
+            remainingPuzzles={remainingPuzzles.length}
+            attempts={attempts}
+            showThresholdModal={showThresholdModal}
+            showPerfectRunFailure={showPerfectRunFailure}
+          />
         )}
       </motion.div>
     </>
