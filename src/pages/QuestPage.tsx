@@ -64,6 +64,7 @@ const QuestPage = () => {
     resumePathTimer,
     startBonusMode,
     getStreakMessage,
+    _hasHydrated,
   } = useQuestStore();
 
   const [showHint, setShowHint] = useState(false);
@@ -108,6 +109,13 @@ const QuestPage = () => {
   const scoreProgress = progress.isBonusMode
     ? Math.round((completedBonusIds.length / totalBonus) * 100)
     : Math.round((completedNonBonusIds.length / totalNonBonus) * 100);
+
+  // Navigation Bouncer: Redirect to hub if path is already completed (prevents URL hacking)
+  useEffect(() => {
+    if (_hasHydrated && keysCollected.includes(pathId) && !progress.isBonusMode) {
+      navigate('/hub');
+    }
+  }, [_hasHydrated, keysCollected, pathId, navigate, progress.isBonusMode]);
 
   useEffect(() => {
     if (!currentPuzzleId) {

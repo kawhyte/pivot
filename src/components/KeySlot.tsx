@@ -1,9 +1,9 @@
 'use client';
 
-import { Key, Clock, Sparkles } from 'lucide-react';
+import { Clock, Trophy } from 'lucide-react';
 import { PATH_METADATA, type PathId } from '@/lib/paths';
 import type { PathStats } from '@/store/useQuestStore';
-import { getCountdownText, isPathUnlocked, getDependencyName } from '@/lib/path-unlock';
+import { getCountdownText, isPathUnlocked } from '@/lib/path-unlock';
 import { formatTime } from '@/lib/themed-titles';
 import { TARGET_SCORES, getTotalPuzzles } from '@/data/puzzles';
 import { Badge } from './ui/badge';
@@ -36,9 +36,9 @@ export const KeySlot = ({
   const path = PATH_METADATA[pathId];
   const unlocked = isPathUnlocked(pathId, completedPathsData, isTester);
   const countdownText = getCountdownText(pathId, completedPathsData, isTester);
-  const dependencyName = getDependencyName(pathId);
 
-  const isClickable = isTester ? unlocked : (unlocked && !isCollected);
+  // Allow clicking on collected paths to view Hall of Fame
+  const isClickable = isTester ? true : (unlocked && !isCollected) || (isCollected);
 
   const targetScore = TARGET_SCORES[pathId];
   const totalPuzzles = getTotalPuzzles(pathId);
@@ -48,11 +48,11 @@ export const KeySlot = ({
   const getPathIcon = () => {
     switch (pathId) {
       case 1:
-        return <img src='/images/cup.png' alt="Pop Culture" />;
+        return <img src='/images/cup.png' alt="Pop Culture" className="max-h-12" />;
       case 2:
-        return <img src='/images/green-shape.png' alt="Renaissance" />;
+        return <img src='/images/green-shape.png' alt="Renaissance" className="max-h-12" />;
       case 3:
-        return <img className="h-20 w-20" src='/images/heart.svg' alt="Heart" />;
+        return <img className="max-h-12" src='/images/heart.svg' alt="Heart" />;
       default:
         return null;
     }
@@ -61,11 +61,11 @@ export const KeySlot = ({
   return (
     <button
       onClick={isClickable ? onClick : undefined}
-      disabled={!isClickable}
       className={cn(
-        "relative w-full duo-card p-6 transition-all",
+        "relative w-full duo-card p-6 transition-all text-left",
         isClickable ? 'hover:shadow-lg cursor-pointer' : 'cursor-default',
-        !unlocked && !isTester ? 'opacity-60' : ''
+        !unlocked && !isTester ? 'opacity-60' : '',
+        isCollected ? 'border-amber-400 bg-amber-50/30' : ''
       )}
     >
       {/* Background Photo Overlay */}
@@ -82,67 +82,47 @@ export const KeySlot = ({
 
       {/* Day Number Badge */}
       <div className="absolute top-4 left-4 z-20">
-        <Badge variant={'outline'}>{pathNumber}</Badge>
+        <Badge
+          variant={isCollected ? "default" : "outline"}
+          className={isCollected ? "bg-amber-500" : ""}
+        >
+          {isCollected ? <Trophy className="h-3 w-3" /> : pathNumber}
+        </Badge>
       </div>
 
       {/* Icon Section */}
       <div className="mb-4 flex items-center justify-center relative">
         <div className="relative z-10">
           {isCollected ? (
-            <div className="relative flex items-center justify-center">
-              <Key
-                className="h-12 w-12 relative z-10"
-                strokeWidth={1.5}
-                style={{ color: path.colors.primary }}
-              />
-            </div>
+            <Trophy className="h-12 w-12 text-amber-500 animate-bounce" />
           ) : unlocked ? (
             <div className="relative flex flex-col items-center gap-2">
               {getPathIcon()}
             </div>
           ) : (
-            <Clock
-              className="h-12 w-12 text-neutral-400"
-              strokeWidth={1.5}
-            />
+            <Clock className="h-12 w-12 text-neutral-400" strokeWidth={1.5} />
           )}
         </div>
       </div>
 
       {/* Path Info */}
       <div className="text-center relative z-10">
-        <h3 className="mb-1 text-2xl font-bold text-neutral-900">
-          {path.name}
-        </h3>
+        <h3 className="mb-1 text-2xl font-bold text-neutral-900">{path.name}</h3>
         <p className="text-lg text-neutral-700">{path.subtitle}</p>
       </div>
 
-      {/* Stats for Collected Paths */}
+      {/* PRIORITY 1: Mastered State (when isCollected is true) */}
       {isCollected && stats ? (
-        <div className="mt-4 space-y-3 relative z-10">
-          <div className="flex items-center justify-center gap-1.5">
-            <p className="text-lg font-semibold text-neutral-900">
-              {stats.themedTitle}
-            </p>
+        <div className="mt-4 space-y-2 text-center bg-white/60 p-3 rounded-xl border border-amber-200 relative z-10">
+          <p className="text-sm font-black text-amber-600 uppercase tracking-widest">Mastered</p>
+          <p className="font-bold text-neutral-800">{stats.themedTitle || "The One with the Victory!"}</p>
+          <div className="flex justify-center gap-4 text-xs font-bold text-neutral-500">
+            <span>⏱️ {formatTime(stats.completionTime)}</span>
+            <span>🎯 {stats.accuracy}%</span>
           </div>
-          <div className="flex items-center justify-center gap-4 text-lg">
-            <div className="flex items-center gap-1 text-neutral-700">
-              <Clock className="h-3.5 w-3.5" />
-              <span className="font-medium">{formatTime(stats.completionTime)}</span>
-            </div>
-            <div className="h-3 w-px bg-neutral-300" />
-            <div className="flex items-center gap-1 text-neutral-700">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span className="font-medium">{stats.accuracy}%</span>
-            </div>
+          <div className="mt-2 inline-flex items-center gap-2 px-4 py-1 text-sm font-bold rounded-lg bg-amber-500 text-white">
+            View Hall of Fame →
           </div>
-          {isTester && (
-            <div className="flex justify-center mt-2">
-              <div className="inline-flex items-center gap-2 px-4 py-2 text-base font-semibold rounded-lg bg-cyan-500 text-white">
-                <span>Re-Test Quest →</span>
-              </div>
-            </div>
-          )}
         </div>
       ) : hasStarted ? (
         <div className="mt-4 space-y-3 relative z-10">
@@ -166,27 +146,20 @@ export const KeySlot = ({
             </span>
           </div>
           <div className="flex justify-center">
-            {/* FIX: Changed from Button to div to prevent nested button error */}
-            <div
-              className={cn(
-                "inline-flex items-center justify-center gap-2 px-4 py-2 text-base font-semibold rounded-lg transition-all",
-                "bg-duolingo-green text-white hover:bg-duolingo-green/90"
-              )}
-            >
+            <div className={cn(
+              "inline-flex items-center justify-center gap-2 px-4 py-2 text-base font-semibold rounded-lg transition-all",
+              "bg-duolingo-green text-white hover:bg-duolingo-green/90"
+            )}>
               Continue →
             </div>
           </div>
         </div>
       ) : (
         <div className="mt-4 flex justify-center relative z-10">
-          <div
-            className={cn(
-              "inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg",
-              unlocked
-                ? 'bg-duolingo-green text-white'
-                : 'bg-neutral-200 text-neutral-600'
-            )}
-          >
+          <div className={cn(
+            "inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg",
+            unlocked ? 'bg-duolingo-green text-white' : 'bg-neutral-200 text-neutral-600'
+          )}>
             {unlocked ? (
               <span>Start Quest →</span>
             ) : (
