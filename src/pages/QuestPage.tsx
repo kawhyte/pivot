@@ -24,6 +24,7 @@ import { PerfectRunFailureModal } from '@/components/quest/PerfectRunFailureModa
 import { DetailedStatsScreen } from '@/components/quest/DetailedStatsScreen';
 import { QuestionSkippedToast } from '@/components/quest/QuestionSkippedToast';
 import { QuestSimulationToolbar } from '@/components/quest/QuestSimulationToolbar';
+import { SuddenDeathTransition } from '@/components/quest/SuddenDeathTransition';
 import { cn } from '@/lib/utils';
 import type { ValidationResult } from '@/types/puzzle';
 
@@ -117,6 +118,9 @@ const QuestPage = () => {
 
   // NEW: Bonus Mode Start Modal
   const [showBonusModeStartModal, setShowBonusModeStartModal] = useState(false);
+
+  // NEW: Sudden Death Transition
+  const [isTransitioningToBonus, setIsTransitioningToBonus] = useState(false);
 
   const totalPuzzles = getTotalPuzzles(pathId);
   const totalNonBonus = getTotalNonBonusPuzzles(pathId);
@@ -414,6 +418,15 @@ const QuestPage = () => {
     } else {
       // WRONG ANSWER
 
+      // NEW: Bonus Mode (Sudden Death) failure check - ONE wrong answer ends attempt
+      if (progress.isBonusMode) {
+        // Submit the wrong answer first (this will call endBonusMode internally)
+        await submitAnswer(pathId, currentPuzzleId, false, 1.0, timeSpent);
+        setShowPerfectRunFailure(true);
+        setIsSubmitting(false);
+        return; // Exit early, modal will handle navigation
+      }
+
       // NEW: Perfect Run failure check - ONE wrong answer ends attempt
       if (progress.isPerfectRunActive) {
         endPerfectRun(pathId, false);
@@ -607,17 +620,37 @@ const QuestPage = () => {
   }
 
   return (
-    <div className={`flex min-h-screen flex-col ${
-      progress.isBonusMode
-        ? 'bg-zinc-950' // Hardcore theme for bonus mode
-        : isTester
-        ? 'bg-zinc-950 tester-mode-quest'
-        : 'bg-gradient-to-br from-festive-cream via-festive-peach/20 to-festive-cream'
-    }`}>
+    <>
+      {/* Sudden Death Transition Overlay */}
+      <SuddenDeathTransition
+        show={isTransitioningToBonus}
+        onComplete={async () => {
+          setIsTransitioningToBonus(false);
+          await startBonusMode(pathId);
+          // Load first bonus puzzle
+          const nextPuzzle = getNextUnsolvedPuzzle(pathId);
+          if (nextPuzzle) {
+            handleNavigate(nextPuzzle);
+          }
+        }}
+      />
+
+      {/* Main Quest Page with Hardcore Theme Filter */}
+      <motion.div
+        animate={progress.isBonusMode ? { filter: 'grayscale(20%) contrast(120%)' } : { filter: 'grayscale(0%) contrast(100%)' }}
+        transition={{ duration: 0.5 }}
+        className={`flex min-h-screen flex-col ${
+          progress.isBonusMode
+            ? 'bg-zinc-950' // Hardcore theme for bonus mode
+            : isTester
+            ? 'bg-zinc-950 tester-mode-quest'
+            : 'bg-gradient-to-br from-festive-cream via-festive-peach/20 to-festive-cream'
+        }`}
+      >
       <header className={cn(
   "fixed top-0 left-0 right-0 z-50 border-b backdrop-blur-md h-16 transition-colors duration-300",
   progress.isBonusMode
-    ? "bg-zinc-950/90 border-red-900" // Hardcore theme for bonus mode
+    ? "bg-zinc-950/90 border-red-900 border-b-4 border-red-600/50" // Hardcore theme for bonus mode with danger border
     : isTester
     ? "bg-zinc-950/90 border-zinc-800"
     : "bg-white/90 border-neutral-100"
@@ -706,6 +739,9 @@ const QuestPage = () => {
 
       {/* Spacer for fixed header */}
       <div className="h-14" />
+
+      {/* Gap between banner and content - increased for bonus mode */}
+      <div className={progress.isBonusMode ? 'mb-12' : 'mb-0'} />
 
       {/* HARDCORE BANNER (Sudden Death Mode) */}
       {progress.isBonusMode && (
@@ -810,12 +846,8 @@ const QuestPage = () => {
                 <Button
                   onClick={async () => {
                     setShowBonusModeStartModal(false);
-                    await startBonusMode(pathId);
-                    // Load first bonus puzzle
-                    const nextPuzzle = getNextUnsolvedPuzzle(pathId);
-                    if (nextPuzzle) {
-                      handleNavigate(nextPuzzle);
-                    }
+                    // Start transition sequence
+                    setIsTransitioningToBonus(true);
                   }}
                   className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-black py-6 rounded-xl text-lg shadow-[0_0_20px_rgba(220,38,38,0.4)]"
                 >
@@ -863,123 +895,125 @@ const QuestPage = () => {
 
       {/* Main Content - Hidden when modals are showing to prevent ghost questions */}
       {!showThresholdModal && !showCompletion && !isPathCompleted && (
-        <main className="flex flex-1 flex-col px-6 pt-20 pb-24">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={puzzle.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <PuzzleRenderer
-                puzzle={puzzle}
-                onSubmit={handleSubmit}
-                showHint={showHint}
-                isSubmitting={isSubmitting}
-                validationResult={validationResult}
-                pathId={pathId}
-                currentMistakes={currentRun.mistakes}
-                currentScore={currentScore}
-                targetScore={targetScore}
-                shake={shake}
-                isTester={isTester}
-              />
+        <main className="flex flex-1 flex-col px-6 pt-20 pb-12">
+          <div className="max-w-xl mx-auto w-full">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={puzzle.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-8"
+              >
+                <PuzzleRenderer
+                  puzzle={puzzle}
+                  onSubmit={handleSubmit}
+                  showHint={showHint}
+                  isSubmitting={isSubmitting}
+                  validationResult={validationResult}
+                  pathId={pathId}
+                  currentMistakes={currentRun.mistakes}
+                  currentScore={currentScore}
+                  targetScore={targetScore}
+                  shake={shake}
+                  isTester={isTester}
+                />
 
-              {/* Skip Button */}
-              {!isSubmitting && currentPuzzleId && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="mx-auto mt-4 w-full max-w-lg"
-                >
-                  <Button
-                    onClick={handleSkip}
-                    variant="ghost"
-                    className={cn(
-                      "w-full text-center text-base transition-colors",
-                      isTester
-                        ? 'text-zinc-400 hover:text-cyan-400 hover:bg-transparent'
-                        : 'text-zinc-500 hover:text-zinc-700 hover:bg-transparent'
-                    )}
+                {/* Skip Button */}
+                {!isSubmitting && currentPuzzleId && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
                   >
-                    Skip Question for Now →
-                  </Button>
-                </motion.div>
-              )}
+                    <Button
+                      onClick={handleSkip}
+                      variant="ghost"
+                      className={cn(
+                        "w-full text-center text-base transition-colors",
+                        isTester
+                          ? 'text-zinc-400 hover:text-cyan-400 hover:bg-transparent'
+                          : 'text-zinc-500 hover:text-zinc-700 hover:bg-transparent'
+                      )}
+                    >
+                      Skip Question for Now →
+                    </Button>
+                  </motion.div>
+                )}
 
-              {/* Finish Button - Show at 93% threshold */}
-              {showFinishButton && (
+                {/* Finish Button - Show at 93% threshold */}
+                {showFinishButton && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <Button
+                      onClick={() => {
+                        const accuracy = Math.round(((progress.completedIds.length / totalPuzzles) * 100));
+                        const stats = {
+                          completionTime: 0,
+                          accuracy,
+                          mistakes: progress.mistakes,
+                          themedTitle: getThemedTitle(pathId, accuracy),
+                          completedAt: Date.now(),
+                        };
+
+                        setShowCompletion(true);
+                        if (!keysCollected.includes(pathId)) {
+                          addKey(pathId, stats);
+                        }
+                      }}
+                      variant="doodle"
+                      size="lg"
+                      className={cn(
+                        "w-full",
+                        isTester && 'bg-cyan-600 hover:bg-cyan-500'
+                      )}
+                    >
+                      Finish & Claim Key
+                    </Button>
+
+                    {/* Hint Text - Only at 95%+ */}
+                    {isCompletionistPending && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-2 text-center text-sm text-neutral-700 font-semibold"
+                      >
+                        Go for 100%?
+                      </motion.p>
+                    )}
+                  </motion.div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Feedback Message */}
+          <div className="max-w-xl mx-auto w-full mt-6">
+            <AnimatePresence>
+              {feedback && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="mx-auto mt-8 w-full max-w-lg"
+                  exit={{ opacity: 0, y: -20 }}
                 >
-                  <Button
-                    onClick={() => {
-                      const accuracy = Math.round(((progress.completedIds.length / totalPuzzles) * 100));
-                      const stats = {
-                        completionTime: 0,
-                        accuracy,
-                        mistakes: progress.mistakes,
-                        themedTitle: getThemedTitle(pathId, accuracy),
-                        completedAt: Date.now(),
-                      };
-
-                      setShowCompletion(true);
-                      if (!keysCollected.includes(pathId)) {
-                        addKey(pathId, stats);
-                      }
-                    }}
-                    variant="doodle"
-                    size="lg"
+                  <div
                     className={cn(
-                      "w-full",
-                      isTester && 'bg-cyan-600 hover:bg-cyan-500'
+                      "doodle-sticker p-4 text-center font-bold",
+                      feedback.type === 'success'
+                        ? 'bg-success-bg'
+                        : 'bg-red-50'
                     )}
                   >
-                    Finish & Claim Key
-                  </Button>
-
-                  {/* Hint Text - Only at 95%+ */}
-                  {isCompletionistPending && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="mt-2 text-center text-sm text-neutral-700 font-semibold"
-                    >
-                      Go for 100%?
-                    </motion.p>
-                  )}
+                    {feedback.message}
+                  </div>
                 </motion.div>
               )}
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Feedback Message */}
-          <AnimatePresence>
-            {feedback && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="mx-auto mt-6 w-full max-w-lg"
-              >
-                <div
-                  className={cn(
-                    "doodle-sticker p-4 text-center font-bold",
-                    feedback.type === 'success'
-                      ? 'bg-success-bg'
-                      : 'bg-red-50'
-                  )}
-                >
-                  {feedback.message}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+            </AnimatePresence>
+          </div>
         </main>
       )}
 
@@ -1008,7 +1042,8 @@ const QuestPage = () => {
           showPerfectRunFailure={showPerfectRunFailure}
         />
       )}
-    </div>
+      </motion.div>
+    </>
   );
 };
 

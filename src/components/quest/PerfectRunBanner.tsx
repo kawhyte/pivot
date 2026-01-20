@@ -32,10 +32,10 @@ export const PerfectRunBanner = ({
       <div className={`
         ${isTester
           ? 'bg-gradient-to-r from-cyan-900 via-cyan-600 to-cyan-900'
-          : 'bg-gradient-to-r from-red-900 via-red-600 to-red-900'
+          : 'bg-gradient-to-r from-red-950 via-red-600 to-red-950'
         }
         animate-pulse
-        shadow-[0_0_15px_rgba(220,38,38,0.5)]
+        shadow-[0_0_20px_rgba(220,38,38,0.5)]
         px-4 py-3
       `}>
         <div className="flex items-center justify-center gap-3 text-xs sm:gap-4 sm:text-sm text-white">
@@ -73,7 +73,7 @@ export const PerfectRunBanner = ({
           <div className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-300" />
             <span className="font-black uppercase tracking-tighter text-white text-base sm:text-lg">
-              ONE MISTAKE = END
+              ONE STRIKE = END
             </span>
           </div>
         </div>

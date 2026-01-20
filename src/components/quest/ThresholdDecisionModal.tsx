@@ -45,8 +45,8 @@ export const ThresholdDecisionModal = ({
 
   return (
     <Dialog open={true} onOpenChange={() => {}}>
-      <DialogContent className={`max-w-md border-4 shadow-2xl p-6 ${isTester ? 'bg-zinc-900 border-cyan-600' : 'bg-white'}`}>
-        <DialogHeader className="space-y-4">
+      <DialogContent className={`max-w-md border-4 shadow-2xl p-8 ${isTester ? 'bg-zinc-900 border-cyan-600' : 'bg-white'}`}>
+        <DialogHeader className="space-y-4 flex flex-col items-center text-center">
           {/* Celebration Icon */}
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -121,46 +121,49 @@ export const ThresholdDecisionModal = ({
           Choose your path:
         </motion.div>
 
-        {/* Option 1: Claim Key & Stop */}
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          onClick={() => onDecision('claim')}
-          className={`duo-button mb-3 w-full py-4 text-white ${
-            isTester
-              ? 'bg-cyan-600 hover:bg-cyan-500'
-              : 'bg-duolingo-green hover:bg-duolingo-green-dark'
-          }`}
-        >
-          <div className="flex items-center justify-center gap-2">
-            <Trophy className="h-5 w-5" />
-            <span className="font-bold">Claim Key & Stop</span>
-          </div>
-          <p className="mt-1 text-xs opacity-90">Keep your current progress</p>
-        </motion.button>
+        {/* Button Container with improved spacing */}
+        <div className="space-y-4">
+          {/* Option 1: Claim Key & Stop */}
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            onClick={() => onDecision('claim')}
+            className={`duo-button w-full py-4 text-white ${
+              isTester
+                ? 'bg-cyan-600 hover:bg-cyan-500'
+                : 'bg-duolingo-green hover:bg-duolingo-green-dark'
+            }`}
+          >
+            <div className="flex items-center justify-center gap-2">
+              <Trophy className="h-5 w-5" />
+              <span className="font-bold">Claim Key & Stop</span>
+            </div>
+            <p className="mt-1 text-xs opacity-90">Keep your current progress</p>
+          </motion.button>
 
-        {/* Option 2: Go for 100% */}
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          onClick={() => onDecision('perfect-run')}
-          className={`duo-button w-full py-4 ${isTester ? 'text-white' : 'text-neutral-900'}`}
-          style={{
-            background: `linear-gradient(135deg, ${pathMeta.colors.primary}20, ${pathMeta.colors.secondary}20)`,
-            borderColor: pathMeta.colors.primary,
-            borderWidth: '2px',
-          }}
-        >
-          <div className="flex items-center justify-center gap-2">
-            <Sparkles className="h-5 w-5" style={{ color: pathMeta.colors.primary }} />
-            <span className="font-bold">Go for 100% Mastery</span>
-          </div>
-          <p className="mt-1 text-xs opacity-75">
-            Perfect Run: {remainingPuzzles} question{remainingPuzzles !== 1 ? 's' : ''}
-          </p>
-        </motion.button>
+          {/* Option 2: Go for 100% */}
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            onClick={() => onDecision('perfect-run')}
+            className={`duo-button w-full py-4 ${isTester ? 'text-white' : 'text-neutral-900'}`}
+            style={{
+              background: `linear-gradient(135deg, ${pathMeta.colors.primary}20, ${pathMeta.colors.secondary}20)`,
+              borderColor: pathMeta.colors.primary,
+              borderWidth: '2px',
+            }}
+          >
+            <div className="flex items-center justify-center gap-2">
+              <Sparkles className="h-5 w-5" style={{ color: pathMeta.colors.primary }} />
+              <span className="font-bold">Go for 100% Mastery</span>
+            </div>
+            <p className="mt-1 text-xs opacity-75">
+              Perfect Run: {remainingPuzzles} question{remainingPuzzles !== 1 ? 's' : ''}
+            </p>
+          </motion.button>
+        </div>
 
         {/* Warning Message */}
         <motion.div
