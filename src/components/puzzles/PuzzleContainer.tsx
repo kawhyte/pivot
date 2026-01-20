@@ -12,7 +12,7 @@ interface PuzzleContainerProps {
   question: string;
   hint?: string;
   showHint: boolean;
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty: 'easy' | 'medium' | 'hard'| 'very-hard';
   pathId: PathId;
   currentMistakes: number;
   currentScore: number;

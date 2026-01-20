@@ -26,19 +26,12 @@ import { SuddenDeathTransition } from '@/components/quest/SuddenDeathTransition'
 import { cn } from '@/lib/utils';
 import type { ValidationResult } from '@/types/puzzle';
 
-/**
- * Get themed pun message for first strike (warning before skip)
- */
 const getFirstStrikeMessage = (pathId: PathId): string => {
   switch (pathId) {
-    case 1: 
-      return "Pivot! That's one strike. Don't make us go on a 'break' from this question! ☕";
-    case 2: 
-      return "Turbulence! One more wrong move and we're re-routing your flight. ✈️";
-    case 3: 
-      return "Memory foggy? One more guess before we save this for the scrapbook! ❤️";
-    default:
-      return "That's strike one! One more wrong and we're moving on...";
+    case 1: return "Pivot! That's one strike. Don't make us go on a 'break' from this question! ☕";
+    case 2: return "Turbulence! One more wrong move and we're re-routing your flight. ✈️";
+    case 3: return "Memory foggy? One more guess before we save this for the scrapbook! ❤️";
+    default: return "That's strike one! One more wrong and we're moving on...";
   }
 };
 
@@ -104,13 +97,12 @@ const QuestPage = () => {
   );
 
   const completedNonBonusIds = progress.completedIds.filter(id => {
-    const puzzle = allPuzzles.find(p => p.id === id);
-    return puzzle && !puzzle.isBonus;
+    const p = allPuzzles.find(item => item.id === id);
+    return p && !p.isBonus;
   });
-  
   const completedBonusIds = progress.completedIds.filter(id => {
-    const puzzle = allPuzzles.find(p => p.id === id);
-    return puzzle && puzzle.isBonus === true;
+    const p = allPuzzles.find(item => item.id === id);
+    return p && p.isBonus === true;
   });
 
   const scoreProgress = progress.isBonusMode
@@ -120,9 +112,7 @@ const QuestPage = () => {
   useEffect(() => {
     if (!currentPuzzleId) {
       const nextPuzzle = getNextUnsolvedPuzzle(pathId);
-      if (nextPuzzle) {
-        setCurrentPuzzle(nextPuzzle);
-      }
+      if (nextPuzzle) setCurrentPuzzle(nextPuzzle);
     }
   }, [pathId, currentPuzzleId, setCurrentPuzzle, getNextUnsolvedPuzzle]);
 
@@ -132,88 +122,16 @@ const QuestPage = () => {
   }, [pathId, startNewRun, resetRun]);
 
   useEffect(() => {
-    if (isPathCompleted && !progress.isBonusMode) return;
-    if (!puzzle && currentPuzzleId) navigate('/hub');
-  }, [puzzle, currentPuzzleId, isPathCompleted, progress.isBonusMode, navigate]);
-
-  useEffect(() => {
-    setAttempts(0);
-    setShake(false);
-  }, [currentPuzzleId]);
-
-  useEffect(() => {
     const baseComplete = completedNonBonusIds.length === totalNonBonus;
     if (baseComplete && !progress.isBonusMode && !isTransitioningToBonus && totalBonus > 0) {
       setIsTransitioningToBonus(true);
     }
   }, [completedNonBonusIds.length, totalNonBonus, progress.isBonusMode, isTransitioningToBonus, totalBonus]);
 
-  useEffect(() => {
-    if (currentPuzzleId) setPuzzleStartTime(Date.now());
-  }, [currentPuzzleId]);
-
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      document.hidden ? pausePathTimer(pathId) : resumePathTimer(pathId);
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [pathId, pausePathTimer, resumePathTimer]);
-
-  const fireConfetti = () => {
-    confetti({
-      particleCount: 50,
-      spread: 60,
-      origin: { y: 0.6 },
-      colors: [pathMeta.colors.primary, pathMeta.colors.secondary],
-    });
-  };
-
-  const handleNavigate = (puzzleId: string) => {
-    setCurrentPuzzle(puzzleId);
-    setFeedback(null);
-    setValidationResult(null);
-    setShowHint(false);
-  };
-
-  const handleSkip = async () => {
-    if (!currentPuzzleId) return;
-    await skipPuzzle(pathId, currentPuzzleId);
-    const nextPuzzle = getNextUnsolvedPuzzle(pathId, currentPuzzleId);
-    if (nextPuzzle) handleNavigate(nextPuzzle);
-  };
-
-  const handleThresholdDecision = (decision: 'claim' | 'perfect-run') => {
-    setShowThresholdModal(false);
-    if (decision === 'claim') {
-      const accuracy = calculateAccuracy(totalPuzzles, progress.mistakes);
-      const stats = {
-        completionTime: progress.totalTimeSpent,
-        accuracy,
-        mistakes: progress.mistakes,
-        themedTitle: getThemedTitle(pathId, accuracy),
-        completedAt: Date.now(),
-        totalQuestions: totalPuzzles,
-        firstTryCount: Object.values(progress.puzzleAttempts).filter((p) => p.isFirstTry).length,
-        firstTryRate: totalPuzzles > 0 ? Math.round((Object.values(progress.puzzleAttempts).filter((p) => p.isFirstTry).length / totalPuzzles) * 100) : 0,
-        skippedCount: progress.skippedIds.length,
-        avgTimePerQuestion: progress.totalTimeSpent > 0 && totalPuzzles > 0 ? Math.round(progress.totalTimeSpent / totalPuzzles) : 0,
-        perfectRunCompleted: false,
-        thresholdDecision: '91%' as const,
-      };
-      setShowCompletion(true);
-      if (!keysCollected.includes(pathId)) addKey(pathId, stats);
-    } else {
-      startPerfectRun(pathId);
-      startPathTimer(pathId);
-    }
-  };
-
   const handleSubmit = async (answer: string | number) => {
     if (!puzzle || !currentPuzzleId || isSubmitting) return;
 
     setIsSubmitting(true);
-    setFeedback(null);
     const timeSpent = Date.now() - puzzleStartTime;
     await new Promise((resolve) => setTimeout(resolve, 600));
 
@@ -224,37 +142,30 @@ const QuestPage = () => {
       setFeedback({ type: 'success', message: result.message });
       setShowSuccessOverlay(true);
       setTimeout(() => setShowSuccessOverlay(false), 1200);
-      fireConfetti();
+      confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
 
+      // Submit and await update to DB/Store
       await submitAnswer(pathId, currentPuzzleId, true, 1.0, timeSpent);
       setPuzzleStartTime(Date.now());
 
-      if (!progress.isPerfectRunActive) {
-        if (!keysCollected.includes(pathId) && getPathScore(pathId) >= targetScore) {
-          setShowKeyUnlockedToast(true);
-        }
-      }
-
-      // FIX: Store is already updated, check for true completion
-      const allCompleted = progress.completedIds.length === totalPuzzles;
+      // FIX: Pull FRESH state after the await to check absolute latest completion
+      const freshProgress = useQuestStore.getState().pathProgress[pathId];
+      const allCompleted = freshProgress.completedIds.length === totalPuzzles;
 
       setTimeout(() => {
         if (allCompleted) {
-          const accuracy = calculateAccuracy(totalPuzzles, progress.mistakes);
+          const accuracy = calculateAccuracy(totalPuzzles, freshProgress.mistakes);
           const stats = {
-            completionTime: progress.totalTimeSpent,
+            completionTime: freshProgress.totalTimeSpent,
             accuracy,
-            mistakes: progress.mistakes,
+            mistakes: freshProgress.mistakes,
             themedTitle: getThemedTitle(pathId, accuracy),
             completedAt: Date.now(),
             totalQuestions: totalPuzzles,
-            firstTryCount: Object.values(progress.puzzleAttempts).filter((p) => p.isFirstTry).length,
-            firstTryRate: totalPuzzles > 0 ? Math.round((Object.values(progress.puzzleAttempts).filter((p) => p.isFirstTry).length / totalPuzzles) * 100) : 0,
-            skippedCount: progress.skippedIds.length,
-            avgTimePerQuestion: progress.totalTimeSpent > 0 && totalPuzzles > 0 ? Math.round(progress.totalTimeSpent / totalPuzzles) : 0,
-            perfectRunCompleted: progress.isPerfectRunActive,
-            thresholdDecision: progress.isPerfectRunActive ? '100%' as const : '91%' as const,
+            perfectRunCompleted: freshProgress.isBonusMode,
+            thresholdDecision: freshProgress.isBonusMode ? '100%' as const : '91%' as const,
           };
+
           setShowCompletion(true);
           if (!keysCollected.includes(pathId)) addKey(pathId, stats);
         } else {
@@ -266,56 +177,43 @@ const QuestPage = () => {
       if (progress.isBonusMode) {
         await submitAnswer(pathId, currentPuzzleId, false, 1.0, timeSpent);
         setShowPerfectRunFailure(true);
-        setIsSubmitting(false);
-        return;
-      }
-
-      if (progress.isPerfectRunActive) {
+      } else if (progress.isPerfectRunActive) {
         endPerfectRun(pathId, false);
         setShowPerfectRunFailure(true);
-        setIsSubmitting(false);
-        return;
-      }
-
-      const mistakeWeight = result.status === 'close' ? 0.5 : 1.0;
-      await submitAnswer(pathId, currentPuzzleId, false, mistakeWeight, timeSpent);
-      recordMistake();
-      setPuzzleStartTime(Date.now());
-
-      if (attempts === 0) {
-        setFeedback({ type: 'error', message: getFirstStrikeMessage(pathId) });
-        setShake(true);
-        setTimeout(() => setShake(false), 400);
-        setAttempts(1);
       } else {
-        setShowSkippedToast(true);
-        await skipPuzzle(pathId, currentPuzzleId);
-        setTimeout(() => {
-          setShowSkippedToast(false);
-          const nextPuzzle = getNextUnsolvedPuzzle(pathId, currentPuzzleId);
-          if (nextPuzzle) handleNavigate(nextPuzzle);
-          else if (progress.completedIds.length === totalPuzzles) {
-            setShowCompletion(true);
-          }
-        }, 2500);
+        const weight = result.status === 'close' ? 0.5 : 1.0;
+        await submitAnswer(pathId, currentPuzzleId, false, weight, timeSpent);
+        if (attempts === 0) {
+          setFeedback({ type: 'error', message: getFirstStrikeMessage(pathId) });
+          setShake(true);
+          setTimeout(() => setShake(false), 400);
+          setAttempts(1);
+        } else {
+          setShowSkippedToast(true);
+          await skipPuzzle(pathId, currentPuzzleId);
+          setTimeout(() => {
+            setShowSkippedToast(false);
+            const next = getNextUnsolvedPuzzle(pathId, currentPuzzleId);
+            if (next) handleNavigate(next);
+          }, 2500);
+        }
       }
     }
     setIsSubmitting(false);
+  };
+
+  const handleNavigate = (puzzleId: string) => {
+    setCurrentPuzzle(puzzleId);
+    setFeedback(null);
+    setValidationResult(null);
+    setShowHint(false);
   };
 
   const handleBackToVault = () => navigate('/hub');
 
   if ((showCompletion || isPathCompleted) && !progress.isBonusMode && !isTransitioningToBonus) {
     const stats = getPathStats(pathId);
-    if (stats) return (
-      <DetailedStatsScreen 
-        pathId={pathId} 
-        stats={stats} 
-        onReturnToHub={handleBackToVault} 
-        showPerfectRunBadge={stats.perfectRunCompleted || false} 
-        isTester={isTester} 
-      />
-    );
+    if (stats) return <DetailedStatsScreen pathId={pathId} stats={stats} onReturnToHub={handleBackToVault} showPerfectRunBadge={stats.perfectRunCompleted} isTester={isTester} />;
   }
 
   if (!puzzle) return null;
@@ -332,69 +230,49 @@ const QuestPage = () => {
         }}
       />
 
-      <motion.div
-        animate={progress.isBonusMode ? { filter: 'grayscale(20%) contrast(120%)' } : { filter: 'grayscale(0%) contrast(100%)' }}
-        className={`flex min-h-screen flex-col ${progress.isBonusMode ? 'bg-zinc-950' : isTester ? 'bg-zinc-950 tester-mode-quest' : 'bg-gradient-to-br from-festive-cream via-festive-peach/20 to-festive-cream'}`}
+      <motion.div 
+        animate={progress.isBonusMode ? { filter: 'grayscale(20%) contrast(120%)' } : { filter: 'none' }}
+        className={cn("flex min-h-screen flex-col", progress.isBonusMode ? 'bg-zinc-950' : 'bg-warm-cream')}
       >
-        <header className={cn("fixed top-0 left-0 right-0 z-50 border-b h-16 transition-colors", progress.isBonusMode ? "bg-zinc-950/90 border-red-900 border-b-4 border-red-600/50" : "bg-white/90 border-neutral-100")}>
-          <div className="mx-auto flex h-full max-w-3xl items-center justify-between px-4 sm:px-6">
-            <div className="flex items-center gap-3">
-              <Button onClick={handleBackToVault} variant="ghost" size="sm" className={cn("h-10 gap-2", progress.isBonusMode ? "text-zinc-400 hover:text-red-400" : "text-neutral-500 hover:text-neutral-900")}>
-                <ArrowLeft className="h-5 w-5" />
-                <span className="hidden md:inline">Exit Mission</span>
-              </Button>
+        <header className={cn("fixed top-0 left-0 right-0 z-50 border-b h-16 transition-colors", progress.isBonusMode ? "bg-zinc-950/90 border-red-900 border-b-4" : "bg-white/90 border-neutral-100")}>
+          <div className="mx-auto flex h-full max-w-3xl items-center justify-between px-6">
+            <Button onClick={handleBackToVault} variant="ghost" className={progress.isBonusMode ? "text-zinc-400" : "text-neutral-500"}>
+              <ArrowLeft className="mr-2 h-5 w-5" /> Exit
+            </Button>
+            <div className="flex flex-col items-center w-40">
+              <span className={cn("text-xs font-black", progress.isBonusMode ? "text-red-400" : "text-duolingo-green")}>{scoreProgress}%</span>
+              <Progress value={scoreProgress} className="h-2" indicatorClassName={progress.isBonusMode ? "bg-red-500" : "bg-duolingo-green"} />
             </div>
-            <div className="flex flex-1 flex-col items-center max-w-[180px]">
-              <div className="flex w-full items-end justify-between px-1">
-                <span className={cn("font-black uppercase tracking-widest", progress.isBonusMode ? "text-red-400" : "text-duolingo-green")}>{scoreProgress}%</span>
-              </div>
-              <Progress value={Math.min(scoreProgress, 100)} className={cn("h-3.5", progress.isBonusMode ? "bg-zinc-900 border-zinc-800" : "bg-neutral-100")} indicatorClassName={progress.isBonusMode ? "bg-red-500" : "bg-duolingo-green"} />
-            </div>
-            <div className="flex items-center"><img src='/images/smile-yellow.svg' className="h-8 w-8" /></div>
+            <img src='/images/smile-yellow.svg' className="h-8 w-8" />
           </div>
         </header>
 
-        <div className="h-14" />
-        <div className={progress.isBonusMode ? 'mb-12' : 'mb-0'} />
-
+        <div className="h-16" />
+        
         {progress.isBonusMode && (
-          <motion.div className="bg-gradient-to-r from-red-950 via-red-600 to-red-950 shadow-lg animate-pulse py-3 text-center">
-            <p className="text-white font-black text-lg uppercase tracking-wider">⚡ SUDDEN DEATH MODE ⚡</p>
-            <p className="text-red-100 text-sm font-bold mt-1">One mistake ends it all. {completedBonusIds.length}/{totalBonus} bonus puzzles completed.</p>
-          </motion.div>
+          <div className="bg-red-600 py-2 text-center text-white font-black animate-pulse">
+            ⚡ SUDDEN DEATH MODE ⚡
+            <p className="text-xs">{completedBonusIds.length}/{totalBonus} bonus puzzles completed</p>
+          </div>
         )}
-
-        <AnimatePresence>
-          {showPerfectRunFailure && (
-            <PerfectRunFailureModal pathId={pathId} streak={progress.perfectRunStreak} remainingPuzzles={remainingPuzzles.length} onClose={() => { setShowPerfectRunFailure(false); navigate('/hub'); }} isTester={isTester} />
-          )}
-        </AnimatePresence>
 
         <SuccessOverlay show={showSuccessOverlay} message={getStreakMessage()} />
 
-        {/* FIX: Use mode-aware gating to show puzzles during Sudden Death */}
+        {/* FIX: Gating logic allows content during Sudden Death */}
         {!showThresholdModal && !showCompletion && (!isPathCompleted || progress.isBonusMode) && (
-          <main className="flex flex-1 flex-col px-6 pt-20 pb-12">
+          <main className="flex flex-1 flex-col px-6 pt-10 pb-12">
             <div className="max-w-xl mx-auto w-full">
-              <AnimatePresence mode="wait">
-                <motion.div key={puzzle.id} className="space-y-8">
-                  <PuzzleRenderer puzzle={puzzle} onSubmit={handleSubmit} showHint={showHint} isSubmitting={isSubmitting} validationResult={validationResult} pathId={pathId} currentMistakes={currentRun.mistakes} currentScore={currentScore} targetScore={targetScore} shake={shake} isTester={isTester} />
-                  {!isSubmitting && (
-                    <Button onClick={handleSkip} variant="ghost" className="w-full text-zinc-500 hover:text-zinc-700">Skip Question for Now →</Button>
-                  )}
-                </motion.div>
-              </AnimatePresence>
+              <PuzzleRenderer 
+                puzzle={puzzle} 
+                onSubmit={handleSubmit} 
+                isSubmitting={isSubmitting} 
+                validationResult={validationResult} 
+                pathId={pathId} 
+                shake={shake} 
+                isBonusMode={progress.isBonusMode}
+              />
             </div>
-            {feedback && (
-              <motion.div className={cn("max-w-xl mx-auto w-full mt-6 doodle-sticker p-4 font-bold", feedback.type === 'success' ? 'bg-success-bg' : 'bg-red-50')}>
-                {feedback.message}
-              </motion.div>
-            )}
           </main>
-        )}
-
-        {isTester && currentPuzzleId && (
-          <QuestSimulationToolbar pathId={pathId} currentPuzzleId={currentPuzzleId} onSubmit={handleSubmit} currentScore={currentScore} targetScore={targetScore} remainingPuzzles={remainingPuzzles.length} attempts={attempts} showThresholdModal={showThresholdModal} showPerfectRunFailure={showPerfectRunFailure} />
         )}
       </motion.div>
     </>
