@@ -623,10 +623,11 @@ const QuestPage = () => {
         onComplete={async () => {
           setIsTransitioningToBonus(false);
           await startBonusMode(pathId);
-          // Load first bonus puzzle
-          const nextPuzzle = getNextUnsolvedPuzzle(pathId);
-          if (nextPuzzle) {
-            handleNavigate(nextPuzzle);
+          // Force Load: Explicitly find first bonus puzzle to avoid state sync issues
+          const pathConfig = getPathPuzzles(pathId);
+          const firstBonus = pathConfig?.puzzles.find(p => p.isBonus === true);
+          if (firstBonus) {
+            handleNavigate(firstBonus.id);
           }
         }}
       />

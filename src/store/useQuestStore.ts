@@ -611,7 +611,7 @@ export const useQuestStore = create<QuestState>()(
           (p) =>
             !progress.completedIds.includes(p.id) &&
             !progress.skippedIds.includes(p.id) &&
-            (showBonusOnly ? p.isBonus === true : !p.isBonus)
+            (showBonusOnly ? !!p.isBonus : !p.isBonus)
         );
 
         // Exclude the current puzzle ID if provided
@@ -630,7 +630,7 @@ export const useQuestStore = create<QuestState>()(
           (p) =>
             !progress.completedIds.includes(p.id) &&
             progress.skippedIds.includes(p.id) &&
-            (showBonusOnly ? p.isBonus === true : !p.isBonus)
+            (showBonusOnly ? !!p.isBonus : !p.isBonus)
         );
 
         // Exclude the current puzzle ID if provided
