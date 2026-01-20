@@ -6,6 +6,7 @@ import { Check } from 'lucide-react';
 import type { MultipleChoicePuzzle as MultipleChoicePuzzleType } from '@/types/puzzle';
 import { PuzzleContainer } from './PuzzleContainer';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils'; // Ensure you have a utility for class merging
 
 import type { PathId } from '@/store/useQuestStore';
 
@@ -19,6 +20,7 @@ interface MultipleChoicePuzzleProps {
   elapsedTime: number;
   currentScore: number;
   targetScore: number;
+  isBonusMode?: boolean; // Add this prop
 }
 
 export const MultipleChoicePuzzle = ({
@@ -31,6 +33,7 @@ export const MultipleChoicePuzzle = ({
   elapsedTime,
   currentScore,
   targetScore,
+  isBonusMode = false, // Default to false
 }: MultipleChoicePuzzleProps) => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
@@ -50,6 +53,7 @@ export const MultipleChoicePuzzle = ({
       elapsedTime={elapsedTime}
       currentScore={currentScore}
       targetScore={targetScore}
+      isBonusMode={isBonusMode} // Pass down to container
     >
       <div className="space-y-3">
         {puzzle.options.map((option, index) => {
@@ -62,27 +66,32 @@ export const MultipleChoicePuzzle = ({
               disabled={isSubmitting}
               whileHover={{ scale: 1.02, rotate: isSelected ? 0 : 0.5 }}
               whileTap={{ scale: 0.98 }}
-              className={`
-                relative w-full hand-drawn-card border-3 p-5 text-left transition-all shadow-md
-                ${
-                  isSelected
+              className={cn(
+                "relative w-full hand-drawn-card border-3 p-5 text-left transition-all shadow-md",
+                // Conditional styling for Bonus Mode vs Regular Mode
+                isBonusMode
+                  ? isSelected
+                    ? 'border-red-500 bg-red-950/40' 
+                    : 'border-zinc-800 bg-zinc-900/60 hover:border-red-900/50 hover:bg-zinc-900/80'
+                  : isSelected
                     ? 'border-celebration-pink bg-celebration-pink/20'
-                    : 'border-deep-brown/20 bg-white hover:border-celebration-pink/50 hover:bg-warm-cream'
-                }
-                ${isSubmitting ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-              `}
+                    : 'border-deep-brown/20 bg-white hover:border-celebration-pink/50 hover:bg-warm-cream',
+                isSubmitting ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+              )}
             >
               <div className="flex items-center gap-4">
                 {/* Radio Circle with Hand-Drawn Style */}
                 <div
-                  className={`
-                    flex h-7 w-7 flex-shrink-0 items-center justify-center hand-drawn border-3 transition-colors
-                    ${
-                      isSelected
+                  className={cn(
+                    "flex h-7 w-7 flex-shrink-0 items-center justify-center hand-drawn border-3 transition-colors",
+                    isBonusMode
+                      ? isSelected
+                        ? 'border-red-500 bg-red-600'
+                        : 'border-zinc-700 bg-zinc-950'
+                      : isSelected
                         ? 'border-celebration-gold bg-celebration-gold'
                         : 'border-deep-brown/40 bg-white'
-                    }
-                  `}
+                  )}
                 >
                   {isSelected && (
                     <motion.div
@@ -90,13 +99,19 @@ export const MultipleChoicePuzzle = ({
                       animate={{ scale: 1, rotate: 0 }}
                       transition={{ type: 'spring', stiffness: 300 }}
                     >
-                      <Check className="h-5 w-5 text-zinc-950" strokeWidth={3} />
+                      <Check 
+                        className={cn("h-5 w-5", isBonusMode ? "text-white" : "text-zinc-950")} 
+                        strokeWidth={3} 
+                      />
                     </motion.div>
                   )}
                 </div>
 
-                {/* Option Text */}
-                <span className="text-base font-medium text-deep-brown">
+                {/* Option Text - Dynamic Color */}
+                <span className={cn(
+                  "text-base font-medium",
+                  isBonusMode ? "text-white" : "text-deep-brown"
+                )}>
                   {option}
                 </span>
               </div>
@@ -114,7 +129,12 @@ export const MultipleChoicePuzzle = ({
         <Button
           onClick={handleSubmit}
           disabled={selectedOption === null || isSubmitting}
-          className="hand-drawn w-full py-6 text-lg font-semibold text-white bg-festive-coral hover:bg-festive-coral/90 disabled:bg-festive-brown/30 disabled:text-festive-brown/60 shadow-md transition-all"
+          className={cn(
+            "hand-drawn w-full py-6 text-lg font-semibold text-white shadow-md transition-all",
+            isBonusMode
+              ? "bg-red-600 hover:bg-red-500 disabled:bg-zinc-800 disabled:text-zinc-500"
+              : "bg-festive-coral hover:bg-festive-coral/90 disabled:bg-festive-brown/30 disabled:text-festive-brown/60"
+          )}
           size="lg"
         >
           {isSubmitting ? 'Checking...' : 'Submit Answer'}

@@ -10,26 +10,25 @@ interface PuzzleContainerProps {
   question: string;
   hint?: string;
   showHint: boolean;
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty: 'easy' | 'medium' | 'hard'| 'very-hard';
   pathId: PathId;
   currentMistakes: number;
   elapsedTime: number;
   currentScore: number;
   targetScore: number;
   children: ReactNode;
+  show?: 'friends' | 'gilmore';
+  isBonusMode?: boolean; // Added for Sudden Death theming
 }
 
 export const PuzzleContainer = ({
-  question,
+question,
   hint,
   showHint,
   difficulty,
-  pathId,
-  currentMistakes,
-  elapsedTime,
-  currentScore,
-  targetScore,
   children,
+  show,
+  isBonusMode,
 }: PuzzleContainerProps) => {
   const getDifficultyStyles = () => {
     switch (difficulty) {

@@ -60,19 +60,25 @@ export const MultipleChoicePuzzle = ({
 
           return (
             <motion.button
-              key={index}
-              onClick={() => setSelectedOption(index)}
-              disabled={isSubmitting}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              className={cn(
-                "duo-answer-pill w-full text-left",
-                isSelected && 'selected',
-                isSubmitting && 'cursor-not-allowed opacity-50',
-                !isSubmitting && 'cursor-pointer',
-                isBonusMode && 'bg-zinc-900/50 border-red-500/30'
-              )}
-            >
+  key={index}
+  onClick={() => setSelectedOption(index)}
+  disabled={isSubmitting}
+  whileHover={{ scale: 1.01 }}
+  whileTap={{ scale: 0.98 }}
+  className={cn(
+    "duo-answer-pill w-full text-left",
+    // 1. Only apply standard 'selected' styling if NOT in bonus mode
+    isSelected && !isBonusMode && 'selected', 
+    isSubmitting && 'cursor-not-allowed opacity-50',
+    !isSubmitting && 'cursor-pointer',
+    // 2. Enhanced Bonus Mode logic
+    isBonusMode && cn(
+      'bg-zinc-900/50 border-red-500/30',
+      // If selected in bonus mode, make background darker and border brighter
+      isSelected && 'bg-zinc-800 border-red-500 border-[3px]' 
+    )
+  )}
+>
               <div className="flex items-center gap-4">
                 {/* Radio Circle - Clean Duolingo Style */}
                 <div
