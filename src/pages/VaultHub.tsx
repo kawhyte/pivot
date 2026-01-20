@@ -178,11 +178,11 @@ const VaultHub = () => {
         </div>
         <div>
           <h1 className="font-doodle text-5xl text-black leading-none">
-            The Vault
+            Birthday Headquarters
           </h1>
-          <p className="text-[13px] font-bold text-neutral-400 uppercase tracking-widest mt-1">
+          {/* <p className="text-[13px] font-bold text-neutral-400 uppercase tracking-widest mt-1">
             Mission: Birthday
-          </p>
+          </p> */}
         </div>
       </div>
 
@@ -205,7 +205,9 @@ const VaultHub = () => {
     <div className="space-y-3">
       <div className="flex items-end justify-between">
         <p className="text-lg font-medium text-neutral-600 max-w-[200px] leading-tight">
-          Collect <span className="text-duolingo-green font-bold">3 keys</span> to unlock your surprise
+          {/* Collect <span className="text-duolingo-green font-bold">3 keys</span> to unlock your surprise */}
+        
+        Tap any destination to start. No lines, no wait—just your favorite things!
         </p>
         <div className="text-right leading-none">
           <span className="text-2xl font-black text-duolingo-green marker-highlight px-2 py-1 rounded">
@@ -321,7 +323,7 @@ const VaultHub = () => {
                     onClick={() => navigate('/vault')}
                     variant="doodle"
                   >
-                    Open Vault
+                    Open Your Present!
                   </Button>
                 </CardContent>
               </Card>

@@ -47,10 +47,10 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
               <Trophy className="h-6 w-6 text-duolingo-green flex-shrink-0 mt-0.5" />
               <div>
                 <h3 className="text-2xl font-bold text-neutral-900 mb-1">
-                  Your Mission
+                 Your Birthday VIP Pass
                 </h3>
                 <p className="text-lg leading-relaxed text-neutral-700">
-                  Complete 3 quest paths to collect keys and unlock the vault!
+                  Choose any path to begin your adventure! Complete all three to unlock your Grand Surprise.
                 </p>
               </div>
             </div>
@@ -67,7 +67,7 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
               <Target className="h-6 w-6 text-duolingo-green flex-shrink-0 mt-0.5" />
               <div className="flex-1">
                 <h3 className="text-2xl font-bold text-neutral-900 mb-2">
-                  How Scoring Works
+                 Earning Your Wings
                 </h3>
                 <div className="space-y-1.5 text-lg">
                   <div className="flex items-center gap-2">
@@ -110,7 +110,7 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
                   Perfect Run Bonus
                 </h3>
                 <p className="text-lg leading-relaxed text-neutral-700">
-                  Get every question right on your first try for a special surprise!
+                  The Lorelai Special: Get every question right on the first try for a legendary bonus!
                 </p>
               </div>
             </div>

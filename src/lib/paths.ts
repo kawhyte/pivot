@@ -9,24 +9,25 @@ export const PATH_IDS = {
 
 export type PathId = (typeof PATH_IDS)[keyof typeof PATH_IDS];
 
+// src/lib/paths.ts
 export const PATH_METADATA: Record<PathId, { 
   name: string; 
   subtitle: string; 
   colors: { primary: string; secondary: string } 
 }> = {
   [PATH_IDS.POP_CULTURE]: {
-    name: "Pop Culture",
-    subtitle: "TV, Sitcom & Fun",
-    colors: { primary: "#6366f1", secondary: "#fbbf24" }
+    name: "Central Perk & Stars Hollow",
+    subtitle: "Where Coffee Meets the Copper Boom!",
+    colors: { primary: "#CE82FF", secondary: "#FFC800" } // Purple/Yellow (Friends/Gilmore)
   },
   [PATH_IDS.RENAISSANCE]: {
-    name: "Renaissance",
-    subtitle: "I Love to Travel",
-    colors: { primary: "#065f46", secondary: "#d4af37" }
+    name: "The Jetsetter's Voyage",
+    subtitle: "First Class Trivia & Lido Deck Logic",
+    colors: { primary: "#1CB0F6", secondary: "#FFD700" } // Sky Blue/Gold (Planes/Ships)
   },
   [PATH_IDS.HEART]: {
-    name: "Heart",
-    subtitle: "Personal Memories",
-    colors: { primary: "#be123c", secondary: "#fb7185" }
+    name: "The Scrapbook of Us",
+    subtitle: "A Journey Through Our Favorite Memories",
+    colors: { primary: "#FF4B4B", secondary: "#FFC0CB" } // Red/Pink
   }
 };

@@ -24,11 +24,15 @@ import { cn } from '@/lib/utils';
 import type { ValidationResult } from '@/types/puzzle';
 
 const getFirstStrikeMessage = (pathId: PathId): string => {
-  switch (pathId) {
-    case 1: return "Pivot! That's one strike. Don't make us go on a 'break' from this question! ☕";
-    case 2: return "Turbulence! One more wrong move and we're re-routing your flight. ✈️";
-    case 3: return "Memory foggy? One more guess before we save this for the scrapbook! ❤️";
-    default: return "That's strike one! One more wrong and we're moving on...";
+switch (pathId) {
+    case 1: 
+      return "PIVOT! That's a strike. Even Kirk wouldn't have guessed that one! ☕";
+    case 2: 
+      return "Turbulence ahead! One more wrong move and we're re-routing your flight! ✈️";
+    case 3: 
+      return "Memory foggy? One more guess before we save this for the scrapbook! ❤️";
+    default: 
+      return "Strike one! You've got this, Lorelai!";
   }
 };
 

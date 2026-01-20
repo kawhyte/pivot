@@ -1118,11 +1118,11 @@ export const useQuestStore = create<QuestState>()(
         // Path ID 1 (Pop Culture) with show-specific messages
         if (activePath === PATH_IDS.POP_CULTURE && currentStreak >= 2) {
           if (currentStreak === 2) {
-            return show === 'friends' ? "YOU'RE HER LOBSTER!" : "COPPER BOOM!";
+            return show === 'friends' ? "YOU'RE HER LOBSTER! 🦞" : "COPPER BOOM! 💥";
           } else if (currentStreak === 3) {
-            return show === 'friends' ? "UNAGI!" : "OY WITH THE POODLES!";
+            return show === 'friends' ? "UNAGI! 🍣" : "OY WITH THE POODLES!";
           } else if (currentStreak >= 4) {
-            return show === 'friends' ? "PIVOT!" : "IN OMNIA PARATUS!";
+            return show === 'friends' ? "PIVOT!" : "IN OMNIA PARATUS! ☂️";
           }
         }
 
