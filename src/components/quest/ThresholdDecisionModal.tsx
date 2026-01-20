@@ -70,7 +70,7 @@ export const ThresholdDecisionModal = ({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className={`text-2xl font-bold ${
+              className={`text-2xl text-center font-bold ${
                 isTester ? 'text-cyan-400' : 'text-neutral-900'
               }`}
             >
