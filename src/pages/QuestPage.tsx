@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import { useQuestStore } from '@/store/useQuestStore';
 import { PATH_METADATA, type PathId } from '@/lib/paths';
 import { getPuzzleById, getTotalPuzzles, getTotalNonBonusPuzzles, getTotalBonusPuzzles, TARGET_SCORES, getPathPuzzles } from '@/data/puzzles';
@@ -117,12 +117,18 @@ const QuestPage = () => {
     }
   }, [_hasHydrated, keysCollected, pathId, navigate, progress.isBonusMode]);
 
+  // THE FIX: Force initialization if puzzle is missing or mismatched
   useEffect(() => {
-    if (!currentPuzzleId) {
-      const nextPuzzle = getNextUnsolvedPuzzle(pathId);
-      if (nextPuzzle) setCurrentPuzzle(nextPuzzle);
+    if (_hasHydrated) {
+      const isMismatched = currentPuzzleId && !getPuzzleById(pathId, currentPuzzleId);
+      if (!currentPuzzleId || isMismatched) {
+        const nextPuzzle = getNextUnsolvedPuzzle(pathId);
+        if (nextPuzzle) {
+          setCurrentPuzzle(nextPuzzle);
+        }
+      }
     }
-  }, [pathId, currentPuzzleId, setCurrentPuzzle, getNextUnsolvedPuzzle]);
+  }, [_hasHydrated, pathId, currentPuzzleId, getNextUnsolvedPuzzle, setCurrentPuzzle]);
 
   useEffect(() => {
     startNewRun();
@@ -231,12 +237,25 @@ const QuestPage = () => {
 
   const handleBackToVault = () => navigate('/hub');
 
+  // Show loader while hydrating or initializing puzzle
+  if (!_hasHydrated || !puzzle) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-warm-cream p-6 text-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+        >
+          <Loader2 className="h-12 w-12 text-duolingo-green opacity-50" />
+        </motion.div>
+        <p className="mt-4 font-bold text-neutral-500">Preparing your quest...</p>
+      </div>
+    );
+  }
+
   if ((showCompletion || isPathCompleted) && !progress.isBonusMode && !isTransitioningToBonus) {
     const stats = getPathStats(pathId);
     if (stats) return <DetailedStatsScreen pathId={pathId} stats={stats} onReturnToHub={handleBackToVault} showPerfectRunBadge={stats.perfectRunCompleted} isTester={isTester} />;
   }
-
-  if (!puzzle) return null;
 
   return (
     <>
