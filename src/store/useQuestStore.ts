@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { PathProgress } from '@/types/puzzle';
 import { PATH_IDS, type PathId } from '@/lib/paths';
-import { getPathPuzzles, getTotalPuzzles, getTotalNonBonusPuzzles, getTotalBonusPuzzles, getTotalBasePoints, getTotalBonusPoints } from '@/data/puzzles';
+import { getPathPuzzles, getTotalPuzzles, getTotalNonBonusPuzzles, getTotalBonusPuzzles, getTotalBasePoints, getTotalBonusPoints, isBaseComplete } from '@/data/puzzles';
 import {
   fetchProfile,
   fetchQuestProgress,
@@ -162,10 +162,6 @@ interface QuestState {
   // NEW: Puzzle-Level Tracking
   recordPuzzleAttempt: (pathId: PathId, puzzleId: string, timeSpent: number) => void;
   completePuzzle: (pathId: PathId, puzzleId: string, isFirstTry: boolean) => void;
-
-  // NEW: Threshold Decision
-  recordThresholdDecision: (pathId: PathId, decision: '91%' | '100%') => void;
-  setHasSeenThresholdModal: (pathId: PathId, seen: boolean) => void;
 
   // Streak-based dynamic messages
   getStreakMessage: () => string;
@@ -416,29 +412,50 @@ export const useQuestStore = create<QuestState>()(
           // Mark puzzle as completed
           get().completePuzzle(pathId, puzzleId, isFirstTry);
 
-          // 3. NEW LOGIC: Point-Weighted Completion System
+          // 3. NEW LOGIC: Question-Count Completion System (replaces point-based)
           const updatedProgress = get().pathProgress[pathId];
-          const currentScore = get().getPathScore(pathId);
-          const totalBasePoints = getTotalBasePoints(pathId);
-          const totalBonusPoints = getTotalBonusPoints(pathId);
+          const totalBonusPuzzles = getTotalBonusPuzzles(pathId);
+          const baseComplete = isBaseComplete(pathId, updatedProgress.completedIds);
 
-          // 4. Check if 100% BASE POINTS reached (auto-unlock key)
-          if (!updatedProgress.isBonusMode && currentScore >= totalBasePoints) {
-            // BASE 100% COMPLETE! Auto-unlock key
+          // Helper: Get path-specific legendary title
+          const getLegendaryTitle = (pathId: PathId): string => {
+            switch (pathId) {
+              case PATH_IDS.POP_CULTURE:
+                return "Monica's Geller Cup 🏆";
+              case PATH_IDS.RENAISSANCE:
+                return "Da Vinci's Apprentice 🎨";
+              case PATH_IDS.HEART:
+                return "WhyteHouse Legend ❤️";
+              default:
+                return "Sudden Death Master!";
+            }
+          };
+
+          // 4. Check if 100% BASE QUESTIONS completed
+          if (!updatedProgress.isBonusMode && baseComplete) {
+            // BASE 100% COMPLETE! Award key immediately
             const stats = calculateStats(pathId, 'Completed!', false, '100%');
             await get().addKey(pathId, stats);
 
-            // Set modal flag so QuestPage can show the "Challenge Sudden Death?" overlay
-            await get().setHasSeenThresholdModal(pathId, true);
+            // QuestPage will auto-trigger Sudden Death transition if bonus puzzles exist
+            // If user completes all bonus: key stats will be overwritten with legendary title
           }
-          // 5. Check if BONUS MODE and total points (base + bonus) reached
-          else if (updatedProgress.isBonusMode && currentScore >= totalBasePoints + totalBonusPoints) {
-            // SUDDEN DEATH SUCCESS! 🎉
-            const stats = calculateStats(pathId, 'Sudden Death Master!', true, '100%');
+          // 5. Check if BONUS MODE and ALL bonus questions completed
+          else if (updatedProgress.isBonusMode) {
+            // Count completed bonus puzzles
+            const completedBonusIds = updatedProgress.completedIds.filter(id => {
+              const puzzle = pathConfig.puzzles.find(p => p.id === id);
+              return puzzle && puzzle.isBonus === true;
+            });
 
-            // End bonus mode and award key (will overwrite previous key stats)
-            await get().endBonusMode(pathId);
-            await get().addKey(pathId, stats);
+            if (completedBonusIds.length === totalBonusPuzzles) {
+              // SUDDEN DEATH SUCCESS! 🎉
+              const stats = calculateStats(pathId, getLegendaryTitle(pathId), true, '100%');
+
+              // End bonus mode and award key (will overwrite previous key stats if any)
+              await get().endBonusMode(pathId);
+              await get().addKey(pathId, stats);
+            }
           }
         } else {
           // WRONG ANSWER
@@ -1085,47 +1102,6 @@ export const useQuestStore = create<QuestState>()(
             },
           },
         }));
-      },
-
-      // ====================
-      // NEW: Threshold Decision
-      // ====================
-      recordThresholdDecision: (pathId, decision) => {
-        // Store decision in pathStats if needed
-        set((state) => ({
-          pathStats: {
-            ...state.pathStats,
-            [pathId]: {
-              ...state.pathStats[pathId],
-              thresholdDecision: decision,
-            } as PathStats,
-          },
-        }));
-      },
-
-      setHasSeenThresholdModal: async (pathId, seen) => {
-        set((state) => ({
-          pathProgress: {
-            ...state.pathProgress,
-            [pathId]: {
-              ...state.pathProgress[pathId],
-              hasSeenThresholdModal: seen,
-            },
-          },
-        }));
-
-        // Sync to database
-        const { agentId } = get();
-        if (agentId) {
-          const currentProgress = get().pathProgress[pathId];
-          const score = get().getPathScore(pathId);
-
-          await syncSessionProgress(agentId, pathId, {
-            score,
-            hasSeenThresholdModal: seen,
-            puzzleAttempts: currentProgress.puzzleAttempts,
-          });
-        }
       },
 
       getStreakMessage: () => {

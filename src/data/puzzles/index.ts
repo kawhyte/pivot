@@ -164,3 +164,22 @@ export const getRandomCoupon = (pathId: PathId): Coupon => {
   const coupons = COUPONS[pathId];
   return coupons[Math.floor(Math.random() * coupons.length)];
 };
+
+/**
+ * Check if all BASE (non-bonus) questions are completed for a path
+ * Returns true only if ALL non-bonus puzzle IDs are in the completed list
+ *
+ * This is the authoritative check for 100% base completion (not points-based)
+ */
+export const isBaseComplete = (pathId: PathId, completedIds: string[]): boolean => {
+  const pathConfig = getPathPuzzles(pathId);
+  if (!pathConfig) return false;
+
+  // Get all non-bonus puzzle IDs
+  const basePuzzleIds = pathConfig.puzzles
+    .filter((puzzle) => !puzzle.isBonus)
+    .map((puzzle) => puzzle.id);
+
+  // Check if every base puzzle ID is in the completed list
+  return basePuzzleIds.every((id) => completedIds.includes(id));
+};

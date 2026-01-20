@@ -88,8 +88,6 @@ const QuestPage = () => {
     startPathTimer,
     pausePathTimer,
     resumePathTimer,
-    recordThresholdDecision,
-    setHasSeenThresholdModal,
     // NEW: Bonus Mode (Sudden Death)
     startBonusMode,
     // Streak-based messages
@@ -115,9 +113,6 @@ const QuestPage = () => {
 
   // NEW: Per-puzzle time tracking
   const [puzzleStartTime, setPuzzleStartTime] = useState<number>(Date.now());
-
-  // NEW: Bonus Mode Start Modal
-  const [showBonusModeStartModal, setShowBonusModeStartModal] = useState(false);
 
   // NEW: Sudden Death Transition
   const [isTransitioningToBonus, setIsTransitioningToBonus] = useState(false);
@@ -206,23 +201,25 @@ const QuestPage = () => {
     setShake(false);
   }, [currentPuzzleId]);
 
-  // NEW: 100% Base Completion Detection - Show bonus mode start modal
+  // NEW: 100% Base Completion Detection - Auto-trigger Sudden Death transition
   useEffect(() => {
     // Check if all non-bonus puzzles completed (100% base)
     const baseComplete = completedNonBonusIds.length === totalNonBonus;
-    const keyAlreadyCollected = keysCollected.includes(pathId);
 
-    // Show modal if: base 100% complete AND key collected AND not in bonus mode yet AND modal not shown
+    // Auto-trigger transition if:
+    // - Base 100% complete
+    // - Not already in bonus mode
+    // - Not already transitioning
+    // - Bonus puzzles exist
     if (
       baseComplete &&
-      keyAlreadyCollected &&
       !progress.isBonusMode &&
-      !showBonusModeStartModal &&
+      !isTransitioningToBonus &&
       totalBonus > 0
     ) {
-      setShowBonusModeStartModal(true);
+      setIsTransitioningToBonus(true);
     }
-  }, [completedNonBonusIds.length, totalNonBonus, keysCollected, pathId, progress.isBonusMode, showBonusModeStartModal, totalBonus]);
+  }, [completedNonBonusIds.length, totalNonBonus, progress.isBonusMode, isTransitioningToBonus, totalBonus]);
 
   // NEW: Reset timer when puzzle changes
   useEffect(() => {
@@ -282,13 +279,12 @@ const QuestPage = () => {
     }
   };
 
-  // NEW: Handle 91% threshold decision
+  // NOTE: Threshold decision handler (legacy - kept for perfect run modal compatibility)
   const handleThresholdDecision = (decision: 'claim' | 'perfect-run') => {
     setShowThresholdModal(false);
 
     if (decision === 'claim') {
       // User chose to claim key and stop - navigate to detailed stats screen
-      recordThresholdDecision(pathId, '91%');
       const accuracy = calculateAccuracy(totalPuzzles, progress.mistakes);
       const themedTitle = getThemedTitle(pathId, accuracy);
 
@@ -321,7 +317,6 @@ const QuestPage = () => {
       }
     } else {
       // User chose to go for 100% - start perfect run mode
-      recordThresholdDecision(pathId, '100%');
       startPerfectRun(pathId);
       startPathTimer(pathId);
     }
@@ -798,74 +793,6 @@ const QuestPage = () => {
             }}
             isTester={isTester}
           />
-        )}
-      </AnimatePresence>
-
-      {/* Bonus Mode Start Modal (100% Base Completion) */}
-      <AnimatePresence>
-        {showBonusModeStartModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-6"
-            onClick={() => {
-              setShowBonusModeStartModal(false);
-              navigate('/hub');
-            }}
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              className="relative w-full max-w-md rounded-2xl bg-zinc-900 p-8 text-center shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="mb-6">
-                <motion.div
-                  animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-orange-500"
-                >
-                  <Trophy className="h-10 w-10 text-white" strokeWidth={2.5} />
-                </motion.div>
-                <h2 className="mb-2 text-3xl font-black text-white">Key Unlocked!</</h2>
-                <p className="text-zinc-300 font-semibold">
-                  100% Base Completion
-                </p>
-              </div>
-
-              <div className="mb-6 rounded-xl bg-zinc-800/50 border border-zinc-700 p-4">
-                <p className="text-zinc-100 font-bold mb-2">Challenge Sudden Death?</p>
-                <p className="text-zinc-400 text-sm">
-                  {totalBonus} brutal bonus puzzles await. One mistake and it's over. Perfect completion = legendary status.
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <Button
-                  onClick={async () => {
-                    setShowBonusModeStartModal(false);
-                    // Start transition sequence
-                    setIsTransitioningToBonus(true);
-                  }}
-                  className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-black py-6 rounded-xl text-lg shadow-[0_0_20px_rgba(220,38,38,0.4)]"
-                >
-                  ⚡ ACCEPT CHALLENGE ⚡
-                </Button>
-                <Button
-                  onClick={() => {
-                    setShowBonusModeStartModal(false);
-                    navigate('/hub');
-                  }}
-                  variant="ghost"
-                  className="text-zinc-400 hover:text-white hover:bg-zinc-800"
-                >
-                  Return to Vault
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
         )}
       </AnimatePresence>
 

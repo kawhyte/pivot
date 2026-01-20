@@ -93,7 +93,7 @@ export const SuddenDeathTransition = ({ show, onComplete }: SuddenDeathTransitio
               transition={{ delay: 0.8, duration: 0.4 }}
               className="mt-4 text-lg sm:text-xl font-bold text-red-300 uppercase tracking-wider"
             >
-              One Strike = Game Over
+              Zero mistakes allowed for Legendary Status
             </motion.p>
 
             {/* Warning Lines */}
