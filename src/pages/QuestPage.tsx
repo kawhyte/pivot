@@ -518,7 +518,8 @@ const QuestPage = () => {
 
 
   // Path completion screen - NEW: Using DetailedStatsScreen
-  if (showCompletion || isPathCompleted) {
+  // GUARD: Don't show completion screen if in bonus mode or transitioning to bonus
+  if ((showCompletion || isPathCompleted) && !progress.isBonusMode && !isTransitioningToBonus) {
     const stats = getPathStats(pathId);
 
     if (stats) {
