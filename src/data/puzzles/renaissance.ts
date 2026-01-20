@@ -341,5 +341,41 @@ export const renaissancePath: PathConfig = {
       points: 35,
     difficulty: 'hard',
     },
+
+    // ========== BONUS PUZZLES (SUDDEN DEATH MODE) ==========
+    {
+      id: 'ren-bonus-1',
+      type: 'multiple-choice',
+      question: 'Which airport holds the IATA code "BKK"?',
+      options: ['Suvarnabhumi', 'Don Mueang', 'Incheon', 'Changi'],
+      correctAnswer: 0,
+      successMessage: 'Suvarnabhumi Airport in Bangkok! 🇹🇭',
+      points: 50,
+      difficulty: 'very-hard',
+      isBonus: true,
+    },
+    {
+      id: 'ren-bonus-2',
+      type: 'text-input',
+      question: 'What aerodynamic principle explains how wings generate lift?',
+      correctAnswer: 'Bernoulli\'s Principle',
+      acceptableAnswers: ['bernoulli\'s principle', 'bernoullis principle', 'bernoulli principle'],
+      placeholder: 'Name the principle...',
+      successMessage: 'Correct! Bernoulli\'s Principle is the foundation of flight! 🛩️',
+      points: 50,
+      difficulty: 'very-hard',
+      isBonus: true,
+    },
+    {
+      id: 'ren-bonus-3',
+      type: 'multiple-choice',
+      question: 'What year did the Heinkel He 178 perform the first turbojet flight?',
+      options: ['1935', '1939', '1942', '1945'],
+      correctAnswer: 1,
+      successMessage: '1939! The dawn of the jet age! ✈️🔥',
+      points: 50,
+      difficulty: 'very-hard',
+      isBonus: true,
+    }
   ],
 };

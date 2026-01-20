@@ -5,7 +5,7 @@ import confetti from 'canvas-confetti';
 import { ArrowLeft, Trophy, Sparkles } from 'lucide-react';
 import { useQuestStore } from '@/store/useQuestStore';
 import { PATH_METADATA, type PathId } from '@/lib/paths';
-import { getPuzzleById, getTotalPuzzles, getRandomCoupon, TARGET_SCORES, getPathPuzzles } from '@/data/puzzles';
+import { getPuzzleById, getTotalPuzzles, getTotalNonBonusPuzzles, getTotalBonusPuzzles, getRandomCoupon, TARGET_SCORES, getPathPuzzles } from '@/data/puzzles';
 import { validateAnswer } from '@/lib/puzzle-validator';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -89,6 +89,8 @@ const QuestPage = () => {
     resumePathTimer,
     recordThresholdDecision,
     setHasSeenThresholdModal,
+    // NEW: Bonus Mode (Sudden Death)
+    startBonusMode,
     // Streak-based messages
     getStreakMessage,
   } = useQuestStore();
@@ -113,7 +115,12 @@ const QuestPage = () => {
   // NEW: Per-puzzle time tracking
   const [puzzleStartTime, setPuzzleStartTime] = useState<number>(Date.now());
 
+  // NEW: Bonus Mode Start Modal
+  const [showBonusModeStartModal, setShowBonusModeStartModal] = useState(false);
+
   const totalPuzzles = getTotalPuzzles(pathId);
+  const totalNonBonus = getTotalNonBonusPuzzles(pathId);
+  const totalBonus = getTotalBonusPuzzles(pathId);
   const puzzle = currentPuzzleId ? getPuzzleById(pathId, currentPuzzleId) : null;
   const pathMeta = PATH_METADATA[pathId];
   const isPathCompleted = keysCollected.includes(pathId);
@@ -127,6 +134,16 @@ const QuestPage = () => {
     (p) => !progress.completedIds.includes(p.id) && !progress.skippedIds.includes(p.id)
   );
 
+  // NEW: Count completed non-bonus and bonus puzzles separately
+  const completedNonBonusIds = progress.completedIds.filter(id => {
+    const puzzle = allPuzzles.find(p => p.id === id);
+    return puzzle && !puzzle.isBonus;
+  });
+  const completedBonusIds = progress.completedIds.filter(id => {
+    const puzzle = allPuzzles.find(p => p.id === id);
+    return puzzle && puzzle.isBonus === true;
+  });
+
   // Calculate completion percentage (for visual progress, not for counter)
   const completedPuzzles = progress.completedIds.length;
   const completionPercentage = Math.round((completedPuzzles / totalPuzzles) * 100);
@@ -136,17 +153,17 @@ const QuestPage = () => {
     (p) => p.id === currentPuzzleId
   );
 
-  // FIX: Calculate max possible points by summing all puzzle points
-  const maxPossiblePoints = allPuzzles.reduce((sum, p) => sum + (p.points || 0), 0);
+  // NEW: Progress calculation based on mode
+  // - If NOT in bonus mode: calculate based on non-bonus puzzles only (reaches 100% when base complete)
+  // - If IN bonus mode: calculate based on bonus puzzles only
+  const scoreProgress = progress.isBonusMode
+    ? Math.round((completedBonusIds.length / totalBonus) * 100)
+    : Math.round((completedNonBonusIds.length / totalNonBonus) * 100);
 
-  // GAUNTLET MODE: 93% threshold (TARGET_SCORES already represent 93% of max points)
+  // Legacy logic (no longer used with completion-first model)
   const canClaimKey = currentScore >= targetScore && !isPathCompleted;
-
-  // FIX: Progress percentage based on maxPossiblePoints (not targetScore)
-  const scoreProgress = Math.round((currentScore / maxPossiblePoints) * 100);
-  const showFinishButton = scoreProgress >= 93 && canClaimKey;
-  // Glow at 95%+ (now that 93% is base requirement)
-  const isCompletionistPending = scoreProgress >= 95 && scoreProgress < 100 && canClaimKey;
+  const showFinishButton = false; // Disabled: Auto-unlock at 100%
+  const isCompletionistPending = false; // Disabled
 
   // Initialize: Set current puzzle to first unsolved
   useEffect(() => {
@@ -185,22 +202,23 @@ const QuestPage = () => {
     setShake(false);
   }, [currentPuzzleId]);
 
-  // NEW: 91% Threshold Detection - Show modal when user reaches 91% (not in perfect run, key not collected, modal not seen)
+  // NEW: 100% Base Completion Detection - Show bonus mode start modal
   useEffect(() => {
-    const score = getPathScore(pathId);
-    const threshold = TARGET_SCORES[pathId]; // Now 91%
+    // Check if all non-bonus puzzles completed (100% base)
+    const baseComplete = completedNonBonusIds.length === totalNonBonus;
+    const keyAlreadyCollected = keysCollected.includes(pathId);
 
-    // Show modal if: score >= 91% AND not in perfect run AND key not collected AND modal not seen
+    // Show modal if: base 100% complete AND key collected AND not in bonus mode yet AND modal not shown
     if (
-      score >= threshold &&
-      !progress.isPerfectRunActive &&
-      !keysCollected.includes(pathId) &&
-      !progress.hasSeenThresholdModal
+      baseComplete &&
+      keyAlreadyCollected &&
+      !progress.isBonusMode &&
+      !showBonusModeStartModal &&
+      totalBonus > 0
     ) {
-      setShowThresholdModal(true);
-      setHasSeenThresholdModal(pathId, true); // Prevent re-showing
+      setShowBonusModeStartModal(true);
     }
-  }, [currentScore, pathId, progress.isPerfectRunActive, progress.hasSeenThresholdModal, keysCollected, getPathScore, setHasSeenThresholdModal]);
+  }, [completedNonBonusIds.length, totalNonBonus, keysCollected, pathId, progress.isBonusMode, showBonusModeStartModal, totalBonus]);
 
   // NEW: Reset timer when puzzle changes
   useEffect(() => {
@@ -590,14 +608,18 @@ const QuestPage = () => {
 
   return (
     <div className={`flex min-h-screen flex-col ${
-      isTester
+      progress.isBonusMode
+        ? 'bg-zinc-950' // Hardcore theme for bonus mode
+        : isTester
         ? 'bg-zinc-950 tester-mode-quest'
         : 'bg-gradient-to-br from-festive-cream via-festive-peach/20 to-festive-cream'
     }`}>
       <header className={cn(
   "fixed top-0 left-0 right-0 z-50 border-b backdrop-blur-md h-16 transition-colors duration-300",
-  isTester 
-    ? "bg-zinc-950/90 border-zinc-800" 
+  progress.isBonusMode
+    ? "bg-zinc-950/90 border-red-900" // Hardcore theme for bonus mode
+    : isTester
+    ? "bg-zinc-950/90 border-zinc-800"
     : "bg-white/90 border-neutral-100"
 )}>
   <div className="mx-auto flex h-full max-w-3xl items-center justify-between px-4 sm:px-6 gap-4">
@@ -685,6 +707,24 @@ const QuestPage = () => {
       {/* Spacer for fixed header */}
       <div className="h-14" />
 
+      {/* HARDCORE BANNER (Sudden Death Mode) */}
+      {progress.isBonusMode && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-red-950 via-red-600 to-red-950 shadow-[0_0_20px_rgba(220,38,38,0.5)] animate-pulse"
+        >
+          <div className="mx-auto max-w-3xl px-6 py-3 text-center">
+            <p className="text-white font-black text-lg uppercase tracking-wider">
+              ⚡ SUDDEN DEATH MODE ⚡
+            </p>
+            <p className="text-red-100 text-sm font-bold mt-1">
+              One mistake ends it all. {completedBonusIds.length}/{totalBonus} bonus puzzles completed.
+            </p>
+          </div>
+        </motion.div>
+      )}
+
       {/* Perfect Run Banner (shows when in perfect run mode) */}
       {progress.isPerfectRunActive && (
         <PerfectRunBanner
@@ -722,6 +762,78 @@ const QuestPage = () => {
             }}
             isTester={isTester}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Bonus Mode Start Modal (100% Base Completion) */}
+      <AnimatePresence>
+        {showBonusModeStartModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-6"
+            onClick={() => {
+              setShowBonusModeStartModal(false);
+              navigate('/hub');
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="relative w-full max-w-md rounded-2xl bg-zinc-900 p-8 text-center shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="mb-6">
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-orange-500"
+                >
+                  <Trophy className="h-10 w-10 text-white" strokeWidth={2.5} />
+                </motion.div>
+                <h2 className="mb-2 text-3xl font-black text-white">Key Unlocked!</</h2>
+                <p className="text-zinc-300 font-semibold">
+                  100% Base Completion
+                </p>
+              </div>
+
+              <div className="mb-6 rounded-xl bg-zinc-800/50 border border-zinc-700 p-4">
+                <p className="text-zinc-100 font-bold mb-2">Challenge Sudden Death?</p>
+                <p className="text-zinc-400 text-sm">
+                  {totalBonus} brutal bonus puzzles await. One mistake and it's over. Perfect completion = legendary status.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <Button
+                  onClick={async () => {
+                    setShowBonusModeStartModal(false);
+                    await startBonusMode(pathId);
+                    // Load first bonus puzzle
+                    const nextPuzzle = getNextUnsolvedPuzzle(pathId);
+                    if (nextPuzzle) {
+                      handleNavigate(nextPuzzle);
+                    }
+                  }}
+                  className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-black py-6 rounded-xl text-lg shadow-[0_0_20px_rgba(220,38,38,0.4)]"
+                >
+                  ⚡ ACCEPT CHALLENGE ⚡
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowBonusModeStartModal(false);
+                    navigate('/hub');
+                  }}
+                  variant="ghost"
+                  className="text-zinc-400 hover:text-white hover:bg-zinc-800"
+                >
+                  Return to Vault
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 

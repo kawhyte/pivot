@@ -226,6 +226,73 @@ export const PathSimulator = () => {
         </button>
       </div>
 
+      {/* NEW: Completion-First + Sudden Death Testing */}
+      <div className="mt-4 p-3 rounded-lg border-2" style={{ borderColor: '#dc2626', backgroundColor: '#fef2f2' }}>
+        <div className="text-xs font-bold text-red-800 mb-2">
+          Sudden Death Testing
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={async () => {
+              if (!agentId) {
+                alert('Not logged in!');
+                return;
+              }
+              setIsProcessing(true);
+              try {
+                // Complete all non-bonus puzzles (triggers 100% base completion modal)
+                await pathSimulator.completeBaseOnly(selectedPath, agentId);
+                await hydrateFromDatabase(agentId);
+                alert('Base 100% complete! Check for Sudden Death modal.');
+              } catch (error) {
+                console.error('Base completion failed:', error);
+                alert('Failed. Check console.');
+              } finally {
+                setIsProcessing(false);
+              }
+            }}
+            disabled={isProcessing}
+            className="px-3 py-2 text-xs font-semibold rounded-lg border-2 transition-all disabled:opacity-50"
+            style={{
+              backgroundColor: 'white',
+              borderColor: '#dc2626',
+              color: '#dc2626',
+            }}
+          >
+            Complete Base (100%)
+          </button>
+          <button
+            onClick={async () => {
+              if (!agentId) {
+                alert('Not logged in!');
+                return;
+              }
+              setIsProcessing(true);
+              try {
+                // Complete all bonus puzzles (tests sudden death completion)
+                await pathSimulator.completeBonus(selectedPath, agentId);
+                await hydrateFromDatabase(agentId);
+                alert('All bonus puzzles solved! Check for completion.');
+              } catch (error) {
+                console.error('Bonus completion failed:', error);
+                alert('Failed. Check console.');
+              } finally {
+                setIsProcessing(false);
+              }
+            }}
+            disabled={isProcessing}
+            className="px-3 py-2 text-xs font-semibold rounded-lg border-2 transition-all disabled:opacity-50"
+            style={{
+              backgroundColor: 'white',
+              borderColor: '#dc2626',
+              color: '#dc2626',
+            }}
+          >
+            Solve Bonus (3/3)
+          </button>
+        </div>
+      </div>
+
       {isProcessing && (
         <div className="text-xs text-center" style={{ color: TESTER_THEME.primary }}>
           Processing...

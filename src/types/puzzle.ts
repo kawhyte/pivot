@@ -15,8 +15,9 @@ interface BasePuzzle {
   hint?: string;
   successMessage: string;
   points?: number;
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty: 'easy' | 'medium' | 'hard' | 'very-hard';
   isReserved?: boolean; // Reserved for perfect run final streak (91%+ threshold)
+  isBonus?: boolean; // Bonus puzzles unlocked after 100% completion (Sudden Death mode)
   metadata?: {
     show?: 'friends' | 'gilmore'; // Show-specific branding for Pop Culture path
   };
@@ -112,6 +113,9 @@ export interface PathProgress {
   perfectRunStartTime: number | null;
   perfectRunStreak: number;
   hasSeenThresholdModal: boolean;  // Prevent modal re-showing
+
+  // Bonus mode (Sudden Death) state (NEW)
+  isBonusMode: boolean;            // True when user enters Sudden Death mode after 100%
 
   // Time tracking (NEW)
   totalTimeSpent: number;          // Milliseconds (paused time excluded)

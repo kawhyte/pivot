@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { PathProgress } from '@/types/puzzle';
 import { PATH_IDS, type PathId } from '@/lib/paths';
-import { getPathPuzzles, getTotalPuzzles, TARGET_SCORES } from '@/data/puzzles';
+import { getPathPuzzles, getTotalPuzzles, getTotalNonBonusPuzzles, getTotalBonusPuzzles, TARGET_SCORES } from '@/data/puzzles';
 import {
   fetchProfile,
   fetchQuestProgress,
@@ -150,6 +150,10 @@ interface QuestState {
   endPerfectRun: (pathId: PathId, success: boolean) => void;
   incrementPerfectRunStreak: (pathId: PathId) => void;
 
+  // NEW: Bonus Mode Management (Sudden Death)
+  startBonusMode: (pathId: PathId) => Promise<void>;
+  endBonusMode: (pathId: PathId) => Promise<void>;
+
   // NEW: Time Tracking
   startPathTimer: (pathId: PathId) => void;
   pausePathTimer: (pathId: PathId) => void;
@@ -194,6 +198,7 @@ const initialState = {
       perfectRunStartTime: null,
       perfectRunStreak: 0,
       hasSeenThresholdModal: false,
+      isBonusMode: false,
       totalTimeSpent: 0,
       isPaused: false,
       lastResumeTime: null,
@@ -209,6 +214,7 @@ const initialState = {
       perfectRunStartTime: null,
       perfectRunStreak: 0,
       hasSeenThresholdModal: false,
+      isBonusMode: false,
       totalTimeSpent: 0,
       isPaused: false,
       lastResumeTime: null,
@@ -224,6 +230,7 @@ const initialState = {
       perfectRunStartTime: null,
       perfectRunStreak: 0,
       hasSeenThresholdModal: false,
+      isBonusMode: false,
       totalTimeSpent: 0,
       isPaused: false,
       lastResumeTime: null,
@@ -335,6 +342,8 @@ export const useQuestStore = create<QuestState>()(
         const progress = get().pathProgress[pathId];
         const attemptData = progress.puzzleAttempts[puzzleId];
         const isFirstTry = attemptData?.attempts === 1;
+        const pathConfig = getPathPuzzles(pathId);
+        if (!pathConfig) return;
 
         // 2. OPTIMISTIC UPDATE: Update local state immediately
         if (isCorrect) {
@@ -356,60 +365,91 @@ export const useQuestStore = create<QuestState>()(
           // Mark puzzle as completed
           get().completePuzzle(pathId, puzzleId, isFirstTry);
 
-          // 3. Perfect run handling
-          if (progress.isPerfectRunActive) {
-            get().incrementPerfectRunStreak(pathId);
+          // 3. NEW LOGIC: Completion-First + Sudden Death Bonus Model
+          const updatedProgress = get().pathProgress[pathId];
+          const totalNonBonus = getTotalNonBonusPuzzles(pathId);
+          const totalBonus = getTotalBonusPuzzles(pathId);
 
-            // Check if ALL RESERVED PUZZLES are completed (perfect run success condition)
-            const pathConfig = getPathPuzzles(pathId);
-            if (!pathConfig) return;
+          // Count completed non-bonus and bonus puzzles
+          const completedNonBonusIds = updatedProgress.completedIds.filter(id => {
+            const puzzle = pathConfig.puzzles.find(p => p.id === id);
+            return puzzle && !puzzle.isBonus;
+          });
+          const completedBonusIds = updatedProgress.completedIds.filter(id => {
+            const puzzle = pathConfig.puzzles.find(p => p.id === id);
+            return puzzle && puzzle.isBonus === true;
+          });
 
-            const reservedPuzzles = pathConfig.puzzles.filter((p) => p.isReserved === true);
-            const reservedPuzzleIds = reservedPuzzles.map((p) => p.id);
-            const newCompletedIds = get().pathProgress[pathId].completedIds;
-            const allReservedCompleted = reservedPuzzleIds.every((id) => newCompletedIds.includes(id));
-
-            if (allReservedCompleted) {
-              // PERFECT RUN SUCCESS! 🎉
-              // Calculate final stats and add key
-              const finalProgress = get().pathProgress[pathId];
-              const score = get().getPathScore(pathId);
-
-              // Calculate detailed stats
-              const totalQuestions = getTotalPuzzles(pathId);
-              const firstTryCount = Object.values(finalProgress.puzzleAttempts)
-                .filter((a) => a.isFirstTry && a.isCompleted).length;
-              const firstTryRate = Math.round((firstTryCount / totalQuestions) * 100);
-              const skippedCount = finalProgress.skippedIds.length;
-              const avgTimePerQuestion = totalQuestions > 0
-                ? Math.round(finalProgress.totalTimeSpent / totalQuestions)
-                : 0;
-
-              const stats: PathStats = {
-                completionTime: finalProgress.totalTimeSpent,
-                accuracy: Math.round(((totalQuestions - finalProgress.mistakes) / totalQuestions) * 100),
-                mistakes: finalProgress.mistakes,
-                themedTitle: 'Perfect!',
-                completedAt: Date.now(),
-                totalQuestions,
-                firstTryCount,
-                firstTryRate,
-                skippedCount,
-                avgTimePerQuestion,
-                perfectRunCompleted: true,
-                thresholdDecision: '100%',
-              };
-
-              await get().addKey(pathId, stats);
-            }
-          }
-          // 4. Check 91% threshold (if not in perfect run mode)
-          else {
+          // 4. Check if 100% BASE completion reached (auto-unlock key)
+          if (!updatedProgress.isBonusMode && completedNonBonusIds.length === totalNonBonus) {
+            // BASE 100% COMPLETE! Auto-unlock key
+            const finalProgress = updatedProgress;
             const score = get().getPathScore(pathId);
-            const threshold = TARGET_SCORES[pathId];
 
-            // Note: We don't auto-unlock here anymore
-            // The modal will be triggered in QuestPage when hasSeenThresholdModal = false
+            // Calculate detailed stats
+            const totalQuestions = totalNonBonus; // Only count base questions
+            const firstTryCount = Object.values(finalProgress.puzzleAttempts)
+              .filter((a) => a.isFirstTry && a.isCompleted).length;
+            const firstTryRate = Math.round((firstTryCount / totalQuestions) * 100);
+            const skippedCount = finalProgress.skippedIds.length;
+            const avgTimePerQuestion = totalQuestions > 0
+              ? Math.round(finalProgress.totalTimeSpent / totalQuestions)
+              : 0;
+
+            const stats: PathStats = {
+              completionTime: finalProgress.totalTimeSpent,
+              accuracy: Math.round(((totalQuestions - finalProgress.mistakes) / totalQuestions) * 100),
+              mistakes: finalProgress.mistakes,
+              themedTitle: 'Completed!',
+              completedAt: Date.now(),
+              totalQuestions,
+              firstTryCount,
+              firstTryRate,
+              skippedCount,
+              avgTimePerQuestion,
+              perfectRunCompleted: false,
+              thresholdDecision: '100%',
+            };
+
+            await get().addKey(pathId, stats);
+
+            // Set modal flag so QuestPage can show the "Challenge Sudden Death?" overlay
+            await get().setHasSeenThresholdModal(pathId, true);
+          }
+          // 5. Check if BONUS MODE and all bonus puzzles completed
+          else if (updatedProgress.isBonusMode && completedBonusIds.length === totalBonus) {
+            // SUDDEN DEATH SUCCESS! 🎉
+            const finalProgress = updatedProgress;
+            const score = get().getPathScore(pathId);
+
+            // Calculate detailed stats (including bonus)
+            const totalQuestions = totalNonBonus + totalBonus;
+            const firstTryCount = Object.values(finalProgress.puzzleAttempts)
+              .filter((a) => a.isFirstTry && a.isCompleted).length;
+            const firstTryRate = Math.round((firstTryCount / totalQuestions) * 100);
+            const skippedCount = finalProgress.skippedIds.length;
+            const avgTimePerQuestion = totalQuestions > 0
+              ? Math.round(finalProgress.totalTimeSpent / totalQuestions)
+              : 0;
+
+            const stats: PathStats = {
+              completionTime: finalProgress.totalTimeSpent,
+              accuracy: Math.round(((totalQuestions - finalProgress.mistakes) / totalQuestions) * 100),
+              mistakes: finalProgress.mistakes,
+              themedTitle: 'Sudden Death Master!',
+              completedAt: Date.now(),
+              totalQuestions,
+              firstTryCount,
+              firstTryRate,
+              skippedCount,
+              avgTimePerQuestion,
+              perfectRunCompleted: true, // Bonus mode completion = perfect
+              thresholdDecision: '100%',
+            };
+
+            // End bonus mode and award key (will overwrite previous key stats)
+            await get().endBonusMode(pathId);
+            await get().addKey(pathId, stats);
           }
         } else {
           // WRONG ANSWER
@@ -417,15 +457,15 @@ export const useQuestStore = create<QuestState>()(
           // Reset streak on incorrect answer
           set({ currentStreak: 0 });
 
-          // Perfect run failure?
-          if (progress.isPerfectRunActive) {
-            // END PERFECT RUN (failure)
-            get().endPerfectRun(pathId, false);
-            // Note: PerfectRunFailureModal will be shown in QuestPage
+          // 6. SUDDEN DEATH FAILURE: If in bonus mode, end immediately
+          if (progress.isBonusMode) {
+            // END BONUS MODE (failure)
+            await get().endBonusMode(pathId);
+            // Note: BonusFailureModal will be shown in QuestPage
             return; // Exit early, don't track mistakes
           }
 
-          // Standard mistake tracking (non-perfect-run mode)
+          // Standard mistake tracking (non-bonus mode)
           set((state) => {
             const progress = { ...state.pathProgress[pathId] };
             progress.mistakes += mistakeWeight;
@@ -436,7 +476,7 @@ export const useQuestStore = create<QuestState>()(
           });
         }
 
-        // 5. SUPABASE SYNC: Sync progress to database (REAL-TIME)
+        // 7. SUPABASE SYNC: Sync progress to database (REAL-TIME)
         const { agentId } = get();
         console.log('📊 submitAnswer - agentId:', agentId);
 
@@ -450,24 +490,27 @@ export const useQuestStore = create<QuestState>()(
             completedCount: currentProgress.completedIds.length,
             skippedCount: currentProgress.skippedIds.length,
             score,
+            isBonusMode: currentProgress.isBonusMode,
           });
 
           await syncSessionProgress(agentId, pathId, {
             currentPuzzleId: puzzleId,
             score,
             mistakes: Math.round(currentProgress.mistakes * 10), // Store as integer
-            // NEW: Real-time progress (critical for mid-quiz persistence)
+            // Real-time progress (critical for mid-quiz persistence)
             completedIds: currentProgress.completedIds,
             skippedIds: currentProgress.skippedIds,
-            // NEW: Perfect run state
+            // Perfect run state (legacy, may be deprecated)
             isPerfectRunActive: currentProgress.isPerfectRunActive,
             perfectRunStartScore: currentProgress.perfectRunStartScore,
             perfectRunStreak: currentProgress.perfectRunStreak,
             hasSeenThresholdModal: currentProgress.hasSeenThresholdModal,
-            // NEW: Time tracking
+            // NEW: Bonus mode state
+            isBonusMode: currentProgress.isBonusMode,
+            // Time tracking
             totalTimeSpent: currentProgress.totalTimeSpent,
             isPaused: currentProgress.isPaused,
-            // NEW: Per-puzzle attempts
+            // Per-puzzle attempts
             puzzleAttempts: currentProgress.puzzleAttempts,
           });
         } else {
@@ -545,17 +588,17 @@ export const useQuestStore = create<QuestState>()(
         const pathConfig = getPathPuzzles(pathId);
         if (!pathConfig) return null;
 
-        // RESERVED FINAL STREAK LOGIC:
-        // - If perfect run is active → show ONLY reserved puzzles
-        // - If perfect run is NOT active → show ONLY non-reserved puzzles
-        const targetReservedState = progress.isPerfectRunActive;
+        // NEW LOGIC: Filter puzzles based on mode
+        // - If bonus mode is active → show ONLY bonus puzzles
+        // - If bonus mode is NOT active → show ONLY non-bonus puzzles
+        const showBonusOnly = progress.isBonusMode;
 
         // GAUNTLET MODE: First try to get fresh puzzles (not completed, not skipped)
         let freshPuzzles = pathConfig.puzzles.filter(
           (p) =>
             !progress.completedIds.includes(p.id) &&
             !progress.skippedIds.includes(p.id) &&
-            (progress.isPerfectRunActive ? p.isReserved === true : !p.isReserved)
+            (showBonusOnly ? p.isBonus === true : !p.isBonus)
         );
 
         // Exclude the current puzzle ID if provided
@@ -574,7 +617,7 @@ export const useQuestStore = create<QuestState>()(
           (p) =>
             !progress.completedIds.includes(p.id) &&
             progress.skippedIds.includes(p.id) &&
-            (progress.isPerfectRunActive ? p.isReserved === true : !p.isReserved)
+            (showBonusOnly ? p.isBonus === true : !p.isBonus)
         );
 
         // Exclude the current puzzle ID if provided
@@ -649,6 +692,7 @@ export const useQuestStore = create<QuestState>()(
               perfectRunStartTime: null,
               perfectRunStreak: 0,
               hasSeenThresholdModal: false,
+              isBonusMode: false,
               totalTimeSpent: 0,
               isPaused: false,
               lastResumeTime: null,
@@ -664,6 +708,7 @@ export const useQuestStore = create<QuestState>()(
               perfectRunStartTime: null,
               perfectRunStreak: 0,
               hasSeenThresholdModal: false,
+              isBonusMode: false,
               totalTimeSpent: 0,
               isPaused: false,
               lastResumeTime: null,
@@ -679,6 +724,7 @@ export const useQuestStore = create<QuestState>()(
               perfectRunStartTime: null,
               perfectRunStreak: 0,
               hasSeenThresholdModal: false,
+              isBonusMode: false,
               totalTimeSpent: 0,
               isPaused: false,
               lastResumeTime: null,
@@ -701,11 +747,14 @@ export const useQuestStore = create<QuestState>()(
                 (Array.isArray(session.skipped_ids) ? session.skipped_ids : JSON.parse(session.skipped_ids))
                 : [];
 
-              // NEW: Restore perfect run state
+              // NEW: Restore perfect run state (legacy, may be deprecated)
               pathProgress[pathIdNum].isPerfectRunActive = session.is_perfect_run_active ?? false;
               pathProgress[pathIdNum].perfectRunStartScore = session.perfect_run_start_score ?? 0;
               pathProgress[pathIdNum].perfectRunStreak = session.perfect_run_streak ?? 0;
               pathProgress[pathIdNum].hasSeenThresholdModal = session.has_seen_threshold_modal ?? false;
+
+              // NEW: Restore bonus mode state
+              pathProgress[pathIdNum].isBonusMode = session.is_bonus_mode ?? false;
 
               // NEW: Restore time tracking
               pathProgress[pathIdNum].totalTimeSpent = session.total_time_spent ?? 0;
@@ -855,6 +904,59 @@ export const useQuestStore = create<QuestState>()(
           await syncSessionProgress(agentId, pathId, {
             score,
             perfectRunStreak: currentProgress.perfectRunStreak,
+            puzzleAttempts: currentProgress.puzzleAttempts,
+          });
+        }
+      },
+
+      // ====================
+      // NEW: Bonus Mode Management (Sudden Death)
+      // ====================
+      startBonusMode: async (pathId) => {
+        set((state) => ({
+          pathProgress: {
+            ...state.pathProgress,
+            [pathId]: {
+              ...state.pathProgress[pathId],
+              isBonusMode: true,
+            },
+          },
+        }));
+
+        // Sync to database
+        const { agentId } = get();
+        if (agentId) {
+          const currentProgress = get().pathProgress[pathId];
+          const score = get().getPathScore(pathId);
+
+          await syncSessionProgress(agentId, pathId, {
+            score,
+            isBonusMode: true,
+            puzzleAttempts: currentProgress.puzzleAttempts,
+          });
+        }
+      },
+
+      endBonusMode: async (pathId) => {
+        set((state) => ({
+          pathProgress: {
+            ...state.pathProgress,
+            [pathId]: {
+              ...state.pathProgress[pathId],
+              isBonusMode: false,
+            },
+          },
+        }));
+
+        // Sync to database
+        const { agentId } = get();
+        if (agentId) {
+          const currentProgress = get().pathProgress[pathId];
+          const score = get().getPathScore(pathId);
+
+          await syncSessionProgress(agentId, pathId, {
+            score,
+            isBonusMode: false,
             puzzleAttempts: currentProgress.puzzleAttempts,
           });
         }

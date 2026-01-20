@@ -129,6 +129,24 @@ export const getTotalPuzzles = (pathId: number): number => {
 };
 
 /**
+ * Get total number of NON-BONUS puzzles in a path (base questions)
+ */
+export const getTotalNonBonusPuzzles = (pathId: number): number => {
+  const pathConfig = getPathPuzzles(pathId);
+  if (!pathConfig) return 0;
+  return pathConfig.puzzles.filter((p) => !p.isBonus).length;
+};
+
+/**
+ * Get total number of BONUS puzzles in a path
+ */
+export const getTotalBonusPuzzles = (pathId: number): number => {
+  const pathConfig = getPathPuzzles(pathId);
+  if (!pathConfig) return 0;
+  return pathConfig.puzzles.filter((p) => p.isBonus === true).length;
+};
+
+/**
  * Get a random bonus coupon for a path (for perfect runs)
  */
 export const getRandomCoupon = (pathId: PathId): Coupon => {

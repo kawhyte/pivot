@@ -252,5 +252,42 @@ export const heartPath: PathConfig = {
       points: 10,
     difficulty: 'easy',
     },
+
+    // ========== BONUS PUZZLES (SUDDEN DEATH MODE) ==========
+    {
+      id: 'heart-bonus-1',
+      type: 'text-input',
+      question: 'What was the name of the very first song we danced to at our wedding?',
+      correctAnswer: '[Kenny: Replace with Song Name]',
+      acceptableAnswers: ['[kenny: replace with alternative spellings]'],
+      placeholder: 'Our first dance song...',
+      successMessage: 'I still hear that song and think of you. 💃🎶',
+      points: 50,
+      difficulty: 'very-hard',
+      isBonus: true,
+    },
+    {
+      id: 'heart-bonus-2',
+      type: 'text-input',
+      question: 'What is the latitude of the place where we got engaged (First 2 digits)?',
+      correctAnswer: '[Kenny: Replace with Lat]',
+      acceptableAnswers: ['[kenny: replace with lat]'],
+      placeholder: 'Enter 2 digits...',
+      successMessage: 'That exact spot changed everything. 🗺️💍',
+      points: 50,
+      difficulty: 'very-hard',
+      isBonus: true,
+    },
+    {
+      id: 'heart-bonus-3',
+      type: 'multiple-choice',
+      question: 'What was the exact time of our first date?',
+      options: ['6:30 PM', '7:00 PM', '7:30 PM', '8:00 PM'],
+      correctAnswer: 1, // Kenny: Pick One (0=6:30, 1=7:00, 2=7:30, 3=8:00)
+      successMessage: 'The moment that started it all. ⏰❤️',
+      points: 50,
+      difficulty: 'very-hard',
+      isBonus: true,
+    }
   ],
 };
