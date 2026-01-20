@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, SkipForward } from 'lucide-react';
 import { useQuestStore } from '@/store/useQuestStore';
 import { PATH_METADATA, type PathId } from '@/lib/paths';
 import { getPuzzleById, getTotalPuzzles, getTotalNonBonusPuzzles, getTotalBonusPuzzles, TARGET_SCORES, getPathPuzzles } from '@/data/puzzles';
@@ -235,6 +235,30 @@ const QuestPage = () => {
     setShowHint(false);
   };
 
+
+const handleManualSkip = async () => {
+    if (!currentPuzzleId || isSubmitting) return;
+    
+    setIsSubmitting(true);
+    setShowSkippedToast(true);
+    
+    // Call the existing store action
+    await skipPuzzle(pathId, currentPuzzleId);
+    
+    setTimeout(() => {
+      setShowSkippedToast(false);
+      const next = getNextUnsolvedPuzzle(pathId, currentPuzzleId);
+      if (next) {
+        handleNavigate(next);
+      } else {
+        navigate('/hub');
+      }
+      setIsSubmitting(false);
+    }, 1000);
+  };
+
+
+
   const handleBackToVault = () => navigate('/hub');
 
   // Show loader while hydrating or initializing puzzle
@@ -315,6 +339,28 @@ const QuestPage = () => {
                 targetScore={targetScore}
                 isTester={isTester}
               />
+
+<AnimatePresence>
+                {!progress.isBonusMode && !showCompletion && (allPuzzles.length - progress.completedIds.length) > 1 && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="flex justify-center mt-8"
+                  >
+                    <Button
+                      variant="outline"
+                      onClick={handleManualSkip}
+                      disabled={isSubmitting}
+                      className="rounded-xl border-2 border-b-4 border-neutral-200 hover:bg-neutral-50 active:border-b-2 active:translate-y-[2px] transition-all text-neutral-500 font-black px-8"
+                    >
+                      <SkipForward className="mr-2 h-5 w-5" />
+                      SKIP FOR NOW
+                    </Button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
             </div>
           </main>
         )}
