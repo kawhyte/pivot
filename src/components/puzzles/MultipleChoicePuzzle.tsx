@@ -60,25 +60,24 @@ export const MultipleChoicePuzzle = ({
 
           return (
             <motion.button
-  key={index}
-  onClick={() => setSelectedOption(index)}
-  disabled={isSubmitting}
-  whileHover={{ scale: 1.01 }}
-  whileTap={{ scale: 0.98 }}
-  className={cn(
-  "duo-answer-pill w-full text-left",
-  // 1. Only apply standard light selection if NOT in bonus mode
-  isSelected && !isBonusMode && 'selected', 
-  isSubmitting && 'cursor-not-allowed opacity-50',
-  !isSubmitting && 'cursor-pointer',
-  // 2. Bonus Mode styling (Ensure these override base bg-white)
-  isBonusMode && cn(
-    "bg-zinc-900/50 border-red-500/30 text-white",
-    // 3. Highlight the selected option in Bonus Mode
-    isSelected && "bg-zinc-800 border-red-500 border-[3px] ring-2 ring-red-500/20" 
-    )
-  )}
->
+              key={index}
+              onClick={() => setSelectedOption(index)}
+              disabled={isSubmitting}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.98 }}
+              className={cn(
+                "duo-answer-pill w-full text-left transition-all",
+                // Only apply standard 'selected' styling if NOT in bonus mode
+                isSelected && !isBonusMode && 'selected', 
+                isSubmitting && 'cursor-not-allowed opacity-50',
+                !isSubmitting && 'cursor-pointer',
+                // Enhanced Bonus Mode selection logic
+                isBonusMode && cn(
+                  'bg-zinc-900/50 border-red-500/30',
+                  isSelected && 'bg-zinc-800 border-red-500 border-[3px] ring-2 ring-red-500/20'
+                )
+              )}
+            >
               <div className="flex items-center gap-4">
                 {/* Radio Circle - Clean Duolingo Style */}
                 <div

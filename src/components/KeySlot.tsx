@@ -1,13 +1,12 @@
 'use client';
 
-import { Key, Clock, Sparkles, Tv, BookOpen, Heart as HeartIcon } from 'lucide-react';
+import { Key, Clock, Sparkles } from 'lucide-react';
 import { PATH_METADATA, type PathId } from '@/lib/paths';
 import type { PathStats } from '@/store/useQuestStore';
 import { getCountdownText, isPathUnlocked, getDependencyName } from '@/lib/path-unlock';
 import { formatTime } from '@/lib/themed-titles';
 import { TARGET_SCORES, getTotalPuzzles } from '@/data/puzzles';
 import { Badge } from './ui/badge';
-import { Button } from './ui/button';
 import { Progress } from './ui/progress';
 import { cn } from '@/lib/utils';
 
@@ -17,12 +16,10 @@ interface KeySlotProps {
   onClick: () => void;
   stats?: PathStats;
   isTester?: boolean;
-  // NEW: Progress data for started quizzes
   currentScore?: number;
   completedCount?: number;
-  // NEW: Completion-based unlock system
   completedPathsData: Array<{ pathId: PathId; completedAt: string; nextPathUnlockAt?: string }>;
-  pathNumber: number; // 1, 2, or 3 for Day badges
+  pathNumber: number;
 }
 
 export const KeySlot = ({
@@ -41,24 +38,21 @@ export const KeySlot = ({
   const countdownText = getCountdownText(pathId, completedPathsData, isTester);
   const dependencyName = getDependencyName(pathId);
 
-  // GOD MODE: Testers can always click any path (even if collected) for testing
   const isClickable = isTester ? unlocked : (unlocked && !isCollected);
 
-  // Calculate progress for started quizzes
   const targetScore = TARGET_SCORES[pathId];
   const totalPuzzles = getTotalPuzzles(pathId);
   const scoreProgress = Math.round((currentScore / targetScore) * 100);
   const hasStarted = completedCount > 0 && !isCollected;
 
-  // Get thematic icon for each path
   const getPathIcon = () => {
     switch (pathId) {
-      case 1: // Pop Culture
-        return <img  src='/images/cup.png'/>// <Tv className="h-16 w-16" strokeWidth={1.5} style={{ color: path.colors.primary }} />;
-      case 2: // Renaissance
-        return <img  src='/images/green-shape.png'/> //<BookOpen className="h-16 w-16" strokeWidth={1.5} style={{ color: path.colors.primary }} />;
-      case 3: // Heart
-        return <img className="h-20 w-20"  src='/images/heart.svg'/>  //<HeartIcon className="h-16 w-16" strokeWidth={1.5} fill={path.colors.primary} style={{ color: path.colors.primary }} />;
+      case 1:
+        return <img src='/images/cup.png' alt="Pop Culture" />;
+      case 2:
+        return <img src='/images/green-shape.png' alt="Renaissance" />;
+      case 3:
+        return <img className="h-20 w-20" src='/images/heart.svg' alt="Heart" />;
       default:
         return null;
     }
@@ -68,7 +62,11 @@ export const KeySlot = ({
     <button
       onClick={isClickable ? onClick : undefined}
       disabled={!isClickable}
-      className={`relative w-full duo-card p-6 ${isClickable ? 'hover:shadow-lg cursor-pointer' : 'cursor-default'} ${!unlocked && !isTester ? 'opacity-60' : ''}`}
+      className={cn(
+        "relative w-full duo-card p-6 transition-all",
+        isClickable ? 'hover:shadow-lg cursor-pointer' : 'cursor-default',
+        !unlocked && !isTester ? 'opacity-60' : ''
+      )}
     >
       {/* Background Photo Overlay */}
       <div
@@ -84,14 +82,7 @@ export const KeySlot = ({
 
       {/* Day Number Badge */}
       <div className="absolute top-4 left-4 z-20">
-
         <Badge variant={'outline'}>{pathNumber}</Badge>
-        {/* <div className="flex items-center gap-2 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full border-2 border-neutral-300 shadow-sm">
-          <span className="text-xs font-bold text-neutral-600">DAY</span>
-          <span className="text-lg font-black" style={{ color: path.colors.primary }}>
-            {pathNumber}
-          </span>
-        </div> */}
       </div>
 
       {/* Icon Section */}
@@ -145,7 +136,6 @@ export const KeySlot = ({
               <span className="font-medium">{stats.accuracy}%</span>
             </div>
           </div>
-          {/* GOD MODE: Show re-test button for collected paths */}
           {isTester && (
             <div className="flex justify-center mt-2">
               <div className="inline-flex items-center gap-2 px-4 py-2 text-base font-semibold rounded-lg bg-cyan-500 text-white">
@@ -155,10 +145,9 @@ export const KeySlot = ({
           )}
         </div>
       ) : hasStarted ? (
-        /* Progress for Started Quizzes */
         <div className="mt-4 space-y-3 relative z-10">
           <div className="flex items-center justify-between px-2">
-            <span className="text-basefont-semibold text-neutral-700">In Progress</span>
+            <span className="text-base font-semibold text-neutral-700">In Progress</span>
             <span className="text-base font-bold" style={{ color: path.colors.primary }}>
               {scoreProgress}%
             </span>
@@ -177,29 +166,26 @@ export const KeySlot = ({
             </span>
           </div>
           <div className="flex justify-center">
-            <Button
+            {/* FIX: Changed from Button to div to prevent nested button error */}
+            <div
               className={cn(
-                "gap-2 px-4 py-2 text-base font-semibold rounded-lg",
-                "bg-duolingo-green text-white hover:bg-duolingo-green/90",
-                "pointer-events-none"
+                "inline-flex items-center justify-center gap-2 px-4 py-2 text-base font-semibold rounded-lg transition-all",
+                "bg-duolingo-green text-white hover:bg-duolingo-green/90"
               )}
             >
               Continue →
-            </Button>
+            </div>
           </div>
         </div>
       ) : (
-        /* Status Badge for Uncollected/Locked Paths */
         <div className="mt-4 flex justify-center relative z-10">
           <div
-            className={`
-              inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg
-              ${
-                unlocked
-                  ? 'bg-duolingo-green text-white'
-                  : 'bg-neutral-200 text-neutral-600'
-              }
-            `}
+            className={cn(
+              "inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg",
+              unlocked
+                ? 'bg-duolingo-green text-white'
+                : 'bg-neutral-200 text-neutral-600'
+            )}
           >
             {unlocked ? (
               <span>Start Quest →</span>
