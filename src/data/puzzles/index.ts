@@ -22,29 +22,40 @@ export const getPathPuzzles = (pathId: number): PathConfig | null => {
 };
 
 /**
- * Calculate max points for NON-RESERVED puzzles only
- * Reserved puzzles are excluded from the 91% threshold calculation
+ * Calculate total points for BASE (non-bonus) puzzles
+ * These are the required puzzles to unlock the key (100% threshold)
  */
-export const getMaxNormalPoints = (pathId: PathId): number => {
+export const getTotalBasePoints = (pathId: PathId): number => {
   const pathConfig = getPathPuzzles(pathId);
   if (!pathConfig) return 0;
 
   return pathConfig.puzzles
-    .filter((puzzle) => !puzzle.isReserved)
+    .filter((puzzle) => !puzzle.isBonus)
     .reduce((total, puzzle) => total + (puzzle.points || 0), 0);
 };
 
 /**
- * Point-based unlock thresholds (MASTERY THRESHOLD: 91% of max normal points)
- * These are minimum point targets to unlock keys
- * Easy=1pt, Medium=2pts, Hard=3pts per puzzle
- * GAUNTLET MODE: 91% threshold for key unlock (with optional 100% Perfect Run)
- * NOTE: Reserved puzzles (for final streak) are EXCLUDED from this calculation
+ * Calculate total points for BONUS (sudden death) puzzles
+ * These are optional extra credit puzzles
+ */
+export const getTotalBonusPoints = (pathId: PathId): number => {
+  const pathConfig = getPathPuzzles(pathId);
+  if (!pathConfig) return 0;
+
+  return pathConfig.puzzles
+    .filter((puzzle) => puzzle.isBonus === true)
+    .reduce((total, puzzle) => total + (puzzle.points || 0), 0);
+};
+
+/**
+ * @deprecated Use getTotalBasePoints() instead. This constant is kept for backward compatibility only.
+ * Point-based unlock thresholds (LEGACY: 91% threshold)
+ * NEW SYSTEM: 100% of base points required (getTotalBasePoints)
  */
 export const TARGET_SCORES: Record<PathId, number> = {
-  [PATH_IDS.POP_CULTURE]: Math.ceil(getMaxNormalPoints(PATH_IDS.POP_CULTURE) * 0.91),
-  [PATH_IDS.RENAISSANCE]: Math.ceil(getMaxNormalPoints(PATH_IDS.RENAISSANCE) * 0.91),
-  [PATH_IDS.HEART]: Math.ceil(getMaxNormalPoints(PATH_IDS.HEART) * 0.91),
+  [PATH_IDS.POP_CULTURE]: getTotalBasePoints(PATH_IDS.POP_CULTURE),
+  [PATH_IDS.RENAISSANCE]: getTotalBasePoints(PATH_IDS.RENAISSANCE),
+  [PATH_IDS.HEART]: getTotalBasePoints(PATH_IDS.HEART),
 } as const;
 
 /**

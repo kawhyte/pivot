@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { PathProgress } from '@/types/puzzle';
 import { PATH_IDS, type PathId } from '@/lib/paths';
-import { getPathPuzzles, getTotalPuzzles, getTotalNonBonusPuzzles, getTotalBonusPuzzles, TARGET_SCORES } from '@/data/puzzles';
+import { getPathPuzzles, getTotalPuzzles, getTotalNonBonusPuzzles, getTotalBonusPuzzles, getTotalBasePoints, getTotalBonusPoints } from '@/data/puzzles';
 import {
   fetchProfile,
   fetchQuestProgress,
@@ -248,7 +248,58 @@ const initialState = {
 
 export const useQuestStore = create<QuestState>()(
   persist(
-    (set, get) => ({
+    (set, get) => {
+      // ========================================
+      // PRIVATE HELPER: Calculate Path Stats
+      // ========================================
+      const calculateStats = (
+        pathId: PathId,
+        themedTitle: string,
+        perfectRunCompleted: boolean,
+        thresholdDecision: '91%' | '100%' | 'abandoned'
+      ): PathStats => {
+        const finalProgress = get().pathProgress[pathId];
+        const score = get().getPathScore(pathId);
+        const totalNonBonus = getTotalNonBonusPuzzles(pathId);
+        const totalBonus = getTotalBonusPuzzles(pathId);
+
+        // Calculate total questions based on whether bonus was completed
+        const totalQuestions = perfectRunCompleted ? totalNonBonus + totalBonus : totalNonBonus;
+
+        // Calculate first-try statistics
+        const firstTryCount = Object.values(finalProgress.puzzleAttempts)
+          .filter((a) => a.isFirstTry && a.isCompleted).length;
+        const firstTryRate = totalQuestions > 0
+          ? Math.round((firstTryCount / totalQuestions) * 100)
+          : 0;
+
+        // Calculate average time per question
+        const avgTimePerQuestion = totalQuestions > 0
+          ? Math.round(finalProgress.totalTimeSpent / totalQuestions)
+          : 0;
+
+        // Calculate accuracy
+        const accuracy = totalQuestions > 0
+          ? Math.round(((totalQuestions - finalProgress.mistakes) / totalQuestions) * 100)
+          : 100;
+
+        return {
+          completionTime: finalProgress.totalTimeSpent,
+          accuracy,
+          mistakes: finalProgress.mistakes,
+          themedTitle,
+          completedAt: Date.now(),
+          totalQuestions,
+          firstTryCount,
+          firstTryRate,
+          skippedCount: finalProgress.skippedIds.length,
+          avgTimePerQuestion,
+          perfectRunCompleted,
+          thresholdDecision,
+        };
+      };
+
+      return {
       ...initialState,
 
       setAuthentication: (isAuthenticated, agentName, agentRole, agentId, isTester) =>
@@ -365,87 +416,25 @@ export const useQuestStore = create<QuestState>()(
           // Mark puzzle as completed
           get().completePuzzle(pathId, puzzleId, isFirstTry);
 
-          // 3. NEW LOGIC: Completion-First + Sudden Death Bonus Model
+          // 3. NEW LOGIC: Point-Weighted Completion System
           const updatedProgress = get().pathProgress[pathId];
-          const totalNonBonus = getTotalNonBonusPuzzles(pathId);
-          const totalBonus = getTotalBonusPuzzles(pathId);
+          const currentScore = get().getPathScore(pathId);
+          const totalBasePoints = getTotalBasePoints(pathId);
+          const totalBonusPoints = getTotalBonusPoints(pathId);
 
-          // Count completed non-bonus and bonus puzzles
-          const completedNonBonusIds = updatedProgress.completedIds.filter(id => {
-            const puzzle = pathConfig.puzzles.find(p => p.id === id);
-            return puzzle && !puzzle.isBonus;
-          });
-          const completedBonusIds = updatedProgress.completedIds.filter(id => {
-            const puzzle = pathConfig.puzzles.find(p => p.id === id);
-            return puzzle && puzzle.isBonus === true;
-          });
-
-          // 4. Check if 100% BASE completion reached (auto-unlock key)
-          if (!updatedProgress.isBonusMode && completedNonBonusIds.length === totalNonBonus) {
+          // 4. Check if 100% BASE POINTS reached (auto-unlock key)
+          if (!updatedProgress.isBonusMode && currentScore >= totalBasePoints) {
             // BASE 100% COMPLETE! Auto-unlock key
-            const finalProgress = updatedProgress;
-            const score = get().getPathScore(pathId);
-
-            // Calculate detailed stats
-            const totalQuestions = totalNonBonus; // Only count base questions
-            const firstTryCount = Object.values(finalProgress.puzzleAttempts)
-              .filter((a) => a.isFirstTry && a.isCompleted).length;
-            const firstTryRate = Math.round((firstTryCount / totalQuestions) * 100);
-            const skippedCount = finalProgress.skippedIds.length;
-            const avgTimePerQuestion = totalQuestions > 0
-              ? Math.round(finalProgress.totalTimeSpent / totalQuestions)
-              : 0;
-
-            const stats: PathStats = {
-              completionTime: finalProgress.totalTimeSpent,
-              accuracy: Math.round(((totalQuestions - finalProgress.mistakes) / totalQuestions) * 100),
-              mistakes: finalProgress.mistakes,
-              themedTitle: 'Completed!',
-              completedAt: Date.now(),
-              totalQuestions,
-              firstTryCount,
-              firstTryRate,
-              skippedCount,
-              avgTimePerQuestion,
-              perfectRunCompleted: false,
-              thresholdDecision: '100%',
-            };
-
+            const stats = calculateStats(pathId, 'Completed!', false, '100%');
             await get().addKey(pathId, stats);
 
             // Set modal flag so QuestPage can show the "Challenge Sudden Death?" overlay
             await get().setHasSeenThresholdModal(pathId, true);
           }
-          // 5. Check if BONUS MODE and all bonus puzzles completed
-          else if (updatedProgress.isBonusMode && completedBonusIds.length === totalBonus) {
+          // 5. Check if BONUS MODE and total points (base + bonus) reached
+          else if (updatedProgress.isBonusMode && currentScore >= totalBasePoints + totalBonusPoints) {
             // SUDDEN DEATH SUCCESS! 🎉
-            const finalProgress = updatedProgress;
-            const score = get().getPathScore(pathId);
-
-            // Calculate detailed stats (including bonus)
-            const totalQuestions = totalNonBonus + totalBonus;
-            const firstTryCount = Object.values(finalProgress.puzzleAttempts)
-              .filter((a) => a.isFirstTry && a.isCompleted).length;
-            const firstTryRate = Math.round((firstTryCount / totalQuestions) * 100);
-            const skippedCount = finalProgress.skippedIds.length;
-            const avgTimePerQuestion = totalQuestions > 0
-              ? Math.round(finalProgress.totalTimeSpent / totalQuestions)
-              : 0;
-
-            const stats: PathStats = {
-              completionTime: finalProgress.totalTimeSpent,
-              accuracy: Math.round(((totalQuestions - finalProgress.mistakes) / totalQuestions) * 100),
-              mistakes: finalProgress.mistakes,
-              themedTitle: 'Sudden Death Master!',
-              completedAt: Date.now(),
-              totalQuestions,
-              firstTryCount,
-              firstTryRate,
-              skippedCount,
-              avgTimePerQuestion,
-              perfectRunCompleted: true, // Bonus mode completion = perfect
-              thresholdDecision: '100%',
-            };
+            const stats = calculateStats(pathId, 'Sudden Death Master!', true, '100%');
 
             // End bonus mode and award key (will overwrite previous key stats)
             await get().endBonusMode(pathId);
@@ -457,11 +446,18 @@ export const useQuestStore = create<QuestState>()(
           // Reset streak on incorrect answer
           set({ currentStreak: 0 });
 
-          // 6. SUDDEN DEATH FAILURE: If in bonus mode, end immediately
+          // 6. SUDDEN DEATH FAILURE: If in bonus mode, end immediately and award key
           if (progress.isBonusMode) {
-            // END BONUS MODE (failure)
+            // END BONUS MODE (failure) - but still award key since 100% base was achieved
+            const stats = calculateStats(pathId, 'Mastery Complete', false, '100%');
+
+            // End bonus mode first
             await get().endBonusMode(pathId);
-            // Note: BonusFailureModal will be shown in QuestPage
+
+            // Award the key (since 100% base points were already achieved)
+            await get().addKey(pathId, stats);
+
+            // Note: BonusFailureModal will be shown in QuestPage with seamless transition to Stats
             return; // Exit early, don't track mistakes
           }
 
@@ -579,8 +575,8 @@ export const useQuestStore = create<QuestState>()(
 
       isPathUnlocked: (pathId) => {
         const score = get().getPathScore(pathId);
-        const threshold = TARGET_SCORES[pathId];
-        return score >= threshold;
+        const requiredPoints = getTotalBasePoints(pathId);
+        return score >= requiredPoints;
       },
 
       getNextUnsolvedPuzzle: (pathId, excludeId) => {
@@ -1175,7 +1171,8 @@ export const useQuestStore = create<QuestState>()(
 
         console.log('✅ Puzzle solved!');
       },
-    }),
+    };
+    },
     {
       name: 'birthday-quest-storage',
       storage: createJSONStorage(() => localStorage),
