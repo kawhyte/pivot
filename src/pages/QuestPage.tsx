@@ -136,11 +136,14 @@ const QuestPage = () => {
     (p) => p.id === currentPuzzleId
   );
 
+  // FIX: Calculate max possible points by summing all puzzle points
+  const maxPossiblePoints = allPuzzles.reduce((sum, p) => sum + (p.points || 0), 0);
+
   // GAUNTLET MODE: 93% threshold (TARGET_SCORES already represent 93% of max points)
   const canClaimKey = currentScore >= targetScore && !isPathCompleted;
 
-  // Progress percentage for glow button
-  const scoreProgress = Math.round((currentScore / targetScore) * 100);
+  // FIX: Progress percentage based on maxPossiblePoints (not targetScore)
+  const scoreProgress = Math.round((currentScore / maxPossiblePoints) * 100);
   const showFinishButton = scoreProgress >= 93 && canClaimKey;
   // Glow at 95%+ (now that 93% is base requirement)
   const isCompletionistPending = scoreProgress >= 95 && scoreProgress < 100 && canClaimKey;
@@ -653,7 +656,7 @@ const QuestPage = () => {
       
       {/* Refined Progress Bar */}
       <Progress
-        value={Math.min((currentScore / targetScore) * 100, 100)}
+        value={Math.min(scoreProgress, 100)}
         className={cn(
           "h-3.5 rounded-full p-0.5 border transition-all",
           isTester ? "bg-zinc-900 border-zinc-800" : "bg-neutral-100 border-neutral-200/50 shadow-inner"
@@ -746,125 +749,127 @@ const QuestPage = () => {
       {/* Success Overlay */}
       <SuccessOverlay show={showSuccessOverlay} message={getStreakMessage()} />
 
-      {/* Main Content */}
-      <main className="flex flex-1 flex-col px-6 pt-20 pb-24">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={puzzle.id}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <PuzzleRenderer
-              puzzle={puzzle}
-              onSubmit={handleSubmit}
-              showHint={showHint}
-              isSubmitting={isSubmitting}
-              validationResult={validationResult}
-              pathId={pathId}
-              currentMistakes={currentRun.mistakes}
-              currentScore={currentScore}
-              targetScore={targetScore}
-              shake={shake}
-              isTester={isTester}
-            />
+      {/* Main Content - Hidden when modals are showing to prevent ghost questions */}
+      {!showThresholdModal && !showCompletion && !isPathCompleted && (
+        <main className="flex flex-1 flex-col px-6 pt-20 pb-24">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={puzzle.id}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <PuzzleRenderer
+                puzzle={puzzle}
+                onSubmit={handleSubmit}
+                showHint={showHint}
+                isSubmitting={isSubmitting}
+                validationResult={validationResult}
+                pathId={pathId}
+                currentMistakes={currentRun.mistakes}
+                currentScore={currentScore}
+                targetScore={targetScore}
+                shake={shake}
+                isTester={isTester}
+              />
 
-            {/* Skip Button */}
-            {!isSubmitting && currentPuzzleId && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="mx-auto mt-4 w-full max-w-lg"
-              >
-                <Button
-                  onClick={handleSkip}
-                  variant="ghost"
-                  className={cn(
-                    "w-full text-center text-base transition-colors",
-                    isTester
-                      ? 'text-zinc-400 hover:text-cyan-400 hover:bg-transparent'
-                      : 'text-zinc-500 hover:text-zinc-700 hover:bg-transparent'
-                  )}
+              {/* Skip Button */}
+              {!isSubmitting && currentPuzzleId && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="mx-auto mt-4 w-full max-w-lg"
                 >
-                  Skip Question for Now →
-                </Button>
-              </motion.div>
-            )}
+                  <Button
+                    onClick={handleSkip}
+                    variant="ghost"
+                    className={cn(
+                      "w-full text-center text-base transition-colors",
+                      isTester
+                        ? 'text-zinc-400 hover:text-cyan-400 hover:bg-transparent'
+                        : 'text-zinc-500 hover:text-zinc-700 hover:bg-transparent'
+                    )}
+                  >
+                    Skip Question for Now →
+                  </Button>
+                </motion.div>
+              )}
 
-            {/* Finish Button - Show at 93% threshold */}
-            {showFinishButton && (
+              {/* Finish Button - Show at 93% threshold */}
+              {showFinishButton && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="mx-auto mt-8 w-full max-w-lg"
+                >
+                  <Button
+                    onClick={() => {
+                      const accuracy = Math.round(((progress.completedIds.length / totalPuzzles) * 100));
+                      const stats = {
+                        completionTime: 0,
+                        accuracy,
+                        mistakes: progress.mistakes,
+                        themedTitle: getThemedTitle(pathId, accuracy),
+                        completedAt: Date.now(),
+                      };
+
+                      setShowCompletion(true);
+                      if (!keysCollected.includes(pathId)) {
+                        addKey(pathId, stats);
+                      }
+                    }}
+                    variant="doodle"
+                    size="lg"
+                    className={cn(
+                      "w-full",
+                      isTester && 'bg-cyan-600 hover:bg-cyan-500'
+                    )}
+                  >
+                    Finish & Claim Key
+                  </Button>
+
+                  {/* Hint Text - Only at 95%+ */}
+                  {isCompletionistPending && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-2 text-center text-sm text-neutral-700 font-semibold"
+                    >
+                      Go for 100%?
+                    </motion.p>
+                  )}
+                </motion.div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Feedback Message */}
+          <AnimatePresence>
+            {feedback && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="mx-auto mt-8 w-full max-w-lg"
+                exit={{ opacity: 0, y: -20 }}
+                className="mx-auto mt-6 w-full max-w-lg"
               >
-                <Button
-                  onClick={() => {
-                    const accuracy = Math.round(((progress.completedIds.length / totalPuzzles) * 100));
-                    const stats = {
-                      completionTime: 0,
-                      accuracy,
-                      mistakes: progress.mistakes,
-                      themedTitle: getThemedTitle(pathId, accuracy),
-                      completedAt: Date.now(),
-                    };
-
-                    setShowCompletion(true);
-                    if (!keysCollected.includes(pathId)) {
-                      addKey(pathId, stats);
-                    }
-                  }}
-                  variant="doodle"
-                  size="lg"
+                <div
                   className={cn(
-                    "w-full",
-                    isTester && 'bg-cyan-600 hover:bg-cyan-500'
+                    "doodle-sticker p-4 text-center font-bold",
+                    feedback.type === 'success'
+                      ? 'bg-success-bg'
+                      : 'bg-red-50'
                   )}
                 >
-                  Finish & Claim Key
-                </Button>
-
-                {/* Hint Text - Only at 95%+ */}
-                {isCompletionistPending && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-2 text-center text-sm text-neutral-700 font-semibold"
-                  >
-                    Go for 100%?
-                  </motion.p>
-                )}
+                  {feedback.message}
+                </div>
               </motion.div>
             )}
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Feedback Message */}
-        <AnimatePresence>
-          {feedback && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="mx-auto mt-6 w-full max-w-lg"
-            >
-              <div
-                className={cn(
-                  "doodle-sticker p-4 text-center font-bold",
-                  feedback.type === 'success'
-                    ? 'bg-success-bg'
-                    : 'bg-red-50'
-                )}
-              >
-                {feedback.message}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </main>
+          </AnimatePresence>
+        </main>
+      )}
 
       {/* Question Navigator - Fixed Mission Log */}
       {/* {currentPuzzleId && allPuzzles.length > 0 && (
