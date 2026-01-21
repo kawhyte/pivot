@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import { toast } from 'sonner';
 import { ArrowLeft, Loader2, SkipForward } from 'lucide-react';
 import { useQuestStore } from '@/store/useQuestStore';
 import { PATH_METADATA, type PathId } from '@/lib/paths';
@@ -211,6 +212,7 @@ const QuestPage = () => {
         await submitAnswer(pathId, currentPuzzleId, false, weight, timeSpent);
         if (attempts === 0) {
           setFeedback({ type: 'error', message: getFirstStrikeMessage(pathId) });
+          toast.error(getFirstStrikeMessage(pathId) + ' (One more mistake and this question will be auto-skipped)');
           setShake(true);
           setTimeout(() => setShake(false), 400);
           setAttempts(1);
@@ -379,7 +381,8 @@ const handleManualSkip = async () => {
           />
         )}
       </motion.div>
-      
+
+      <QuestionSkippedToast show={showSkippedToast} message="Second strike! Skipping this for now..." />
     </>
   );
 };
