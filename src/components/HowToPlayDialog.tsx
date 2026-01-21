@@ -74,19 +74,19 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
                     <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-xs">
                       1
                     </div>
-                    <span>Easy = 1 point</span>
+                    <span>Easy = 10 point</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold text-xs">
                       2
                     </div>
-                    <span>Medium = 2 points</span>
+                    <span>Medium = 20 points</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-xs">
                       3
                     </div>
-                    <span>Hard = 3 points</span>
+                    <span>Hard = 30 points</span>
                   </div>
                 </div>
                 <p className="text-base text-neutral-600 mt-3">
