@@ -382,7 +382,17 @@ const handleManualSkip = async () => {
         )}
       </motion.div>
 
-      <QuestionSkippedToast show={showSkippedToast} message="Second strike! Skipping this for now..." />
+      <AnimatePresence>
+        {showSkippedToast && (
+          <QuestionSkippedToast
+            show={showSkippedToast}
+            message="Second strike! Skipping this for now..."
+            pathId={pathId}
+            onDismiss={() => setShowSkippedToast(false)}
+            isTester={isTester}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 };

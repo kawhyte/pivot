@@ -5,16 +5,22 @@ import { SkipForward, Clock } from 'lucide-react';
 import { PATH_METADATA, type PathId } from '@/lib/paths';
 
 interface QuestionSkippedToastProps {
+  show: boolean;
+  message?: string;
   pathId: PathId;
   onDismiss: () => void;
   isTester?: boolean;
 }
 
 export const QuestionSkippedToast = ({
+  show,
+  message,
   pathId,
   onDismiss,
   isTester = false,
 }: QuestionSkippedToastProps) => {
+  if (!show || !pathId) return null;
+
   const pathMeta = PATH_METADATA[pathId];
 
   return (
@@ -73,7 +79,7 @@ export const QuestionSkippedToast = ({
                 isTester ? 'text-zinc-300' : 'text-neutral-700'
               }`}
             >
-              Don't worry! This question will be available to try again later.
+              {message || "Don't worry! This question will be available to try again later."}
             </p>
 
             {/* Info Box */}
