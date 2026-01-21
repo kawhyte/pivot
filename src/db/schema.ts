@@ -82,6 +82,10 @@ export const questProgress = pgTable('quest_progress', {
 
   // Completion-based unlock system (NEW)
   nextPathUnlockAt: timestamp('next_path_unlock_at'), // When next path unlocks (8am day after completion)
+
+  // Tiered reward system (Tier 1: Key, Tier 2: Bonus)
+  isKeyUnlocked: boolean('is_key_unlocked').default(false).notNull(),
+  isBonusUnlocked: boolean('is_bonus_unlocked').default(false).notNull(),
 }, (table) => ({
   questProgressProfilePathIdx: uniqueIndex('quest_progress_profile_path_idx').on(table.profileId, table.pathId),
 }));

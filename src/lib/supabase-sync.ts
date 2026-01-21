@@ -179,6 +179,9 @@ export async function savePathCompletion(
     thresholdDecision?: string;
     // NEW: Completion-based unlock system
     nextPathUnlockAt?: string;
+    // NEW: Tiered reward flags
+    isKeyUnlocked?: boolean;
+    isBonusUnlocked?: boolean;
   }
 ) {
   if (!supabase) return false;
@@ -209,6 +212,9 @@ export async function savePathCompletion(
         threshold_decision: data.thresholdDecision,
         // NEW: Completion-based unlock system
         next_path_unlock_at: data.nextPathUnlockAt,
+        // NEW: Tiered reward flags
+        is_key_unlocked: data.isKeyUnlocked ?? false,
+        is_bonus_unlocked: data.isBonusUnlocked ?? false,
         updated_at: new Date().toISOString(),
       }, {
         onConflict: 'profile_id,path_id',
@@ -638,6 +644,57 @@ export async function deletePathProgress(profileId: number, pathId: PathId) {
     return true;
   } catch (error) {
     console.error('Error during hard reset:', error);
+    return false;
+  }
+}
+
+/**
+ * Update unlock flags without overwriting other completion data
+ * CRITICAL: Enforces non-revocable rule for is_key_unlocked
+ */
+export async function updateUnlockFlags(
+  profileId: number,
+  pathId: PathId,
+  flags: {
+    isKeyUnlocked?: boolean;
+    isBonusUnlocked?: boolean;
+  }
+) {
+  if (!supabase) return false;
+
+  try {
+    // NEVER allow revoking key unlock
+    if (flags.isKeyUnlocked === false) {
+      console.warn('Attempted to revoke key unlock - operation blocked');
+      return false;
+    }
+
+    const updateData: any = {
+      updated_at: new Date().toISOString(),
+    };
+
+    if (flags.isKeyUnlocked === true) {
+      updateData.is_key_unlocked = true;
+    }
+
+    if (flags.isBonusUnlocked !== undefined) {
+      updateData.is_bonus_unlocked = flags.isBonusUnlocked;
+    }
+
+    const { error } = await supabase
+      .from('quest_progress')
+      .update(updateData)
+      .eq('profile_id', profileId)
+      .eq('path_id', pathId);
+
+    if (error) {
+      console.error('Error updating unlock flags:', error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error updating unlock flags:', error);
     return false;
   }
 }

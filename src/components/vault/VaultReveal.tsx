@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { Gift, Sparkles, Heart, PartyPopper } from 'lucide-react';
+import { Gift, Sparkles, Heart, PartyPopper, Trophy, Key } from 'lucide-react';
+import { useQuestStore } from '@/store/useQuestStore';
 
 interface VaultRevealProps {
   onComplete?: () => void;
@@ -11,6 +12,14 @@ interface VaultRevealProps {
 
 export const VaultReveal = ({ onComplete }: VaultRevealProps) => {
   const [stage, setStage] = useState<'unlocking' | 'opening' | 'revealing' | 'complete'>('unlocking');
+
+  // Get unlock status from store
+  const pathUnlockStatus = useQuestStore((state) => state.pathUnlockStatus);
+
+  // Determine if user unlocked ANY bonus
+  const hasAnyBonus = Object.values(pathUnlockStatus).some(
+    (status) => status?.isBonusUnlocked === true
+  );
 
   // Multi-stage confetti celebration
   const fireConfettiSequence = () => {
@@ -229,6 +238,25 @@ export const VaultReveal = ({ onComplete }: VaultRevealProps) => {
             animate={{ opacity: 1, scale: 1 }}
             className="text-center max-w-3xl"
           >
+            {/* Conditional Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 flex justify-center"
+            >
+              {hasAnyBonus ? (
+                <div className="flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 px-6 py-3 shadow-lg">
+                  <Trophy className="h-6 w-6 text-white" />
+                  <span className="text-lg font-bold text-white">VIP ACCESS UNLOCKED</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 rounded-full bg-duolingo-green px-6 py-3 shadow-lg">
+                  <Key className="h-6 w-6 text-white" />
+                  <span className="text-lg font-bold text-white">VAULT UNLOCKED</span>
+                </div>
+              )}
+            </motion.div>
+
             <motion.div
               animate={{
                 scale: [1, 1.05, 1],
@@ -247,7 +275,7 @@ export const VaultReveal = ({ onComplete }: VaultRevealProps) => {
               animate={{ opacity: 1, y: 0 }}
               className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 mb-6"
             >
-              Happy Birthday! 🎉
+              {hasAnyBonus ? '🏆 Ultimate Achievement' : 'Happy Birthday! 🎉'}
             </motion.h1>
 
             <motion.div
@@ -257,11 +285,14 @@ export const VaultReveal = ({ onComplete }: VaultRevealProps) => {
               className="bg-white/10 backdrop-blur-md rounded-2xl p-8 mb-8 border border-white/20"
             >
               <p className="text-2xl text-white mb-4 leading-relaxed">
-                You&apos;ve completed all three paths and collected every key!
+                {hasAnyBonus
+                  ? "You've mastered every challenge and earned the VIP experience!"
+                  : "You've completed all three paths and collected every key!"}
               </p>
               <p className="text-xl text-zinc-300 mb-6">
-                This journey through pop culture, knowledge, and our precious memories
-                was designed to celebrate the incredible person you are.
+                {hasAnyBonus
+                  ? "Your fearless pursuit of perfection unlocked the ultimate reward. You are absolutely incredible!"
+                  : "This journey through pop culture, knowledge, and our precious memories was designed to celebrate the incredible person you are."}
               </p>
               <div className="flex justify-center gap-4 mb-6">
                 <div className="text-center">
@@ -278,7 +309,9 @@ export const VaultReveal = ({ onComplete }: VaultRevealProps) => {
                 </div>
               </div>
               <p className="text-lg text-white font-medium">
-                🎁 Your real gift is waiting for you... ✨
+                {hasAnyBonus
+                  ? '✨ Your exclusive VIP gift awaits... ✨'
+                  : '🎁 Your gift is waiting for you... ✨'}
               </p>
             </motion.div>
 
@@ -290,9 +323,13 @@ export const VaultReveal = ({ onComplete }: VaultRevealProps) => {
                 onClick={onComplete}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 px-12 py-4 text-xl font-bold text-white shadow-2xl"
+                className={`rounded-full px-12 py-4 text-xl font-bold text-white shadow-2xl ${
+                  hasAnyBonus
+                    ? 'bg-gradient-to-r from-yellow-400 to-orange-500'
+                    : 'bg-gradient-to-r from-purple-500 via-pink-500 to-red-500'
+                }`}
               >
-                Reveal My Gift
+                {hasAnyBonus ? 'Unlock VIP Gift' : 'Reveal My Gift'}
               </motion.button>
             )}
           </motion.div>

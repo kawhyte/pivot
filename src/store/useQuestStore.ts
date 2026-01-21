@@ -67,6 +67,10 @@ export interface PathStats {
   avgTimePerQuestion: number;        // Milliseconds
   perfectRunCompleted: boolean;      // Did user complete via perfect run?
   thresholdDecision: '91%' | '100%' | 'abandoned';
+
+  // Tiered reward tracking (NEW)
+  isKeyUnlocked?: boolean;    // Track if key was unlocked (Tier 1)
+  isBonusUnlocked?: boolean;  // Track if bonus was unlocked (Tier 2)
 }
 
 export interface CurrentRun {
@@ -113,6 +117,12 @@ interface QuestState {
   // Performance stats for each completed path
   pathStats: Partial<Record<PathId, PathStats>>;
 
+  // Tiered reward status per path (loaded from DB)
+  pathUnlockStatus: Partial<Record<PathId, {
+    isKeyUnlocked: boolean;
+    isBonusUnlocked: boolean;
+  }>>;
+
   // Is vault unlocked (all 3 keys collected)
   isVaultUnlocked: boolean;
 
@@ -129,6 +139,7 @@ interface QuestState {
   setActivePath: (pathId: PathId | null) => void;
   addKey: (pathId: PathId, stats?: PathStats) => Promise<void>;
   setUnlockedPaths: (paths: PathId[]) => void;
+  setPathUnlockStatus: (pathId: PathId, status: { isKeyUnlocked?: boolean; isBonusUnlocked?: boolean }) => void;
   setCurrentPuzzle: (puzzleId: string | null) => void;
   submitAnswer: (pathId: PathId, puzzleId: string, isCorrect: boolean, mistakeWeight?: number, timeSpent?: number) => Promise<void>;
   skipPuzzle: (pathId: PathId, puzzleId: string) => Promise<void>;
@@ -182,6 +193,7 @@ const initialState = {
   keysCollected: [],
   unlockedPaths: [],
   completedPathsData: [],
+  pathUnlockStatus: {},
   pathProgress: {
     [PATH_IDS.POP_CULTURE]: {
       completedIds: [],
@@ -313,9 +325,20 @@ export const useQuestStore = create<QuestState>()(
           const newKeys = [...state.keysCollected, pathId];
           const updates: Partial<QuestState> = { keysCollected: newKeys };
 
-          // If stats provided, store them
+          // If stats provided, store them (with unlock flags)
           if (stats) {
             updates.pathStats = { ...state.pathStats, [pathId]: stats };
+
+            // Update unlock status if provided
+            if (stats.isKeyUnlocked !== undefined || stats.isBonusUnlocked !== undefined) {
+              updates.pathUnlockStatus = {
+                ...state.pathUnlockStatus,
+                [pathId]: {
+                  isKeyUnlocked: stats.isKeyUnlocked ?? state.pathUnlockStatus[pathId]?.isKeyUnlocked ?? false,
+                  isBonusUnlocked: stats.isBonusUnlocked ?? state.pathUnlockStatus[pathId]?.isBonusUnlocked ?? false,
+                },
+              };
+            }
           }
 
           return updates;
@@ -349,6 +372,9 @@ export const useQuestStore = create<QuestState>()(
               perfectRunCompleted: stats?.perfectRunCompleted,
               thresholdDecision: stats?.thresholdDecision,
               nextPathUnlockAt: nextPathUnlockAt.toISOString(),
+              // NEW: Pass unlock flags from stats
+              isKeyUnlocked: stats?.isKeyUnlocked ?? false,
+              isBonusUnlocked: stats?.isBonusUnlocked ?? false,
             });
 
             // Re-fetch quest progress to update completedPathsData
@@ -376,6 +402,18 @@ export const useQuestStore = create<QuestState>()(
       },
 
       setUnlockedPaths: (paths) => set({ unlockedPaths: paths }),
+
+      setPathUnlockStatus: (pathId, status) => {
+        set((state) => ({
+          pathUnlockStatus: {
+            ...state.pathUnlockStatus,
+            [pathId]: {
+              ...state.pathUnlockStatus[pathId],
+              ...status,
+            },
+          },
+        }));
+      },
 
       setCurrentPuzzle: (puzzleId) => set({ currentPuzzleId: puzzleId }),
 
@@ -452,9 +490,16 @@ export const useQuestStore = create<QuestState>()(
               // SUDDEN DEATH SUCCESS! 🎉
               const stats = calculateStats(pathId, getLegendaryTitle(pathId), true, '100%');
 
+              // NEW: Add unlock flags (both key and bonus unlocked)
+              stats.isKeyUnlocked = true;
+              stats.isBonusUnlocked = true;
+
               // End bonus mode and award key (will overwrite previous key stats if any)
               await get().endBonusMode(pathId);
               await get().addKey(pathId, stats);
+
+              // Update unlock status in store
+              get().setPathUnlockStatus(pathId, { isBonusUnlocked: true });
             }
           }
         } else {
@@ -468,11 +513,18 @@ export const useQuestStore = create<QuestState>()(
             // END BONUS MODE (failure) - but still award key since 100% base was achieved
             const stats = calculateStats(pathId, 'Mastery Complete', false, '100%');
 
+            // NEW: Add unlock flags (key unlocked, bonus NOT unlocked)
+            stats.isKeyUnlocked = true;
+            stats.isBonusUnlocked = false;
+
             // End bonus mode first
             await get().endBonusMode(pathId);
 
             // Award the key (since 100% base points were already achieved)
             await get().addKey(pathId, stats);
+
+            // Update unlock status in store
+            get().setPathUnlockStatus(pathId, { isBonusUnlocked: false });
 
             // Note: BonusFailureModal will be shown in QuestPage with seamless transition to Stats
             return; // Exit early, don't track mistakes
@@ -683,6 +735,17 @@ export const useQuestStore = create<QuestState>()(
           // NEW: Calculate unlocked paths based on completion
           const unlockedPaths = getUnlockedPaths(completedPathsData, profile.isTester);
 
+          // NEW: Extract unlock status from quest progress
+          const pathUnlockStatus: Partial<Record<PathId, any>> = {};
+          questProgressData.forEach((p) => {
+            if (p.is_completed) {
+              pathUnlockStatus[p.path_id as PathId] = {
+                isKeyUnlocked: p.is_key_unlocked ?? false,
+                isBonusUnlocked: p.is_bonus_unlocked ?? false,
+              };
+            }
+          });
+
           // 3. Fetch active sessions for all paths
           const sessions: Record<PathId, any> = {};
           for (const pathId of [PATH_IDS.POP_CULTURE, PATH_IDS.RENAISSANCE, PATH_IDS.HEART]) {
@@ -790,6 +853,7 @@ export const useQuestStore = create<QuestState>()(
             completedPathsData,
             unlockedPaths,
             pathProgress,
+            pathUnlockStatus,
             _hasHydrated: true,
           });
 

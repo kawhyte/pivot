@@ -8,6 +8,7 @@ import { useQuestStore } from '@/store/useQuestStore';
 import { PATH_METADATA, type PathId } from '@/lib/paths';
 import { getPuzzleById, getTotalPuzzles, getTotalNonBonusPuzzles, getTotalBonusPuzzles, TARGET_SCORES, getPathPuzzles } from '@/data/puzzles';
 import { validateAnswer } from '@/lib/puzzle-validator';
+import { updateUnlockFlags } from '@/lib/supabase-sync';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { PuzzleRenderer } from '@/components/puzzles/PuzzleRenderer';
@@ -66,6 +67,9 @@ const QuestPage = () => {
     startBonusMode,
     getStreakMessage,
     _hasHydrated,
+    pathUnlockStatus,
+    setPathUnlockStatus,
+    agentId,
   } = useQuestStore();
 
   const [showHint, setShowHint] = useState(false);
@@ -82,6 +86,7 @@ const QuestPage = () => {
   const [showSkippedToast, setShowSkippedToast] = useState(false);
   const [puzzleStartTime, setPuzzleStartTime] = useState<number>(Date.now());
   const [isTransitioningToBonus, setIsTransitioningToBonus] = useState(false);
+  const [pendingKeyUnlock, setPendingKeyUnlock] = useState(false);
 
   const totalPuzzles = getTotalPuzzles(pathId);
   const totalNonBonus = getTotalNonBonusPuzzles(pathId);
@@ -92,6 +97,7 @@ const QuestPage = () => {
   const progress = pathProgress[pathId];
   const currentScore = getPathScore(pathId);
   const targetScore = TARGET_SCORES[pathId];
+  const currentPathUnlockStatus = pathUnlockStatus[pathId];
 
   const allPuzzles = getPathPuzzles(pathId)?.puzzles || [];
   const remainingPuzzles = allPuzzles.filter(
@@ -136,12 +142,36 @@ const QuestPage = () => {
     return () => resetRun();
   }, [pathId, startNewRun, resetRun]);
 
+  // NEW LOGIC: Show decision modal instead of auto-transitioning to Sudden Death
   useEffect(() => {
     const baseComplete = completedNonBonusIds.length === totalNonBonus;
-    if (baseComplete && !progress.isBonusMode && !isTransitioningToBonus && totalBonus > 0) {
-      setIsTransitioningToBonus(true);
+    const hasKeyAlready = currentPathUnlockStatus?.isKeyUnlocked;
+
+    // Check if user just completed 100% base for the FIRST time
+    if (baseComplete && !hasKeyAlready && !progress.isBonusMode && !showThresholdModal && totalBonus > 0) {
+      // Set key unlocked flag in store and DB
+      setPathUnlockStatus(pathId, { isKeyUnlocked: true });
+
+      // Sync to database immediately
+      if (agentId) {
+        updateUnlockFlags(agentId, pathId, { isKeyUnlocked: true });
+      }
+
+      // Show decision modal (user chooses: claim key OR risk upgrade)
+      setShowThresholdModal(true);
+      setPendingKeyUnlock(true);
     }
-  }, [completedNonBonusIds.length, totalNonBonus, progress.isBonusMode, isTransitioningToBonus, totalBonus]);
+  }, [
+    completedNonBonusIds.length,
+    totalNonBonus,
+    currentPathUnlockStatus?.isKeyUnlocked,
+    progress.isBonusMode,
+    showThresholdModal,
+    totalBonus,
+    pathId,
+    setPathUnlockStatus,
+    agentId,
+  ]);
 
   const handleSubmit = async (answer: string | number) => {
     if (!puzzle || !currentPuzzleId || isSubmitting) return;
@@ -259,7 +289,44 @@ const handleManualSkip = async () => {
     }, 1000);
   };
 
+  // NEW: Modal decision handlers
+  const handleClaimKey = async () => {
+    setShowThresholdModal(false);
 
+    // Award key to vault with stats (is_key_unlocked: true, is_bonus_unlocked: false)
+    const finalProgress = pathProgress[pathId];
+    const accuracy = calculateAccuracy(totalNonBonus, finalProgress.mistakes);
+    const themedTitle = getThemedTitle(pathId, accuracy, finalProgress.mistakes);
+
+    const stats: import('@/store/useQuestStore').PathStats = {
+      completionTime: finalProgress.totalTimeSpent,
+      accuracy,
+      mistakes: finalProgress.mistakes,
+      themedTitle,
+      completedAt: Date.now(),
+      totalQuestions: totalNonBonus,
+      firstTryCount: Object.values(finalProgress.puzzleAttempts).filter((p) => p.isFirstTry && p.isCompleted).length,
+      firstTryRate: Math.round((Object.values(finalProgress.puzzleAttempts).filter((p) => p.isFirstTry && p.isCompleted).length / totalNonBonus) * 100),
+      skippedCount: finalProgress.skippedIds.length,
+      avgTimePerQuestion: Math.round(finalProgress.totalTimeSpent / totalNonBonus),
+      perfectRunCompleted: false,
+      thresholdDecision: '100%',
+      isKeyUnlocked: true,
+      isBonusUnlocked: false,
+    };
+
+    await addKey(pathId, stats);
+
+    // Navigate to stats screen
+    setShowCompletion(true);
+  };
+
+  const handleRiskUpgrade = async () => {
+    setShowThresholdModal(false);
+
+    // Start Sudden Death transition
+    setIsTransitioningToBonus(true);
+  };
 
   const handleBackToVault = () => navigate('/hub');
 
@@ -294,6 +361,24 @@ const handleManualSkip = async () => {
           if (firstBonus) setCurrentPuzzle(firstBonus.id);
         }}
       />
+
+      {/* Threshold Decision Modal (100% Base Completion Fork) */}
+      {showThresholdModal && (
+        <ThresholdDecisionModal
+          pathId={pathId}
+          currentScore={currentScore}
+          targetScore={targetScore}
+          remainingPuzzles={totalBonus}
+          onDecision={(decision) => {
+            if (decision === 'claim') {
+              handleClaimKey();
+            } else {
+              handleRiskUpgrade();
+            }
+          }}
+          isTester={isTester}
+        />
+      )}
 
       <motion.div 
         animate={progress.isBonusMode ? { filter: 'grayscale(20%) contrast(120%)' } : { filter: 'none' }}
