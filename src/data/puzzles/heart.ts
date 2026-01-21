@@ -14,19 +14,16 @@ export const heartPath: PathConfig = {
   name: 'Heart',
   puzzles: [
     // --- EASY: SHARED HOBBIES & DAILY LIFE ---
-    {
+  {
       id: 'heart-6',
-      type: 'text-input',
-      question: 'What is the name of our home Wi-Fi network?',
-      // Based on your troubleshooting logs!
-      correctAnswer: 'TheWhyteHouse',
-      acceptableAnswers: ['thewhytehouse', 'the whyte house', 'whyte house'],
-      placeholder: 'Our digital home name...',
-      hint: 'It\'s a play on our last name and a famous building!',
-      successMessage: 'Correct! There is no place like #TheWhyteHouse with you. 🏠💻',
+      type: 'multiple-choice',
+      question: 'Finish these lyrics: "Mi Love you like a..."',
+      options: ['Callaloo', 'Fresh vegetable', 'The Sun', 'Beyond'],
+      correctAnswer: 1,
+      successMessage: 'And even further than that! Happy Birthday, my love! 🌙✨',
       points: 10,
       difficulty: 'easy',
-      isReserved: true,
+      isReserved: true, // Milestone: The final birthday message
     },
     {
       id: 'heart-7',
@@ -40,25 +37,28 @@ export const heartPath: PathConfig = {
       difficulty: 'easy',
       isReserved: true,
     },
-    {
-      id: 'heart-8',
-      type: 'image-reveal',
-      imageUrl: '/puzzles/heart/sneaker-app.jpg',
-      imageAlt: 'A screenshot of a mobile app showing shoe inventory',
-      question: 'We spent hours building an app together to track our shoes. What was the "secret" tab name for inspiration?',
-      correctAnswer: 'Inspo',
-      acceptableAnswers: ['inspo', 'inspiration', 'the inspo tab'],
-      successMessage: 'Yes! You are my forever inspiration. 📱✨',
+   {
+      id: 'heart-26',
+      type: 'multiple-choice',
+      question: 'If I [Kenny] were left home alone for 24 hours, what would I most likely be doing the entire time?',
+      options: [
+        'Eating on the Carpet',
+        'Skipping with no pants on',
+        'Getting bored after 3 hours wondering when you will be home',
+        'All of the above (and probably forgetting to drink water and stretching )'
+      ],
+      correctAnswer: 3, // Suggested: All of the above!
+      successMessage: 'You know me too well! A little bit of code, a lot of sneakers, and definitely some Stars Hollow. 🍕💻',
       points: 15,
-    difficulty: 'easy',
+      difficulty: 'medium',
     },
 
     // --- MEDIUM: MILESTONES & MEMORIES ---
     {
       id: 'heart-9',
       type: 'multiple-choice',
-      question: 'What was the first movie we ever watched together at home?',
-      options: ['A Marvel Movie', 'A Romantic Comedy', 'A Classic Horror', 'A Disney Movie'],
+      question: 'What  is the name of the Friends episode that has the shoe Kenny likes? ',
+      options: [', "The One With Monica\'s Boots', 'The One With the Routine', 'The One About A Classic Horror', 'The One Where No One\'s Ready'],
       correctAnswer: 1, // Replace with your actual first movie genre/title
       hint: 'I remember we had popcorn and you fell asleep halfway through...',
       successMessage: 'Perfect memory! Even if we didn\'t finish it, it was the best night. 🍿🎬',
@@ -201,7 +201,7 @@ export const heartPath: PathConfig = {
     {
       id: 'heart-21',
       type: 'multiple-choice',
-      question: 'Where is our "Dream Destination" for our 10th anniversary?',
+      question: 'Where was the "Dream Destination" for my 40th birthday?',
       options: ['Japan', 'Italy', 'Paris', 'The Maldives'],
       correctAnswer: 0, // Update to her dream trip
       successMessage: 'Pack your bags, because I’m making it happen! 🇯🇵✈️',
@@ -241,16 +241,20 @@ export const heartPath: PathConfig = {
       points: 10,
     difficulty: 'easy',
     },
-    {
+  {
       id: 'heart-25',
-      type: 'text-input',
-      question: 'Finish this sentence: "To the moon and..."',
-      correctAnswer: 'Back',
-      acceptableAnswers: ['back again'],
-      placeholder: 'Complete the phrase...',
-      successMessage: 'And even further than that. Happy Birthday, my love! 🌙✨',
+      type: 'multiple-choice',
+      question: 'What have we done every single night for the past 200+ nights?',
+      options: [
+        'Watch an episode of Gilmore Girls',
+        'Say "I love you to the moon and back"',
+        'Play Wordle',
+        'Plan our next trip to Japan'
+      ],
+      correctAnswer: 1, // Index for "Say 'I love you to the moon and back'"
+      successMessage: 'And even further than that! Happy Birthday, my love! 🌙✨',
       points: 10,
-    difficulty: 'easy',
+      difficulty: 'easy',
     },
 
     // ========== BONUS PUZZLES (SUDDEN DEATH MODE) ==========

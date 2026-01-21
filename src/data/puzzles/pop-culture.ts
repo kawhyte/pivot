@@ -195,7 +195,7 @@ export const popCulturePath: PathConfig = {
     {
       id: 'pop-20',
       type: 'image-reveal',
-      imageUrl: '/puzzles/pop-culture/gladys.jpg',
+      imageUrl: '/puzzles/pop-culture/gladys.webp',
       imageAlt: 'A creepy 3D piece of art with a woman coming out of a frame',
       question: 'Phoebe created two "original" pieces of art. What is the name of this one?',
       correctAnswer: 'Gladys',
@@ -321,7 +321,7 @@ export const popCulturePath: PathConfig = {
     {
       id: 'pop-23',
       type: 'image-reveal',
-      imageUrl: '/puzzles/pop-culture/no-cell-phones.jpg',
+      imageUrl: '/puzzles/pop-culture/no-cell-phones.webp',
       imageAlt: 'A red circle with a line through a cell phone',
       question: 'Where would you find this specific sign in Stars Hollow?',
       correctAnswer: 'Luke\'s Diner',
@@ -383,17 +383,20 @@ export const popCulturePath: PathConfig = {
       difficulty: 'medium',
       metadata: { show: 'gilmore' },
     },
-    {
+ {
       id: 'pop-35',
-      type: 'image-reveal',
-      imageUrl: '/puzzles/pop-culture/vulture.jpg',
-      imageAlt: 'A picture of a vulture',
-      question: 'What "animal" did Rory compare her graduation hat to?',
-      correctAnswer: 'Vulture',
-      acceptableAnswers: ['a vulture', 'vulture'],
-      successMessage: 'It really did look like a giant bird of prey!',
-      points: 35,
-      difficulty: 'hard',
+      type: 'multiple-choice',
+      question: 'In a classic Gilmore comparison, what specific animal did Rory say Lorelai looked like she had on her head during graduation?',
+      options: [
+        'A molting crow',
+        'A scavenging vulture',
+        'A starving raven',
+        'An angry osprey'
+      ],
+      correctAnswer: 1, // Index for 'A scavenging vulture'
+      successMessage: 'Spot on! "Is there any other kind?" It really did look like a giant bird of prey. 🎓🦅',
+      points: 50,
+      difficulty: 'very-hard',
       isReserved: true,
       metadata: { show: 'gilmore' },
     },
