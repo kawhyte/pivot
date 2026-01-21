@@ -403,8 +403,9 @@ const handleManualSkip = async () => {
         {!showThresholdModal && !showCompletion && (!isPathCompleted || progress.isBonusMode) && (
           <main className="flex flex-1 flex-col px-6 pt-10 pb-12">
             <div className="max-w-xl mx-auto w-full">
-              <PuzzleRenderer 
-                puzzle={puzzle} 
+              <PuzzleRenderer
+                key={puzzle.id}
+                puzzle={puzzle}
                 onSubmit={handleSubmit} 
                 isSubmitting={isSubmitting} 
                 validationResult={validationResult} 

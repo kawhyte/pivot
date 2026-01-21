@@ -74,6 +74,7 @@ export const TextInputPuzzle = ({
       targetScore={targetScore}
       show={puzzle.metadata?.show}
       isBonusMode={isBonusMode}
+      shake={shake || closeShake}
     >
       <div className="space-y-8">
         {/* Text Input - Notepad Line Style */}

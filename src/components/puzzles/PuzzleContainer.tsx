@@ -20,6 +20,7 @@ interface PuzzleContainerProps {
   children: ReactNode;
   show?: 'friends' | 'gilmore';
   isBonusMode?: boolean;
+  shake?: boolean;
 }
 
 export const PuzzleContainer = ({
@@ -30,6 +31,7 @@ export const PuzzleContainer = ({
   children,
   show,
   isBonusMode = false,
+  shake = false,
 }: PuzzleContainerProps) => {
   
   // Mapping difficulty to shadcn-compatible Tailwind classes
@@ -53,6 +55,16 @@ export const PuzzleContainer = ({
   };
 
   const currentDifficulty = difficultyConfig[difficulty as keyof typeof difficultyConfig] || difficultyConfig.hard;
+
+  // Animation variants for shake effect
+  const containerVariants = {
+    initial: { opacity: 0, scale: 0.95 },
+    visible: { opacity: 1, scale: 1 },
+    shake: {
+      x: [-10, 10, -10, 10, 0],
+      transition: { duration: 0.4 }
+    }
+  };
 
   return (
     <div className="mx-auto w-full max-w-lg px-6 sm:px-0">
@@ -100,8 +112,9 @@ export const PuzzleContainer = ({
 
       {/* Puzzle Content */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial="initial"
+        animate={shake ? "shake" : "visible"}
+        variants={containerVariants}
         transition={{ delay: 0.1 }}
         layout
         className="text-xl"

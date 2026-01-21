@@ -53,6 +53,7 @@ export const MultipleChoicePuzzle = ({
       targetScore={targetScore}
       show={puzzle.metadata?.show}
       isBonusMode={isBonusMode}
+      shake={shake}
     >
       <div className="space-y-4">
         {puzzle.options.map((option, index) => {

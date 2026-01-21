@@ -75,6 +75,7 @@ export const ImageRevealPuzzle = ({
       targetScore={targetScore}
       show={puzzle.metadata?.show}
       isBonusMode={isBonusMode}
+      shake={shake || closeShake}
     >
       <div className="space-y-6">
         {/* SVG Rough-Edge Mask Definition */}
