@@ -68,51 +68,47 @@ export const heartPath: PathConfig = {
     {
       id: 'heart-10',
       type: 'text-input',
-      question: 'What is the "Monica Approved" meal that I cook for you that you love the most?',
-      correctAnswer: 'Pasta', // Replace with her favorite meal you cook
-      acceptableAnswers: ['homemade pasta', 'spaghetti'],
-      placeholder: 'Name the dish...',
-      hint: 'It’s your favorite thing to eat on a Sunday evening.',
-      successMessage: 'Seven-star rating from the best critic! Bon Appétit! 🍝🍷',
+      question: 'What is the "Monica Approved" fruit do I like to eat the most?',
+      correctAnswer: 'Grapes', // Replace with her favorite meal you cook
+      acceptableAnswers: ['grape', 'grapes'],
+      placeholder: 'Name the fruit...',
+      hint: 'It’s your favorite thing to have as a snack.',
+      successMessage: ' Bon Appétit!',
       points: 20,
-    difficulty: 'medium',
+    difficulty: 'easy',
     },
-    {
+{
       id: 'heart-11',
-      type: 'image-reveal',
-      imageUrl: '/puzzles/heart/first-trip.jpg',
-      imageAlt: 'A beautiful landscape from your first vacation',
-      question: 'This was our very first trip together. What city were we in?',
-      correctAnswer: 'Miami', // Replace with your first trip city
-      acceptableAnswers: ['miami'],
-      successMessage: 'I\'d travel anywhere in the world as long as it\'s with you. ✈️🌍',
-      points: 25,
+      type: 'multiple-choice',
+      question: 'What place did you say you wanted to visit when we were on our honeymoon?',
+      options: ['Bora Bora', 'Japan', 'Alaska', 'The Maldives'],
+      correctAnswer: 2, 
+      successMessage: 'I remember that conversation like it was yesterday. One day we will make that trip happen! ✈️🇯🇵',
+      points: 15,
       difficulty: 'medium',
-      isReserved: true,
+      isReserved: true, 
     },
-    {
+ {
       id: 'heart-12',
       type: 'multiple-choice',
-      question: 'What was the color of the very first flowers I ever bought for you?',
-      options: ['Classic Red', 'Sunlight Yellow', 'Soft Pink', 'Pure White'],
-      correctAnswer: 2, // Update to the real color
-      successMessage: 'You remember! Just like those flowers, our love keeps blooming. 🌸',
+      question: 'Where was I living in Jamaica when we first started dating?',
+      options: ['Hanbury', 'Timber Trail', 'Greys Hill', 'Spanish Town'],
+      correctAnswer: 0, // Update this index (0=Kingston, 1=Portmore, etc.) to the correct city
+      successMessage: 'Correct! Those were the days of long drives and even longer phone calls. 🇯🇲❤️',
       points: 15,
-    difficulty: 'easy',
+      difficulty: 'easy',
     },
 
     // --- HARD: THE LITTLE DETAILS ---
-    {
+   {
       id: 'heart-13',
-      type: 'text-input',
-      question: 'What is the name of the first digital print we "published" on The Pixel Prince?',
-      correctAnswer: 'Abstract Love', // Replace with the actual first print name
-      acceptableAnswers: ['abstract love'],
-      placeholder: 'Type the print title...',
-      hint: 'It was the start of our digital art journey.',
-      successMessage: 'The Pixel Prince found his Princess that day! 🎨👑',
+      type: 'multiple-choice',
+      question: 'Which movie or TV show would we watch for hours in bed when you visited me in Jamaica?',
+      options: ['Law & Order', 'Criminal Minds', 'Grey\'s Anatomy', 'Suits'],
+      correctAnswer: 0, // Index for 'Law & Order'
+      successMessage: 'Dun-dun! We really did spend entire days bingeing those cases together. ⚖️📺',
       points: 30,
-    difficulty: 'hard',
+      difficulty: 'hard',
     },
     {
       id: 'heart-14',
@@ -126,30 +122,32 @@ export const heartPath: PathConfig = {
       points: 35,
     difficulty: 'hard',
     },
-    {
+ {
       id: 'heart-15',
-      type: 'multiple-choice',
-      question: 'Who said "I Love You" first?',
-      options: ['Kenny', 'Sweetheart', 'We said it at the same time!', 'The Cat'],
-      correctAnswer: 0, // Be honest, Kenny! 
-      hint: 'It was a very nervous moment...',
-      successMessage: 'And I haven\'t stopped saying it since. ❤️',
-      points: 20,
-    difficulty: 'medium',
-    },
-
-    // --- FUN & WARM: INSIDE JOKES ---
-    {
-      id: 'heart-16',
       type: 'text-input',
-      question: 'If we were a "Friends" couple, who would we be?',
-      correctAnswer: 'Monica and Chandler',
-      acceptableAnswers: ['monica and chandler', 'chandler and monica', 'mondler'],
-      placeholder: 'The best TV couple...',
-      hint: 'The competitive chef and the funny data guy!',
-      successMessage: 'Exactly! I’m so glad you’re my person. 💜☕',
-      points: 15,
-    difficulty: 'easy',
+      question: 'What movie or TV show would I have you record for me to binge-watch when I visited Lakeland, Florida?',
+      correctAnswer: 'Bridezilla',
+      acceptableAnswers: ['bridezilla', 'bridezillas'],
+      placeholder: 'Name the show...',
+      successMessage: 'Correct! We definitely spent a lot of time watching those wedding meltdowns! 👰‍♀️😤',
+      points: 20,
+      difficulty: 'hard',
+    },
+    // --- FUN & WARM: INSIDE JOKES ---
+  {
+      id: 'heart-16',
+      type: 'multiple-choice',
+      question: 'What color shirt was I wearing when I proposed?',
+      options: [
+        'A solid white button-down',
+        'A multi-color striped shirt',
+        'A navy blue polo',
+        'A grey linen shirt'
+      ],
+      correctAnswer: 1,
+      successMessage: 'Correct! That multi-color striped shirt (with the yellow stripes) is now a legendary part of our story. 👕✨',
+      points: 20,
+      difficulty: 'medium',
     },
     {
       id: 'heart-17',
@@ -163,15 +161,15 @@ export const heartPath: PathConfig = {
       points: 25,
     difficulty: 'medium',
     },
-    {
+ {
       id: 'heart-18',
       type: 'multiple-choice',
       question: 'What is the one thing I always "lose" that you always find for me?',
-      options: ['My Keys', 'My Phone', 'My Glasses', 'My Mind'],
-      correctAnswer: 1, // Update to your most lost item
-      successMessage: 'Thank you for always being my "Internal GPS." 🧭❤️',
+      options: ['My Keys', 'My Phone', 'My Glasses', 'All of the above'],
+      correctAnswer: 3,
+      successMessage: 'Exactly! Thank you for always being my "Internal GPS" for everything I misplace. 🧭❤️',
       points: 15,
-    difficulty: 'easy',
+      difficulty: 'easy',
     },
     {
       id: 'heart-19',

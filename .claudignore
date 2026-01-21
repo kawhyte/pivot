@@ -1,0 +1,63 @@
+# Dependency Folders
+node_modules/
+jspm_packages/
+
+# Build & Output Directories
+dist/
+build/
+out/
+.next/
+.vite/
+
+# Database Migrations & Versioning
+# (Exclude if you don't need Claude reviewing raw SQL history)
+migrations/
+supabase/migrations/
+drizzle/
+
+# Version Control & Secrets
+.git/
+.hg/
+.svn/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Logs and Databases
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.sqlite
+*.db
+
+# OS & Editor Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.serverless/
+.cache/
+
+# Large Data & Media
+*.mp4
+*.zip
+*.tar.gz
+*.csv
+*.json
+!package.json
+!tsconfig.json
+
+# Documentation (Exclude if not needed for coding)
+docs/
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE
+# Keep README.md unless it's extremely large and redundant
+# README.md 
+
+# Internal/Temp Docs
+temp-notes/
+*.todo
