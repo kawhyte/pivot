@@ -379,6 +379,7 @@ const handleManualSkip = async () => {
           />
         )}
       </motion.div>
+      
     </>
   );
 };

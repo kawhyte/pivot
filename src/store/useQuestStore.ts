@@ -1070,6 +1070,7 @@ export const useQuestStore = create<QuestState>()(
               ...state.pathProgress,
               [pathId]: {
                 ...state.pathProgress[pathId],
+                totalTimeSpent: state.pathProgress[pathId].totalTimeSpent + timeSpent,
                 puzzleAttempts: {
                   ...state.pathProgress[pathId].puzzleAttempts,
                   [puzzleId]: {
