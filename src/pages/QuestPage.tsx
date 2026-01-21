@@ -108,10 +108,26 @@ const QuestPage = () => {
 
   // Navigation Bouncer: Redirect to hub if path is already completed (prevents URL hacking)
   useEffect(() => {
-    if (_hasHydrated && keysCollected.includes(pathId) && !progress.isBonusMode) {
+    if (
+      _hasHydrated &&
+      keysCollected.includes(pathId) &&
+      !progress.isBonusMode &&
+      !showThresholdModal &&          // Block redirect during decision modal
+      !showCompletion &&               // Block redirect during stats view
+      !isTransitioningToBonus          // Block redirect during Sudden Death transition
+    ) {
       navigate('/hub');
     }
-  }, [_hasHydrated, keysCollected, pathId, navigate, progress.isBonusMode]);
+  }, [
+    _hasHydrated,
+    keysCollected,
+    pathId,
+    navigate,
+    progress.isBonusMode,
+    showThresholdModal,                // Add dependency
+    showCompletion,                    // Add dependency
+    isTransitioningToBonus             // Add dependency
+  ]);
 
   // THE FIX: Force initialization if puzzle is missing or mismatched
   useEffect(() => {

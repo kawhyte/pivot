@@ -98,32 +98,34 @@ export const ImageRevealPuzzle = ({
           </defs>
         </svg>
 
-        {/* Image with Clean Card Style */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{
-            opacity: imageLoaded ? 1 : 0,
-            scale: imageLoaded ? 1 : 0.95,
-          }}
-          transition={{
-            duration: imageLoaded ? 0.6 : 0.4,
-          }}
-          className="relative aspect-video w-full overflow-hidden"
-        >
-          <div className="relative w-full h-full duo-card bg-white p-2">
-            <img
-              src={puzzle.imageUrl}
-              alt={puzzle.imageAlt}
-              className="absolute inset-0 w-full h-full object-cover rounded-xl"
-              onLoad={() => setImageLoaded(true)}
-            />
-            {!imageLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center bg-neutral-100">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-duolingo-green border-t-transparent" />
-              </div>
-            )}
-          </div>
-        </motion.div>
+     {/* Image with Clean Card Style - Fixed 500x300px */}
+<motion.div
+  initial={{ opacity: 0, scale: 0.95 }}
+  animate={{
+    opacity: imageLoaded ? 1 : 0,
+    scale: imageLoaded ? 1 : 0.95,
+  }}
+  transition={{
+    duration: imageLoaded ? 0.6 : 0.4,
+  }}
+  /* Removed aspect-video and added fixed arbitrary dimensions */
+  className="relative w-[500px] h-[300px] overflow-hidden mx-auto"
+>
+  <div className="relative w-full h-full duo-card bg-white p-2">
+    <img
+      src={puzzle.imageUrl}
+      alt={puzzle.imageAlt}
+      /* object-cover ensures the image fills the 500x300 space without distorting */
+      className="absolute inset-0 w-full h-full object-contain rounded-xl"
+      onLoad={() => setImageLoaded(true)}
+    />
+    {!imageLoaded && (
+      <div className="absolute inset-0 flex items-center justify-center bg-neutral-100">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-duolingo-green border-t-transparent" />
+      </div>
+    )}
+  </div>
+</motion.div>
 
         {/* Text Input - Clean Duolingo Style */}
         <div>
