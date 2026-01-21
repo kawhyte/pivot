@@ -83,7 +83,7 @@ export const renaissancePath: PathConfig = {
     {
       id: 'ren-12',
       type: 'image-reveal',
-      imageUrl: '/puzzles/renaissance/kix-airport.jpg',
+      imageUrl: '/puzzles/renaissance/kix-airport.webp',
       imageAlt: 'An airport built on a man-made island in the sea',
       question: 'This airport (Code: KIX) is built on an artificial island. Which city does it serve?',
       correctAnswer: 'Osaka',
@@ -152,7 +152,7 @@ export const renaissancePath: PathConfig = {
     {
       id: 'ren-18',
       type: 'image-reveal',
-      imageUrl: '/puzzles/renaissance/boeing-747.jpg',
+      imageUrl: '/puzzles/renaissance/boeing-747.jpeg',
       imageAlt: 'A plane with a distinctive "hump" on the top front',
       question: 'Known as the "Queen of the Skies," what is the model number of this hump-backed jet?',
       correctAnswer: '747',
@@ -258,7 +258,7 @@ export const renaissancePath: PathConfig = {
       acceptableAnswers: ['delta', 'delta airlines'],
       successMessage: 'Correct! That is the iconic Delta Widget. ✈️',
       points: 15,
-    difficulty: 'medium',
+    difficulty: 'easy',
     },
     {
       id: 'ren-28',
