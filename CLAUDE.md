@@ -1,46 +1,64 @@
 # CLAUDE.md — Birthday Quest (High-Efficiency)
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Project Overview
+Mobile-first PWA puzzle game built with Vite + React Router. Features a Supabase database-first architecture with a tiered reward system for a birthday surprise.
 
-Birthday Quest is a mobile-first PWA puzzle game built with Vite + React Router. Players complete quests across three themed paths to collect keys and unlock a vault. Built as a special birthday surprise gift with Supabase database-first architecture for cross-device sync.
 
-# CLAUDE.md — Birthday Quest (High-Efficiency)
+## 🛑 STRICT UI & VISUAL LOCK
+- **Preserve Current UI:** Maintain all existing CSS, Tailwind classes, and Framer Motion configurations.
+- **Icon Policy:** Use Lucide icons exclusively. Strictly NO emojis in code or UI.
+- **Focus:** 100% on logical state management and Supabase data synchronization.
+- **Goal:** Focus 100% on logical state management and database synchronization.
+- **Visuals:** Maintain current aesthetic. Use Lucide Icons only. No emojis.
+
+
 
 ## Critical Context
-- **Concept:** Mobile-first PWA "VIP World Tour" puzzle game (Birthday Gift).
-- **Core Loop:** Auth (Secret Code) → Hub → Path (3 themed) → Gauntlet (Random Puzzles) → Key Unlock (93% score) → Vault Reveal.
-- **Single Source of Truth:** Supabase (PostgreSQL). Zustand persists only `agentId`.
-- **Mission Lock:** Access is date-restricted via `VITE_MISSION_START_DATE` (`src/lib/mission.ts`).
+- **Core Loop:** - **Core Loop:** Auth → Hub → Path → 100% Completion (Key Unlocked) → Success Screen (Fork) → Optional: Sudden Death (Gift Upgrade Unlock) → Vault Reveal.
+- **Gifting Tier Logic:** - **Tier 1 (Base):** 100% completion = Path Key Unlocked (`is_key_unlocked: true`).
+    - **Tier 2 (VIP):** Sudden Death Clear = Bonus Reward (`is_bonus_unlocked: true`).
+    - **Failure State:** Sudden Death fail denies the VIP upgrade but NEVER revokes the Base Key.
+- **Data Source:** Supabase (PostgreSQL) is the single source of truth. Zustand persists `agentId` only.
+
 
 ## Tech Stack
 - **Frontend:** React 19, Vite, React Router v7, TypeScript, Tailwind v3, Framer Motion.
 - **State/Data:** Zustand (Client), Supabase (Remote), Drizzle (Schema Management).
 - **Visuals:** Lucide Icons (Required), canvas-confetti. **Strictly No Emojis.**
 
-## Token-Efficient Rules
-- **Logic Priority:** All sync logic must reside in `src/store/useQuestStore.ts` or `src/lib/supabase-sync.ts`.
-- **Validation:** Use `src/lib/puzzle-validator.ts` for fuzzy string matching (Levenshtein).
-- **Commands:** Use `npm run dev` (Port 3000) and `npm run db:push` for schema updates.
-- **Components:** Functional components with arrow functions and early returns.
+## Technical Rules
+- **Logic Location:** Centralize all sync logic in `src/store/useQuestStore.ts` and `src/lib/supabase-sync.ts`.
+- **Validation:** Use `src/lib/puzzle-validator.ts` for Levenshtein/Fuzzy matching.
+- **Component Pattern:** Use functional arrow functions with early returns for logic branches.
+- **Sync Strategy:** Perform optimistic Zustand updates followed immediately by background Supabase persistence.
+
+
 
 ## Architectural Map
 - **Auth:** Validate via `profiles.secret_code`.
-- **Gauntlet Mode:** Non-linear, random puzzle selection.
+- **Gauntlet Mode:** Non-linear selection. 100% puzzle coverage is required for Key Unlock.
 - **Mercy System:** Two-strike system (Warning → Auto-skip to `skippedIds`).
-- **Sync:** Optimistic Zustand updates followed by background Supabase persistence.
+- **Sudden Death:** Optional phase triggered post-100%. Failure does NOT revoke Key.
+- **Animations:** Framer Motion (Transitions/Shake), canvas-confetti (Celebrations).
+- **Success Screen UI:** Must clearly present two paths: 
+    1. "Claim My Key & Continue" (Safe Path).
+    2. "Risk it for the VIP Upgrade" (Sudden Death Entry).
+- **Data Logic:** Track `is_bonus_unlocked` as a boolean in `quest_progress` to determine which "Gift Reveal" video or text to show in the final Vault.
+- **Sync:** Ensure the "Upgrade" status persists in Supabase so it can't be "cheated" by refreshing.
+- **Vault Logic:** Condition the "Gift Reveal" content solely on `is_key_unlocked` and `is_bonus_unlocked` flags.
+
 
 ## File Priority
 - **State & Sync:** `src/store/useQuestStore.ts`, `src/lib/supabase-sync.ts`.
-- **Content:** `src/data/puzzles/` (Pop, Renaissance, Heart).
 - **Navigation:** `src/pages/QuestPage.tsx`, `src/components/puzzles/QuestionNavigator.tsx`.
-- **Database:** `src/db/schema.ts`.
+- **Success UI:** `src/pages/SuccessScreen.tsx` (Handles Key vs. Bonus CTAs).
+- **Database:** `SCHEMA.md` (SQL/JSONB Reference).
 
 ## Development & Testing
-- **Setup:** Env vars `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `DATABASE_URL`.
-- **Reset:** `npm run reset:all` to clear both localStorage and Supabase progress.
-- **God Mode:** Use `isTester` flag in user profile for bypass UI and validations.
+- **God Mode:** `isTester` flag in profile enables bypass UI/validations.
+**Dev:** `npm run dev` (Port 3000)
+- **DB Sync:** `npm run db:push`
+- **Full Reset:** `npm run reset:all` (Clears localStorage and all Supabase progress).
 
 ### Animation Strategy
 - Framer Motion for all page transitions and component animations
