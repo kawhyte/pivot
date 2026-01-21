@@ -9,6 +9,7 @@ import { PATH_METADATA, type PathId } from '@/lib/paths';
 import { getPuzzleById, getTotalPuzzles, getTotalNonBonusPuzzles, getTotalBonusPuzzles, TARGET_SCORES, getPathPuzzles } from '@/data/puzzles';
 import { validateAnswer } from '@/lib/puzzle-validator';
 import { updateUnlockFlags } from '@/lib/supabase-sync';
+import { getRandomFeedback } from '@/lib/themed-feedback';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { PuzzleRenderer } from '@/components/puzzles/PuzzleRenderer';
@@ -24,19 +25,6 @@ import { QuestSimulationToolbar } from '@/components/quest/QuestSimulationToolba
 import { SuddenDeathTransition } from '@/components/quest/SuddenDeathTransition';
 import { cn } from '@/lib/utils';
 import type { ValidationResult } from '@/types/puzzle';
-
-const getFirstStrikeMessage = (pathId: PathId): string => {
-switch (pathId) {
-    case 1: 
-      return "PIVOT! That's a strike. Even Kirk wouldn't have guessed that one! ☕";
-    case 2: 
-      return "Turbulence ahead! One more wrong move and we're re-routing your flight! ✈️";
-    case 3: 
-      return "Memory foggy? One more guess before we save this for the scrapbook! ❤️";
-    default: 
-      return "Strike one! You've got this, Lorelai!";
-  }
-};
 
 const QuestPage = () => {
   const navigate = useNavigate();
@@ -84,6 +72,7 @@ const QuestPage = () => {
   const [showThresholdModal, setShowThresholdModal] = useState(false);
   const [showPerfectRunFailure, setShowPerfectRunFailure] = useState(false);
   const [showSkippedToast, setShowSkippedToast] = useState(false);
+  const [skipType, setSkipType] = useState<'manual' | 'auto'>('auto');
   const [puzzleStartTime, setPuzzleStartTime] = useState<number>(Date.now());
   const [isTransitioningToBonus, setIsTransitioningToBonus] = useState(false);
   const [pendingKeyUnlock, setPendingKeyUnlock] = useState(false);
@@ -241,12 +230,13 @@ const QuestPage = () => {
         const weight = result.status === 'close' ? 0.5 : 1.0;
         await submitAnswer(pathId, currentPuzzleId, false, weight, timeSpent);
         if (attempts === 0) {
-          setFeedback({ type: 'error', message: getFirstStrikeMessage(pathId) });
-          toast.error(getFirstStrikeMessage(pathId) + ' (One more mistake and this question will be auto-skipped)');
+          setFeedback({ type: 'error', message: getRandomFeedback(pathId) });
+          toast.error(getRandomFeedback(pathId) + ' (One more mistake and this question will be auto-skipped)');
           setShake(true);
           setTimeout(() => setShake(false), 400);
           setAttempts(1);
         } else {
+          setSkipType('auto');
           setShowSkippedToast(true);
           await skipPuzzle(pathId, currentPuzzleId);
           setTimeout(() => {
@@ -270,10 +260,11 @@ const QuestPage = () => {
 
 const handleManualSkip = async () => {
     if (!currentPuzzleId || isSubmitting) return;
-    
+
     setIsSubmitting(true);
+    setSkipType('manual');
     setShowSkippedToast(true);
-    
+
     // Call the existing store action
     await skipPuzzle(pathId, currentPuzzleId);
     
@@ -471,7 +462,11 @@ const handleManualSkip = async () => {
         {showSkippedToast && (
           <QuestionSkippedToast
             show={showSkippedToast}
-            message="Second strike! Skipping this for now..."
+            message={
+              skipType === 'manual'
+                ? "Skipped for now - you can revisit this later"
+                : "Second strike! Auto-skipped this puzzle"
+            }
             pathId={pathId}
             onDismiss={() => setShowSkippedToast(false)}
             isTester={isTester}

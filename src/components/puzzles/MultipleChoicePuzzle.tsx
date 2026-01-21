@@ -60,7 +60,7 @@ export const MultipleChoicePuzzle = ({
 
           return (
             <motion.button
-              key={index}
+              key={`${puzzle.id}-${option}`}
               onClick={() => setSelectedOption(index)}
               disabled={isSubmitting}
               whileHover={{ scale: 1.01 }}

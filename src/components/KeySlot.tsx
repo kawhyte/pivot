@@ -5,7 +5,7 @@ import { PATH_METADATA, type PathId } from '@/lib/paths';
 import type { PathStats } from '@/store/useQuestStore';
 import { getCountdownText, isPathUnlocked } from '@/lib/path-unlock';
 import { formatTime } from '@/lib/themed-titles';
-import { TARGET_SCORES, getTotalPuzzles } from '@/data/puzzles';
+import { TARGET_SCORES, getTotalPuzzles, getTotalNonBonusPuzzles } from '@/data/puzzles';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
 import { cn } from '@/lib/utils';
@@ -43,7 +43,8 @@ export const KeySlot = ({
 
   const targetScore = TARGET_SCORES[pathId];
   const totalPuzzles = getTotalPuzzles(pathId);
-  const scoreProgress = Math.round((currentScore / targetScore) * 100);
+  const totalNonBonus = getTotalNonBonusPuzzles(pathId);
+  const scoreProgress = Math.round((completedCount / totalNonBonus) * 100);
   const hasStarted = completedCount > 0 && !isCollected;
 
   const getPathIcon = () => {

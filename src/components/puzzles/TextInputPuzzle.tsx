@@ -79,6 +79,7 @@ export const TextInputPuzzle = ({
         {/* Text Input - Notepad Line Style */}
         <div className="relative">
           <input
+            key={puzzle.id}
             type="text"
             value={answer}
             onChange={handleInputChange}
