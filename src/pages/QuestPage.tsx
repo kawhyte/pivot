@@ -114,7 +114,8 @@ const QuestPage = () => {
       !progress.isBonusMode &&
       !showThresholdModal &&          // Block redirect during decision modal
       !showCompletion &&               // Block redirect during stats view
-      !isTransitioningToBonus          // Block redirect during Sudden Death transition
+      !isTransitioningToBonus &&       // Block redirect during Sudden Death transition
+      !isTester                        // Allow testers to replay completed paths
     ) {
       navigate('/hub');
     }
@@ -126,7 +127,8 @@ const QuestPage = () => {
     progress.isBonusMode,
     showThresholdModal,                // Add dependency
     showCompletion,                    // Add dependency
-    isTransitioningToBonus             // Add dependency
+    isTransitioningToBonus,            // Add dependency
+    isTester                           // Add dependency
   ]);
 
   // THE FIX: Force initialization if puzzle is missing or mismatched

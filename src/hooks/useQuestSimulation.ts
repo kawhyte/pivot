@@ -41,17 +41,37 @@ export const useQuestSimulation = ({
   const getAllUnsolvedPuzzles = useCallback((): Puzzle[] => {
     const allPuzzles = getPathPuzzles(pathId)?.puzzles || [];
     const progress = pathProgress[pathId];
+    const inBonusMode = progress.isBonusMode;
 
     return allPuzzles.filter(
-      (p) => !progress.completedIds.includes(p.id) && !progress.skippedIds.includes(p.id)
+      (p) =>
+        !progress.completedIds.includes(p.id) &&
+        !progress.skippedIds.includes(p.id) &&
+        (inBonusMode ? !!p.isBonus : !p.isBonus)
     );
   }, [pathId, pathProgress]);
+
+  // ============================================
+  // STOP CONTROL (Defined before effects that use it)
+  // ============================================
+
+  const stop = useCallback(() => {
+    console.log('⏹️ Stopping simulation');
+    setState({ isPlaying: false, scenario: null });
+    previousPuzzleIdRef.current = null;
+  }, []);
 
   // ============================================
   // CORE AUTO-PLAY LOGIC (EVENT-DRIVEN)
   // ============================================
 
   useEffect(() => {
+    // Priority check: halt simulation if decision modal is showing
+    if (showThresholdModal) {
+      stop();
+      return;
+    }
+
     // Don't run if not playing or no puzzle
     if (!state.isPlaying || !currentPuzzleId) return;
 
@@ -93,7 +113,9 @@ export const useQuestSimulation = ({
     console.log(`🤖 Auto-submitting answer for ${puzzle.id}:`, correctAnswer);
     onSubmit(correctAnswer);
 
-  }, [currentPuzzleId, state.isPlaying, state.scenario, getPathScore, pathId, getAllUnsolvedPuzzles, onSubmit]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Note: 'stop' is excluded because it's a stable callback with no dependencies
+  }, [showThresholdModal, currentPuzzleId, state.isPlaying, state.scenario, getPathScore, pathId, getAllUnsolvedPuzzles, onSubmit]);
 
   // ============================================
   // PAUSE ON MODALS
@@ -128,12 +150,6 @@ export const useQuestSimulation = ({
     // Submit wrong answer immediately
     setTimeout(() => onSubmit('INTENTIONALLY_WRONG_ANSWER_FOR_TESTING'), 100);
   }, [startPerfectRun, pathId, onSubmit]);
-
-  const stop = useCallback(() => {
-    console.log('⏹️ Stopping simulation');
-    setState({ isPlaying: false, scenario: null });
-    previousPuzzleIdRef.current = null;
-  }, []);
 
   // ============================================
   // MANUAL CONTROLS

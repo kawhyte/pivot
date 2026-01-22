@@ -17,6 +17,8 @@ import {
 import { TESTER_THEME } from '@/lib/debug-utils';
 import { useQuestSimulation } from '@/hooks/useQuestSimulation';
 import { PATH_METADATA, type PathId } from '@/lib/paths';
+import { useQuestStore } from '@/store/useQuestStore';
+import { cn } from '@/lib/utils';
 
 interface QuestSimulationToolbarProps {
   pathId: PathId;
@@ -43,6 +45,8 @@ export const QuestSimulationToolbar = ({
 }: QuestSimulationToolbarProps) => {
   const [isOpen, setIsOpen] = useState(true);
   const [isMinimized, setIsMinimized] = useState(false);
+
+  const { pathProgress } = useQuestStore();
 
   const simulation = useQuestSimulation({
     pathId,
@@ -108,7 +112,7 @@ export const QuestSimulationToolbar = ({
               >
                 <Bug className="h-5 w-5 text-white" />
               </motion.div>
-              <span className="text-base font-black text-white">
+              <span className="text-lg font-black text-white">
                 🤖 AUTO-PLAYING {simulation.currentScenario && `(${simulation.currentScenario})`}
               </span>
             </div>
@@ -139,8 +143,8 @@ export const QuestSimulationToolbar = ({
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Bug className="h-5 w-5 text-white" />
-              <h2 className="text-base font-black text-white">Quest Simulator</h2>
+              <Bug className="h-6 w-6 text-white" />
+              <h2 className="text-lg font-black text-white">Quest Simulator</h2>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -163,7 +167,7 @@ export const QuestSimulationToolbar = ({
               </button>
             </div>
           </div>
-          <div className="mt-1 text-xs text-white/80">Keyboard: Ctrl+Shift+S</div>
+          <div className="mt-1 text-sm text-white/80">Keyboard: Ctrl+Shift+S</div>
         </div>
 
         {/* Content */}
@@ -183,12 +187,12 @@ export const QuestSimulationToolbar = ({
                   style={{ borderColor: TESTER_THEME.border, backgroundColor: TESTER_THEME.bg }}
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <Award className="h-4 w-4" style={{ color: TESTER_THEME.primary }} />
-                    <span className="text-sm font-bold" style={{ color: TESTER_THEME.text }}>
+                    <Award className="h-5 w-5" style={{ color: TESTER_THEME.primary }} />
+                    <span className="text-base font-bold" style={{ color: TESTER_THEME.text }}>
                       Current Progress
                     </span>
                   </div>
-                  <div className="space-y-1 text-xs" style={{ color: TESTER_THEME.text }}>
+                  <div className="space-y-1 text-sm" style={{ color: TESTER_THEME.text }}>
                     <div className="flex justify-between">
                       <span>Score:</span>
                       <span className="font-bold">
@@ -207,6 +211,17 @@ export const QuestSimulationToolbar = ({
                       <span>Path:</span>
                       <span className="font-bold">{pathMeta.name}</span>
                     </div>
+                    <div className="flex justify-between">
+                      <span>Mode:</span>
+                      <span
+                        className={cn(
+                          "font-bold uppercase tracking-wider",
+                          pathProgress[pathId]?.isBonusMode ? "text-red-500" : ""
+                        )}
+                      >
+                        {pathProgress[pathId]?.isBonusMode ? "SUDDEN DEATH" : "BASE QUEST"}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -216,8 +231,8 @@ export const QuestSimulationToolbar = ({
                   style={{ borderColor: TESTER_THEME.border, backgroundColor: TESTER_THEME.bg }}
                 >
                   <div className="flex items-center gap-2 mb-3">
-                    <Zap className="h-4 w-4" style={{ color: TESTER_THEME.primary }} />
-                    <span className="text-sm font-bold" style={{ color: TESTER_THEME.text }}>
+                    <Zap className="h-5 w-5" style={{ color: TESTER_THEME.primary }} />
+                    <span className="text-base font-bold" style={{ color: TESTER_THEME.text }}>
                       Manual Controls
                     </span>
                   </div>
@@ -225,7 +240,7 @@ export const QuestSimulationToolbar = ({
                     <button
                       onClick={simulation.submitCorrect}
                       disabled={simulation.isPlaying || !currentPuzzleId}
-                      className="px-3 py-2 text-xs font-semibold rounded-lg border-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-3 py-2 text-sm font-semibold rounded-lg border-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                       style={{
                         backgroundColor: '#10B981',
                         borderColor: '#059669',
@@ -233,14 +248,14 @@ export const QuestSimulationToolbar = ({
                       }}
                     >
                       <div className="flex items-center justify-center gap-1">
-                        <CheckCircle className="h-3.5 w-3.5" />
+                        <CheckCircle className="h-4 w-4" />
                         <span>Correct</span>
                       </div>
                     </button>
                     <button
                       onClick={simulation.submitWrong}
                       disabled={simulation.isPlaying || !currentPuzzleId}
-                      className="px-3 py-2 text-xs font-semibold rounded-lg border-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-3 py-2 text-sm font-semibold rounded-lg border-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                       style={{
                         backgroundColor: '#EF4444',
                         borderColor: '#DC2626',
@@ -248,12 +263,12 @@ export const QuestSimulationToolbar = ({
                       }}
                     >
                       <div className="flex items-center justify-center gap-1">
-                        <XCircle className="h-3.5 w-3.5" />
+                        <XCircle className="h-4 w-4" />
                         <span>Wrong</span>
                       </div>
                     </button>
                   </div>
-                  <div className="mt-2 text-xs text-center text-neutral-600">
+                  <div className="mt-2 text-sm text-center text-neutral-600">
                     One-click answer submission
                   </div>
                 </div>
@@ -264,8 +279,8 @@ export const QuestSimulationToolbar = ({
                   style={{ borderColor: TESTER_THEME.border, backgroundColor: TESTER_THEME.bg }}
                 >
                   <div className="flex items-center gap-2 mb-3">
-                    <Play className="h-4 w-4" style={{ color: TESTER_THEME.primary }} />
-                    <span className="text-sm font-bold" style={{ color: TESTER_THEME.text }}>
+                    <Play className="h-5 w-5" style={{ color: TESTER_THEME.primary }} />
+                    <span className="text-base font-bold" style={{ color: TESTER_THEME.text }}>
                       Auto-Play Scenarios
                     </span>
                   </div>
@@ -273,7 +288,7 @@ export const QuestSimulationToolbar = ({
                     <button
                       onClick={simulation.completeTo91}
                       disabled={simulation.isPlaying}
-                      className="w-full px-3 py-2 text-left text-xs font-semibold rounded-lg border-2 transition-all disabled:opacity-50"
+                      className="w-full px-3 py-2 text-left text-sm font-semibold rounded-lg border-2 transition-all disabled:opacity-50"
                       style={{
                         backgroundColor: 'white',
                         borderColor: TESTER_THEME.border,
@@ -281,10 +296,10 @@ export const QuestSimulationToolbar = ({
                       }}
                     >
                       <div className="flex items-center gap-2">
-                        <Target className="h-3.5 w-3.5 flex-shrink-0" />
+                        <Target className="h-4 w-4 flex-shrink-0" />
                         <div>
-                          <div className="font-bold">Complete to 91%</div>
-                          <div className="text-xs text-neutral-600">Reach threshold, show modal</div>
+                          <div className="font-bold">Complete Base Quest</div>
+                          <div className="text-sm text-neutral-600">Triggers Decision Modal</div>
                         </div>
                       </div>
                     </button>
@@ -292,7 +307,7 @@ export const QuestSimulationToolbar = ({
                     <button
                       onClick={simulation.completePerfect}
                       disabled={simulation.isPlaying}
-                      className="w-full px-3 py-2 text-left text-xs font-semibold rounded-lg border-2 transition-all disabled:opacity-50"
+                      className="w-full px-3 py-2 text-left text-sm font-semibold rounded-lg border-2 transition-all disabled:opacity-50"
                       style={{
                         backgroundColor: 'white',
                         borderColor: TESTER_THEME.border,
@@ -300,10 +315,10 @@ export const QuestSimulationToolbar = ({
                       }}
                     >
                       <div className="flex items-center gap-2">
-                        <Award className="h-3.5 w-3.5 flex-shrink-0" />
+                        <Award className="h-4 w-4 flex-shrink-0" />
                         <div>
                           <div className="font-bold">Complete Perfect</div>
-                          <div className="text-xs text-neutral-600">Solve all puzzles correctly</div>
+                          <div className="text-sm text-neutral-600">Solve all puzzles correctly</div>
                         </div>
                       </div>
                     </button>
@@ -311,7 +326,7 @@ export const QuestSimulationToolbar = ({
                     <button
                       onClick={simulation.triggerThreshold}
                       disabled={simulation.isPlaying}
-                      className="w-full px-3 py-2 text-left text-xs font-semibold rounded-lg border-2 transition-all disabled:opacity-50"
+                      className="w-full px-3 py-2 text-left text-sm font-semibold rounded-lg border-2 transition-all disabled:opacity-50"
                       style={{
                         backgroundColor: 'white',
                         borderColor: TESTER_THEME.border,
@@ -319,10 +334,10 @@ export const QuestSimulationToolbar = ({
                       }}
                     >
                       <div className="flex items-center gap-2">
-                        <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
+                        <AlertCircle className="h-4 w-4 flex-shrink-0" />
                         <div>
                           <div className="font-bold">Trigger Threshold</div>
-                          <div className="text-xs text-neutral-600">Stop at exactly 91%</div>
+                          <div className="text-sm text-neutral-600">Stop at exactly 91%</div>
                         </div>
                       </div>
                     </button>
@@ -330,7 +345,7 @@ export const QuestSimulationToolbar = ({
                     <button
                       onClick={simulation.failPerfectRun}
                       disabled={simulation.isPlaying}
-                      className="w-full px-3 py-2 text-left text-xs font-semibold rounded-lg border-2 transition-all disabled:opacity-50"
+                      className="w-full px-3 py-2 text-left text-sm font-semibold rounded-lg border-2 transition-all disabled:opacity-50"
                       style={{
                         backgroundColor: '#FEE2E2',
                         borderColor: '#EF4444',
@@ -338,10 +353,10 @@ export const QuestSimulationToolbar = ({
                       }}
                     >
                       <div className="flex items-center gap-2">
-                        <Heart className="h-3.5 w-3.5 flex-shrink-0" />
+                        <Heart className="h-4 w-4 flex-shrink-0" />
                         <div>
                           <div className="font-bold">Fail Perfect Run</div>
-                          <div className="text-xs opacity-75">Start perfect run + fail</div>
+                          <div className="text-sm opacity-75">Start perfect run + fail</div>
                         </div>
                       </div>
                     </button>
@@ -355,8 +370,8 @@ export const QuestSimulationToolbar = ({
                     style={{ borderColor: TESTER_THEME.border, backgroundColor: TESTER_THEME.bg }}
                   >
                     <div className="flex items-center gap-2 mb-3">
-                      <Play className="h-4 w-4" style={{ color: TESTER_THEME.primary }} />
-                      <span className="text-sm font-bold" style={{ color: TESTER_THEME.text }}>
+                      <Play className="h-5 w-5" style={{ color: TESTER_THEME.primary }} />
+                      <span className="text-base font-bold" style={{ color: TESTER_THEME.text }}>
                         Playback Controls
                       </span>
                     </div>
@@ -364,7 +379,7 @@ export const QuestSimulationToolbar = ({
                     {/* Stop Button */}
                     <button
                       onClick={simulation.stop}
-                      className="w-full px-3 py-2 text-xs font-semibold rounded-lg border-2 transition-all"
+                      className="w-full px-3 py-2 text-sm font-semibold rounded-lg border-2 transition-all"
                       style={{
                         backgroundColor: '#EF4444',
                         borderColor: '#DC2626',
@@ -372,12 +387,12 @@ export const QuestSimulationToolbar = ({
                       }}
                     >
                       <div className="flex items-center justify-center gap-1">
-                        <X className="h-3.5 w-3.5" />
+                        <X className="h-4 w-4" />
                         <span>Stop Auto-Play</span>
                       </div>
                     </button>
 
-                    <div className="mt-2 text-xs text-center text-neutral-600">
+                    <div className="mt-2 text-sm text-center text-neutral-600">
                       Simulation runs automatically at full speed
                     </div>
                   </div>
@@ -389,7 +404,7 @@ export const QuestSimulationToolbar = ({
 
         {/* Footer */}
         <div
-          className="px-4 py-2 border-t-2 text-center text-xs"
+          className="px-4 py-2 border-t-2 text-center text-sm"
           style={{
             backgroundColor: TESTER_THEME.bg,
             borderColor: TESTER_THEME.border,
