@@ -1,7 +1,9 @@
 'use client';
 
-import { Key, Clock, Sparkles } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { PATH_METADATA, type PathId } from '@/lib/paths';
+import { KeyIcon } from '@/components/icons/KeyIcon';
+import { SparklesIcon } from '@/components/icons/SparklesIcon';
 import type { PathStats } from '@/store/useQuestStore';
 import { getCountdownText, isPathUnlocked } from '@/lib/path-unlock';
 import { formatTime } from '@/lib/themed-titles';
@@ -91,10 +93,9 @@ export const KeySlot = ({
         <div className="relative z-10">
           {isCollected ? (
             <div className="relative flex items-center justify-center">
-              <Key
+              <KeyIcon
                 className="h-12 w-12 relative z-10"
-                strokeWidth={1.5}
-                style={{ color: path.colors.primary }}
+                color={path.colors.primary}
               />
             </div>
           ) : unlocked ? (
@@ -133,7 +134,7 @@ export const KeySlot = ({
             </div>
             <div className="h-3 w-px bg-neutral-300" />
             <div className="flex items-center gap-1 text-neutral-700">
-              <Sparkles className="h-3.5 w-3.5" />
+              <SparklesIcon className="h-3.5 w-3.5" />
               <span className="font-medium">{stats?.accuracy || 100}%</span>
             </div>
           </div>

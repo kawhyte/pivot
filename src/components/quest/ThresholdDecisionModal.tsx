@@ -3,8 +3,10 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { Trophy, Sparkles, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { PATH_METADATA, type PathId } from '@/lib/paths';
+import { TrophyIcon } from '@/components/icons/TrophyIcon';
+import { SparklesIcon } from '@/components/icons/SparklesIcon';
 import {
   Dialog,
   DialogContent,
@@ -60,7 +62,7 @@ export const ThresholdDecisionModal = ({
                 background: `linear-gradient(135deg, ${pathMeta.colors.primary}, ${pathMeta.colors.secondary})`,
               }}
             >
-              <Trophy className="h-8 w-8 text-white" strokeWidth={2} />
+              <TrophyIcon className="h-24 w-24" />
             </div>
           </motion.div>
 
@@ -136,7 +138,7 @@ export const ThresholdDecisionModal = ({
             }`}
           >
             <div className="flex items-center justify-center gap-2">
-              <Trophy className="h-5 w-5" />
+              <TrophyIcon className="h-24 w-24" />
               <span className="font-bold">Claim Key & Stop</span>
             </div>
             <p className="mt-1 text-base opacity-90">Keep your current progress</p>
@@ -152,7 +154,7 @@ export const ThresholdDecisionModal = ({
           
           >
             <div className="flex items-center justify-center gap-2">
-              <Sparkles className="h-5 w-5" style={{ color: pathMeta.colors.primary }} />
+              <SparklesIcon className="h-5 w-5" />
               <span className="font-bold">Go for 100% Mastery</span>
             </div>
             <p className="mt-1 text-base ">

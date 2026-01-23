@@ -7,7 +7,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Trophy, Target, Sparkles } from 'lucide-react';
+import { Target } from 'lucide-react';
+import { TrophyIcon } from '@/components/icons/TrophyIcon';
+import { SparklesIcon } from '@/components/icons/SparklesIcon';
 
 interface HowToPlayDialogProps {
   open: boolean;
@@ -44,7 +46,7 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
             className="duo-card bg-duolingo-green/10 p-4 border-2 border-duolingo-green"
           >
             <div className="flex items-start gap-3">
-              <Trophy className="h-6 w-6 text-duolingo-green flex-shrink-0 mt-0.5" />
+              <TrophyIcon className="h-24 w-24 flex-shrink-0 mt-0.5" />
               <div>
                 <h3 className="text-2xl font-bold text-neutral-900 mb-1">
                  Your Birthday VIP Pass
@@ -104,7 +106,7 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
             className="duo-card bg-amber-50 p-4 border-2 border-amber-300"
           >
             <div className="flex items-start gap-3">
-              <Sparkles className="h-6 w-6 text-amber-600 flex-shrink-0 mt-0.5" />
+              <SparklesIcon className="h-6 w-6 text-amber-600 flex-shrink-0 mt-0.5" />
               <div>
                 <h3 className="text-2xl font-bold text-neutral-900 mb-1">
                   Perfect Run Bonus

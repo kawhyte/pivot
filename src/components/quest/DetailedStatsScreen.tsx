@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { Clock, Target, SkipForward, Zap, Award, Sparkles, Trophy } from 'lucide-react';
+import { Clock, Target, SkipForward, Zap, Award } from 'lucide-react';
 import { PATH_METADATA, type PathId, type PathStats } from '@/store/useQuestStore';
+import { TrophyIcon } from '@/components/icons/TrophyIcon';
+import { SparklesIcon } from '@/components/icons/SparklesIcon';
 
 interface DetailedStatsScreenProps {
   pathId: PathId;
@@ -78,14 +80,14 @@ export const DetailedStatsScreen = ({
         >
           <div
             className="flex h-20 w-20 items-center justify-center rounded-full"
-            style={{
-              background: `linear-gradient(135deg, ${pathMeta.colors.primary}, ${pathMeta.colors.secondary})`,
-            }}
+            // style={{
+            //   background: `linear-gradient(135deg, ${pathMeta.colors.primary}, ${pathMeta.colors.secondary})`,
+            // }}
           >
             {showPerfectRunBadge ? (
-              <Trophy className="h-10 w-10 text-white" strokeWidth={2} />
+              <TrophyIcon className="h-24 w-24" />
             ) : (
-              <Sparkles className="h-10 w-10 text-white" strokeWidth={2} />
+              <SparklesIcon className="h-10 w-10 text-white" />
             )}
           </div>
         </motion.div>
@@ -121,7 +123,7 @@ export const DetailedStatsScreen = ({
             className="mb-6 rounded-xl bg-gradient-to-br from-yellow-50 to-amber-50 px-4 py-3"
           >
             <div className="flex items-center justify-center gap-2">
-              <Trophy className="h-5 w-5 text-amber-600" />
+              <TrophyIcon className="h-24 w-24" />
               <p className="font-bold text-amber-900">100% Perfect Run Achievement!</p>
             </div>
           </motion.div>

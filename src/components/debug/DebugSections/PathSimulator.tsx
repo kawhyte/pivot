@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Zap, Target, SkipForward, Trash2, Wand2, Sparkles } from 'lucide-react';
+import { Zap, Target, SkipForward, Trash2, Wand2 } from 'lucide-react';
+import { SparklesIcon } from '@/components/icons/SparklesIcon';
 import { pathSimulator, TESTER_THEME } from '@/lib/debug-utils';
 import { useQuestStore } from '@/store/useQuestStore';
 import { PATH_IDS, PATH_METADATA } from '@/lib/paths';
@@ -147,7 +148,7 @@ export const PathSimulator = () => {
             color: 'white',
           }}
         >
-          <Sparkles className="h-4 w-4" />
+          <SparklesIcon className="h-4 w-4" />
           Solve All Paths
         </button>
       </div>

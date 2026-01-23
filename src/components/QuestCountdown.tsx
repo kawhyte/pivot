@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Gift, Sparkles, Star, Trophy, Target } from 'lucide-react';
+import { Gift, Star, Target } from 'lucide-react';
+import { TrophyIcon } from '@/components/icons/TrophyIcon';
+import { SparklesIcon } from '@/components/icons/SparklesIcon';
 
 interface CountdownProps {
   targetDate: Date;
@@ -112,7 +114,7 @@ export const QuestCountdown = ({ targetDate, onComplete }: CountdownProps) => {
           ease: 'easeInOut',
         }}
       >
-        <Sparkles className="h-12 w-12 text-celebration-gold opacity-30" />
+        <SparklesIcon className="h-12 w-12 text-celebration-gold opacity-30" />
       </motion.div>
 
       <motion.div
@@ -234,7 +236,7 @@ export const QuestCountdown = ({ targetDate, onComplete }: CountdownProps) => {
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               >
                 <div className="text-center">
-                  <Trophy className="h-8 w-8 mx-auto mb-2 text-celebration-pink" />
+                  <TrophyIcon className="h-24 w-24 mx-auto mb-2" />
                   <h3 className="font-display text-sm text-deep-brown mb-1">Pop Culture</h3>
                   <p className="text-xs text-deep-brown/60">TV, Movies & Fun</p>
                 </div>
@@ -279,7 +281,7 @@ export const QuestCountdown = ({ targetDate, onComplete }: CountdownProps) => {
 
             <div className="bg-celebration-pink/10 p-4 rounded-lg hand-drawn border-2 border-celebration-pink/30">
               <p className="mb-2">
-                <Sparkles className="inline h-5 w-5 mr-2 text-celebration-pink" />
+                <SparklesIcon className="inline h-5 w-5 mr-2 text-celebration-pink" />
                 <strong className="text-starbucks-green">Perfect Run Bonus:</strong>
               </p>
               <p className="ml-8 text-base">

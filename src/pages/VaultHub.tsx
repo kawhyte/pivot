@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import confetti from 'canvas-confetti';
-import { KeyRound, Sparkles, HelpCircle, Share2, Check, LogOut } from 'lucide-react';
+import { KeyRound, HelpCircle, Share2, Check, LogOut } from 'lucide-react';
+import { SparklesIcon } from '@/components/icons/SparklesIcon';
 import { toast } from 'sonner';
 import { useQuestStore } from '@/store/useQuestStore';
 import { PATH_IDS } from '@/lib/paths';
@@ -311,7 +312,7 @@ const VaultHub = () => {
               <Card variant="doodle" className="bg-duolingo-green">
                 <CardContent className="p-8 text-center">
                   <div className="mb-4 flex justify-center">
-                    <Sparkles className="h-14 w-14 text-white" strokeWidth={2} fill="currentColor" />
+                    <SparklesIcon className="h-14 w-14 text-white" />
                   </div>
                   <h2 className="mb-2 text-3xl font-black text-white font-doodle">
                     Vault Unlocked!

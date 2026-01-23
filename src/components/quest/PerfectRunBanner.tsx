@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Trophy, Flame, AlertTriangle } from 'lucide-react';
+import { Flame, AlertTriangle } from 'lucide-react';
+import { TrophyIcon } from '@/components/icons/TrophyIcon';
 
 interface PerfectRunBannerProps {
   streak: number;
@@ -41,7 +42,7 @@ export const PerfectRunBanner = ({
         <div className="flex items-center justify-center gap-3 text-xs sm:gap-4 sm:text-sm text-white">
           {/* Trophy Icon */}
           <div className="flex items-center gap-1.5">
-            <Trophy className="h-4 w-4 sm:h-5 sm:w-5" />
+            <TrophyIcon className="h-24 w-24" />
             <span className="font-extrabold uppercase tracking-wide">Perfect Run</span>
           </div>
 

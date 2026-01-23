@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import { SparklesIcon } from '@/components/icons/SparklesIcon';
 import confetti from 'canvas-confetti';
 import { useEffect } from 'react';
 import { PATH_METADATA, type PathId } from '@/lib/paths';
@@ -39,7 +39,7 @@ export const KeyUnlockedToast = ({ pathId, onDismiss }: KeyUnlockedToastProps) =
     >
       <div className="duo-card px-6 py-4 bg-success-bg border-duolingo-green border-[3px]">
         <div className="flex items-center gap-3">
-          <Sparkles className="h-5 w-5 text-duolingo-green flex-shrink-0" strokeWidth={2} />
+          <SparklesIcon className="h-5 w-5 text-duolingo-green flex-shrink-0" />
           <div className="flex flex-col gap-1">
             <p className="font-bold text-sm text-neutral-900">
               Key Unlocked! 🔑

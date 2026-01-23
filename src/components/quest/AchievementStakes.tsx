@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Trophy } from 'lucide-react';
+import { TrophyIcon } from '@/components/icons/TrophyIcon';
 import type { PathId } from '@/lib/paths';
 import { PATH_IDS } from '@/lib/paths';
 
@@ -29,7 +29,7 @@ const getPathStakes = (pathId: PathId, completionPercentage: number): StakeItem[
         {
           id: 'friends-completionist',
           title: 'Sitcom Completionist Award',
-          icon: <Trophy className="h-5 w-5" />,
+          icon: <TrophyIcon className="h-24 w-24" />,
           type: 'completionist',
           isAvailable: true,
           requirementMet: isCompleted,
@@ -42,7 +42,7 @@ const getPathStakes = (pathId: PathId, completionPercentage: number): StakeItem[
         {
           id: 'renaissance-completionist',
           title: 'Renaissance Completionist Award',
-          icon: <Trophy className="h-5 w-5" />,
+          icon: <TrophyIcon className="h-24 w-24" />,
           type: 'completionist',
           isAvailable: true,
           requirementMet: isCompleted,
@@ -55,7 +55,7 @@ const getPathStakes = (pathId: PathId, completionPercentage: number): StakeItem[
         {
           id: 'heartfelt-completionist',
           title: 'Heartfelt Completionist Award',
-          icon: <Trophy className="h-5 w-5" />,
+          icon: <TrophyIcon className="h-24 w-24" />,
           type: 'completionist',
           isAvailable: true,
           requirementMet: isCompleted,

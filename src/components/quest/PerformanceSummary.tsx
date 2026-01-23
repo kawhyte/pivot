@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Clock, Sparkles, Zap, Award } from 'lucide-react';
+import { Clock, Zap, Award } from 'lucide-react';
+import { SparklesIcon } from '@/components/icons/SparklesIcon';
 import { formatTime } from '@/lib/themed-titles';
 import { isPersonalBest } from '@/lib/achievements';
 import type { AchievementResult } from '@/lib/achievements';
@@ -41,7 +42,7 @@ export const PerformanceSummary = ({
       case 'pro':
         return <Award className="h-5 w-5" />;
       default:
-        return <Sparkles className="h-5 w-5" />;
+        return <SparklesIcon className="h-5 w-5" />;
     }
   };
 
@@ -87,7 +88,7 @@ export const PerformanceSummary = ({
             animate={{ scale: [1, 1.1, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <Sparkles className="h-4 w-4 text-emerald-600" />
+            <SparklesIcon className="h-4 w-4 text-emerald-600" />
           </motion.div>
           <span className="font-semibold text-emerald-700">New Personal Best!</span>
         </motion.div>
@@ -102,7 +103,7 @@ export const PerformanceSummary = ({
           transition={{ delay: 0.5 }}
         >
           <div className="flex items-center justify-center gap-1.5 text-sm text-zinc-600">
-            <Sparkles className="h-4 w-4" />
+            <SparklesIcon className="h-4 w-4" />
             <span>Accuracy</span>
           </div>
           <motion.p
@@ -172,7 +173,7 @@ export const PerformanceSummary = ({
         }`}>
           {achievement.category === 'accuracy' && <Award className="h-3.5 w-3.5" />}
           {achievement.category === 'speed' && <Zap className="h-3.5 w-3.5" />}
-          {achievement.category === 'standard' && <Sparkles className="h-3.5 w-3.5" />}
+          {achievement.category === 'standard' && <SparklesIcon className="h-3.5 w-3.5" />}
           <span className="capitalize">{achievement.category} Achievement</span>
         </span>
       </motion.div>

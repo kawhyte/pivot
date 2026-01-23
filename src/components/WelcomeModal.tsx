@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Sparkles, Gift } from 'lucide-react';
+import { Gift } from 'lucide-react';
+import { SparklesIcon } from '@/components/icons/SparklesIcon';
 import { PATH_METADATA, PATH_IDS } from '@/lib/paths';
 
 interface WelcomeModalProps {
@@ -58,7 +59,7 @@ export const WelcomeModal = ({ open, onOpenChange, agentName }: WelcomeModalProp
                     {PATH_METADATA[PATH_IDS.POP_CULTURE].subtitle}
                   </p>
                   <div className="flex items-center gap-1.5 text-xs font-semibold text-duolingo-green">
-                    <Sparkles className="h-3.5 w-3.5" />
+                    <SparklesIcon className="h-3.5 w-3.5" />
                     <span>Available Now!</span>
                   </div>
                 </div>

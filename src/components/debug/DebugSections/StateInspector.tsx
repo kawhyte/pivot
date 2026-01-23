@@ -1,4 +1,5 @@
-import { Eye, Key, Lock, Unlock, Database } from 'lucide-react';
+import { Eye, Lock, Unlock, Database } from 'lucide-react';
+import { KeyIcon } from '@/components/icons/KeyIcon';
 import { inspector, TESTER_THEME } from '@/lib/debug-utils';
 import { useQuestStore } from '@/store/useQuestStore';
 import { PATH_METADATA } from '@/lib/paths';
@@ -27,7 +28,7 @@ export const StateInspector = () => {
       {/* Keys Collected */}
       <div className="p-3 rounded-lg border-2" style={{ borderColor: TESTER_THEME.border, backgroundColor: TESTER_THEME.bg }}>
         <div className="flex items-center gap-2 mb-2">
-          <Key className="h-3.5 w-3.5" style={{ color: TESTER_THEME.primary }} />
+          <KeyIcon className="h-3.5 w-3.5" color={TESTER_THEME.primary} />
           <span className="text-base font-bold" style={{ color: TESTER_THEME.text }}>
             Keys Collected: {keysCollected.length} / 3
           </span>

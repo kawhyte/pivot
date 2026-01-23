@@ -3,7 +3,10 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { Gift, Sparkles, Heart, PartyPopper, Trophy, Key } from 'lucide-react';
+import { Gift, Heart, PartyPopper } from 'lucide-react';
+import { TrophyIcon } from '@/components/icons/TrophyIcon';
+import { SparklesIcon } from '@/components/icons/SparklesIcon';
+import { KeyIcon } from '@/components/icons/KeyIcon';
 import { useQuestStore } from '@/store/useQuestStore';
 
 interface VaultRevealProps {
@@ -178,7 +181,7 @@ export const VaultReveal = ({ onComplete }: VaultRevealProps) => {
               transition={{ duration: 1, ease: 'easeOut' }}
               className="mb-8 flex justify-center"
             >
-              <Sparkles className="h-32 w-32 text-yellow-400" strokeWidth={1.5} />
+              <SparklesIcon className="h-32 w-32 text-yellow-400" />
             </motion.div>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -246,12 +249,12 @@ export const VaultReveal = ({ onComplete }: VaultRevealProps) => {
             >
               {hasAnyBonus ? (
                 <div className="flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 px-6 py-3 shadow-lg">
-                  <Trophy className="h-6 w-6 text-white" />
+                  <TrophyIcon className="h-24 w-24" />
                   <span className="text-lg font-bold text-white">VIP ACCESS UNLOCKED</span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2 rounded-full bg-duolingo-green px-6 py-3 shadow-lg">
-                  <Key className="h-6 w-6 text-white" />
+                  <KeyIcon className="h-6 w-6 text-white" />
                   <span className="text-lg font-bold text-white">VAULT UNLOCKED</span>
                 </div>
               )}

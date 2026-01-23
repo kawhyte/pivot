@@ -1,7 +1,8 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Sparkles } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
+import { SparklesIcon } from '@/components/icons/SparklesIcon';
 import { useState } from 'react';
 import type { Coupon } from '@/types/puzzle';
 import type { PathId } from '@/lib/paths';
@@ -59,7 +60,7 @@ export const BonusCoupon = ({ coupon, pathId }: BonusCouponProps) => {
           animate={{ rotate: [0, 10, -10, 0] }}
           transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
         >
-          <Sparkles className="mx-auto h-8 w-8 text-festive-gold mb-2" />
+          <SparklesIcon className="mx-auto h-8 w-8 text-festive-gold mb-2" />
         </motion.div>
         <p className="text-lg font-display text-festive-brown">Perfect Run Bonus!</p>
         <p className="font-accent text-sm text-festive-brown/70 mt-1">You earned a special reward</p>
