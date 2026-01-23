@@ -337,7 +337,7 @@ export const QuestSimulationToolbar = ({
                         <AlertCircle className="h-4 w-4 flex-shrink-0" />
                         <div>
                           <div className="font-bold">Trigger Threshold</div>
-                          <div className="text-sm text-neutral-600">Stop at exactly 91%</div>
+                          <div className="text-sm text-neutral-600">Stop at exactly 100%</div>
                         </div>
                       </div>
                     </button>

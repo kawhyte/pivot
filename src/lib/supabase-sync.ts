@@ -698,3 +698,86 @@ export async function updateUnlockFlags(
     return false;
   }
 }
+
+/**
+ * Reset path progress (for testing purposes)
+ * Deletes path_stats entry and resets quest_progress for the given path
+ */
+export async function resetPathProgress(agentId: number, pathId: number): Promise<boolean> {
+  try {
+    // Get profile ID from agent ID
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('agent_id', agentId)
+      .single();
+
+    if (profileError || !profile) {
+      console.error('Error fetching profile for reset:', profileError);
+      return false;
+    }
+
+    const profileId = profile.id;
+
+    // Delete path_stats entry
+    const { error: statsError } = await supabase
+      .from('path_stats')
+      .delete()
+      .eq('profile_id', profileId)
+      .eq('path_id', pathId);
+
+    if (statsError) {
+      console.error('Error deleting path_stats:', statsError);
+    }
+
+    // Reset quest_progress for this path
+    const { error: progressError } = await supabase
+      .from('quest_progress')
+      .update({
+        completed_ids: [],
+        skipped_ids: [],
+        mistakes: 0,
+        total_time_spent: 0,
+        is_completed: false,
+        completed_at: null,
+        is_key_unlocked: false,
+        is_bonus_unlocked: false,
+        is_bonus_mode: false,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('profile_id', profileId)
+      .eq('path_id', pathId);
+
+    if (progressError) {
+      console.error('Error resetting quest_progress:', progressError);
+      return false;
+    }
+
+    // Also reset active_sessions for this path
+    const { error: sessionError } = await supabase
+      .from('active_sessions')
+      .update({
+        completed_ids: [],
+        skipped_ids: [],
+        mistakes: 0,
+        total_time_spent: 0,
+        is_bonus_mode: false,
+        is_perfect_run_active: false,
+        perfect_run_streak: 0,
+        puzzle_attempts: {},
+        updated_at: new Date().toISOString(),
+      })
+      .eq('profile_id', profileId)
+      .eq('path_id', pathId);
+
+    if (sessionError) {
+      console.error('Error resetting active_sessions:', sessionError);
+    }
+
+    console.log(`✅ Path ${pathId} reset in database for agent ${agentId}`);
+    return true;
+  } catch (error) {
+    console.error('Error resetting path progress:', error);
+    return false;
+  }
+}

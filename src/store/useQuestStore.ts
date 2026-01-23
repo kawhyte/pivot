@@ -179,6 +179,9 @@ interface QuestState {
 
   // God Mode: Solve current puzzle instantly
   solveCurrentPuzzle: () => Promise<void>;
+
+  // Reset Path (Testing Utility)
+  resetPath: (pathId: PathId) => Promise<void>;
 }
 
 const initialState = {
@@ -469,17 +472,8 @@ export const useQuestStore = create<QuestState>()(
             }
           };
 
-          // 4. Check if 100% BASE QUESTIONS completed
-          if (!updatedProgress.isBonusMode && baseComplete) {
-            // BASE 100% COMPLETE! Award key immediately
-            const stats = calculateStats(pathId, 'Completed!', false, '100%');
-            await get().addKey(pathId, stats);
-
-            // QuestPage will auto-trigger Sudden Death transition if bonus puzzles exist
-            // If user completes all bonus: key stats will be overwritten with legendary title
-          }
-          // 5. Check if BONUS MODE and ALL bonus questions completed
-          else if (updatedProgress.isBonusMode) {
+          // 4. Check if BONUS MODE and ALL bonus questions completed
+          if (updatedProgress.isBonusMode) {
             // Count completed bonus puzzles
             const completedBonusIds = updatedProgress.completedIds.filter(id => {
               const puzzle = pathConfig.puzzles.find(p => p.id === id);
@@ -1211,6 +1205,47 @@ export const useQuestStore = create<QuestState>()(
         await get().submitAnswer(activePath, currentPuzzleId, true, 0, 1000);
 
         console.log('✅ Puzzle solved!');
+      },
+
+      // ====================
+      // Reset Path (Testing Utility)
+      // ====================
+      resetPath: async (pathId: PathId) => {
+        const { agentId } = get();
+
+        // Reset local state
+        set((state) => ({
+          pathProgress: {
+            ...state.pathProgress,
+            [pathId]: {
+              completedIds: [],
+              skippedIds: [],
+              mistakes: 0,
+              totalTimeSpent: 0,
+              puzzleAttempts: {},
+              isBonusMode: false,
+              isPerfectRunActive: false,
+              perfectRunStartPuzzleId: null,
+              startTime: null,
+              isPaused: false,
+              lastResumeTime: null,
+            },
+          },
+          keysCollected: state.keysCollected.filter((id) => id !== pathId),
+          pathUnlockStatus: {
+            ...state.pathUnlockStatus,
+            [pathId]: { isKeyUnlocked: false, isBonusUnlocked: false },
+          },
+          pathStats: state.pathStats.filter((stats) => stats.pathId !== pathId),
+        }));
+
+        // Reset in database
+        if (agentId) {
+          const { resetPathProgress } = await import('@/lib/supabase-sync');
+          await resetPathProgress(agentId, pathId);
+        }
+
+        console.log(`🔄 Path ${pathId} has been reset`);
       },
     };
     },
