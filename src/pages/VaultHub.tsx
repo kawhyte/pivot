@@ -175,7 +175,7 @@ const VaultHub = () => {
     <div className="flex items-center justify-between mb-6">
       <div className="flex items-center gap-3">
         <div className="bg-neutral-50 p-2   shadow-sm">
-          <img className="h-16 w-16" src='/images/lock.svg' alt="Vault" />
+          <img className="h-16 w-16" src='/images/home.svg' alt="Home" />
         </div>
         <div>
           <h1 className="font-doodle text-5xl text-black leading-none">

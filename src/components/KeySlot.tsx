@@ -94,7 +94,7 @@ export const KeySlot = ({
           {isCollected ? (
             <div className="relative flex items-center justify-center">
               <KeyIcon
-                className="h-12 w-12 relative z-10"
+                className="h-16 w-16 rotate-90 relative z-10"
                 color={path.colors.primary}
               />
             </div>

@@ -52,7 +52,7 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
                  Your Birthday VIP Pass
                 </h3>
                 <p className="text-lg leading-relaxed text-neutral-700">
-                  Choose any path to begin your adventure! Complete all three to unlock your Grand Surprise.
+                  Choose any path to begin your adventure! Complete all three to unlock your Message.
                 </p>
               </div>
             </div>

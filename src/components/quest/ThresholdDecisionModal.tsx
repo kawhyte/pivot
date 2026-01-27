@@ -58,9 +58,7 @@ export const ThresholdDecisionModal = ({
           >
             <div
               className="flex h-16 w-16 items-center justify-center rounded-full"
-              style={{
-                background: `linear-gradient(135deg, ${pathMeta.colors.primary}, ${pathMeta.colors.secondary})`,
-              }}
+             
             >
               <TrophyIcon className="h-24 w-24" />
             </div>
@@ -72,7 +70,7 @@ export const ThresholdDecisionModal = ({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className={`text-2xl text-center font-bold ${
+              className={`text-4xl mb-3 text-center font-bold ${
                 isTester ? 'text-cyan-400' : 'text-neutral-900'
               }`}
             >
@@ -85,7 +83,7 @@ export const ThresholdDecisionModal = ({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className={`text-center pb-5 text-sm ${
+            className={`text-center pb-5 text-base ${
               isTester ? 'text-zinc-600' : 'text-neutral-700'
             }`}
           >
@@ -100,15 +98,15 @@ export const ThresholdDecisionModal = ({
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.4 }}
           className={`mb-6 mx-8 rounded-xl px-4 py-3 text-center ${
-            isTester ? 'bg-zinc-800' : 'bg-neutral-100'
+            isTester ? 'bg-zinc-100' : 'bg-neutral-100'
           }`}
         >
-          <p className={`text-lg font-bold ${isTester ? 'text-cyan-400' : 'text-neutral-900'}`}>
-            {currentScore} / {targetScore} PTS
+          <p className={`text-lg font-bold ${isTester ? 'text-neutral-900' : 'text-neutral-900'}`}>
+         Now, you have a very important decision to make.   
           </p>
-          <p className={`text-base ${isTester ? 'text-zinc-400' : 'text-neutral-600'}`}>
+          {/* <p className={`text-base ${isTester ? 'text-zinc-400' : 'text-neutral-600'}`}>
             {remainingPuzzles} question{remainingPuzzles !== 1 ? 's' : ''} remaining
-          </p>
+          </p> */}
         </motion.div>
 
         {/* Divider */}
@@ -124,44 +122,49 @@ export const ThresholdDecisionModal = ({
         </motion.div>
 
         {/* Button Container with improved spacing */}
-        <div className="space-y-4">
-          {/* Option 1: Claim Key & Stop */}
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            onClick={() => onDecision('claim')}
-            className={`duo-button w-full  py-4 text-white ${
-              isTester
-                ? 'bg-cyan-600 hover:bg-cyan-500'
-                : 'bg-duolingo-green hover:bg-duolingo-green-dark'
-            }`}
-          >
-            <div className="flex items-center justify-center gap-2">
-              <TrophyIcon className="h-24 w-24" />
-              <span className="font-bold">Claim Key & Stop</span>
-            </div>
-            <p className="mt-1 text-base opacity-90">Keep your current progress</p>
-          </motion.button>
+        <div className="space-y-6 px-10">
+  {/* Option 1: Claim Key & Stop (Safe Path) */}
+  <motion.button
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: 0.6 }}
+    onClick={() => onDecision('claim')}
+    className={`duo-button w-full py-6 flex flex-col items-center justify-center shadow-xl active:scale-[0.98] transition-all ${
+      isTester
+        ? 'bg-cyan-600 hover:bg-cyan-500'
+        : 'bg-duolingo-green hover:bg-duolingo-green-dark text-white'
+    }`}
+  >
+    <div className="flex items-center gap-3">
+      <TrophyIcon className="h-7 w-7 text-white" />
+      <span className="text-xl font-black uppercase tracking-wide">Secure My Key & Quit</span>
+    </div>
+    <p className="mt-1 text-xs font-bold text-white/90 uppercase tracking-widest">
+      Finish Quest & Keep Progress
+    </p>
+  </motion.button>
 
-          {/* Option 2: Go for 100% */}
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            onClick={() => onDecision('perfect-run')}
-            className={`duo-button w-full mt-3 py-4 ${isTester ? '' : 'text-neutral-900'}`}
-          
-          >
-            <div className="flex items-center justify-center gap-2">
-              <SparklesIcon className="h-5 w-5" />
-              <span className="font-bold">Go for 100% Mastery</span>
-            </div>
-            <p className="mt-1 text-base ">
-              Perfect Run: {remainingPuzzles} question{remainingPuzzles !== 1 ? 's' : ''}
-            </p>
-          </motion.button>
-        </div>
+  {/* Option 2: Go for 100% (Risk Path) */}
+  <motion.button
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: 0.7 }}
+    onClick={() => onDecision('perfect-run')}
+    className={`duo-button w-full py-6 flex flex-col items-center justify-center border-2 shadow-lg active:scale-[0.98] transition-all ${
+      isTester 
+        ? 'border-cyan-600 bg-zinc-800 text-cyan-400' 
+        : 'border-neutral-200 bg-white text-neutral-900 hover:bg-neutral-50'
+    }`}
+  >
+    <div className="flex items-center gap-3">
+      <SparklesIcon className="h-7 w-7" />
+      <span className="text-xl font-black uppercase tracking-wide">Risk for the Bonus Upgraded Gift</span>
+    </div>
+    <p className="mt-1 text-xs font-bold opacity-70 uppercase tracking-widest">
+      Sudden Death: {remainingPuzzles} Perfect Correct in a Row
+    </p>
+  </motion.button>
+</div>
 
         {/* Warning Message */}
         <motion.div

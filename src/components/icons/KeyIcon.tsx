@@ -12,7 +12,7 @@ interface KeyIconProps {
   color?: string;
 }
 
-export const KeyIcon = ({ className = 'h-12 w-12', color }: KeyIconProps) => (
+export const KeyIcon = ({ className = 'h-16 w-16', color }: KeyIconProps) => (
   <img
     className={className}
     src="/images/key.svg"

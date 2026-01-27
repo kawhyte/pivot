@@ -35,7 +35,7 @@ export const WelcomeModal = ({ open, onOpenChange, agentName }: WelcomeModalProp
         {/* Content */}
         <div className="p-6 space-y-5">
           <p className="text-center text-base text-neutral-700 font-medium">
-            Complete 3 themed quests to unlock your birthday surprise!
+            Complete 3 themed quests to unlock  your "not" birthday message!
           </p>
 
           {/* Path Journey */}
@@ -45,7 +45,7 @@ export const WelcomeModal = ({ open, onOpenChange, agentName }: WelcomeModalProp
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0">
                   <div className="flex items-center gap-1.5 px-2.5 py-1 bg-neutral-100 rounded-full border-2 border-neutral-300">
-                    <span className="text-xs font-bold text-neutral-600">DAY</span>
+                    {/* <span className="text-xs font-bold text-neutral-600">DAY</span> */}
                     <span className="text-base font-black" style={{ color: PATH_METADATA[PATH_IDS.POP_CULTURE].colors.primary }}>
                       1
                     </span>
@@ -58,10 +58,10 @@ export const WelcomeModal = ({ open, onOpenChange, agentName }: WelcomeModalProp
                   <p className="text-sm text-neutral-600 mb-1">
                     {PATH_METADATA[PATH_IDS.POP_CULTURE].subtitle}
                   </p>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-duolingo-green">
+                  {/* <div className="flex items-center gap-1.5 text-xs font-semibold text-duolingo-green">
                     <SparklesIcon className="h-3.5 w-3.5" />
                     <span>Available Now!</span>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
@@ -71,7 +71,7 @@ export const WelcomeModal = ({ open, onOpenChange, agentName }: WelcomeModalProp
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0">
                   <div className="flex items-center gap-1.5 px-2.5 py-1 bg-neutral-100 rounded-full border-2 border-neutral-300">
-                    <span className="text-xs font-bold text-neutral-600">DAY</span>
+                    {/* <span className="text-xs font-bold text-neutral-600">DAY</span> */}
                     <span className="text-base font-black" style={{ color: PATH_METADATA[PATH_IDS.RENAISSANCE].colors.primary }}>
                       2
                     </span>
@@ -84,9 +84,9 @@ export const WelcomeModal = ({ open, onOpenChange, agentName }: WelcomeModalProp
                   <p className="text-sm text-neutral-600 mb-1">
                     {PATH_METADATA[PATH_IDS.RENAISSANCE].subtitle}
                   </p>
-                  <p className="text-xs text-neutral-500 font-medium">
+                  {/* <p className="text-xs text-neutral-500 font-medium">
                     Unlocks at 8:00 AM after Day 1
-                  </p>
+                  </p> */}
                 </div>
               </div>
             </div>
@@ -96,7 +96,7 @@ export const WelcomeModal = ({ open, onOpenChange, agentName }: WelcomeModalProp
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0">
                   <div className="flex items-center gap-1.5 px-2.5 py-1 bg-neutral-100 rounded-full border-2 border-neutral-300">
-                    <span className="text-xs font-bold text-neutral-600">DAY</span>
+                    {/* <span className="text-xs font-bold text-neutral-600">DAY</span> */}
                     <span className="text-base font-black" style={{ color: PATH_METADATA[PATH_IDS.HEART].colors.primary }}>
                       3
                     </span>
@@ -109,9 +109,9 @@ export const WelcomeModal = ({ open, onOpenChange, agentName }: WelcomeModalProp
                   <p className="text-sm text-neutral-600 mb-1">
                     {PATH_METADATA[PATH_IDS.HEART].subtitle}
                   </p>
-                  <p className="text-xs text-neutral-500 font-medium">
+                  {/* <p className="text-xs text-neutral-500 font-medium">
                     Unlocks at 8:00 AM after Day 2
-                  </p>
+                  </p> */}
                 </div>
               </div>
             </div>
@@ -120,7 +120,7 @@ export const WelcomeModal = ({ open, onOpenChange, agentName }: WelcomeModalProp
           {/* Final Message */}
           <div className="duo-card bg-duolingo-green/10 p-4 border-2 border-duolingo-green text-center">
             <p className="text-sm font-bold text-neutral-800">
-              Collect all 3 keys to unlock your birthday surprise!
+              Collect all 3 keys to unlock a "not" birthday message!
             </p>
           </div>
 
