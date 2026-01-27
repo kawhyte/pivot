@@ -239,12 +239,12 @@ export const DetailedStatsScreen = ({
           transition={{ delay: 0.9 }}
           className="mb-6 flex justify-center"
         >
-          <div className="rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 text-sm font-semibold text-white">
+          {/* <div className="rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 text-sm font-semibold text-white">
             <div className="flex items-center gap-2">
               <Award className="h-4 w-4" />
               <span>Mastery Achievement</span>
             </div>
-          </div>
+          </div> */}
         </motion.div>
 
         {/* Return to Vault Button */}

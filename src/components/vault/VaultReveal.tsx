@@ -332,7 +332,7 @@ export const VaultReveal = ({ onComplete }: VaultRevealProps) => {
                     : 'bg-gradient-to-r from-purple-500 via-pink-500 to-red-500'
                 }`}
               >
-                {hasAnyBonus ? 'Unlock VIP Gift' : 'Reveal My Gift'}
+                {hasAnyBonus ? 'Reveal My Message' : 'Show My Message'}
               </motion.button>
             )}
           </motion.div>

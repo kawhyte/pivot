@@ -314,17 +314,17 @@ const VaultHub = () => {
                   <div className="mb-4 flex justify-center">
                     <SparklesIcon className="h-14 w-14 text-white" />
                   </div>
-                  <h2 className="mb-2 text-3xl font-black text-white font-doodle">
+                  <h2 className="mb-2 text-3xl font-black text-black font-doodle">
                     Vault Unlocked!
                   </h2>
-                  <p className="mb-6 text-base text-white/90">
-                    You've collected all 3 keys. Ready to see your surprise?
+                  <p className="mb-6 text-base text-black/90">
+                    You've collected all 3 keys. Ready to see your Message?
                   </p>
                   <Button
                     onClick={() => navigate('/vault')}
                     variant="doodle"
                   >
-                    Open Your Present!
+                    View your message!
                   </Button>
                 </CardContent>
               </Card>
