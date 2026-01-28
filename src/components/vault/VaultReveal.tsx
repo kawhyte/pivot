@@ -248,7 +248,7 @@ export const VaultReveal = ({ onComplete }: VaultRevealProps) => {
               className="mb-6 flex justify-center"
             >
               {hasAnyBonus ? (
-                <div className="flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 px-6 py-3 shadow-lg">
+                <div className="flex items-center gap-2 rounded-full px-6 py-3 shadow-lg">
                   <TrophyIcon className="h-24 w-24" />
                   <span className="text-lg font-bold text-white">VIP ACCESS UNLOCKED</span>
                 </div>

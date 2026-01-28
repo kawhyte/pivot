@@ -124,14 +124,14 @@ export const DetailedStatsScreen = ({
           >
             <div className="flex items-center justify-center gap-2 mb-2">
               <Zap className="h-5 w-5 text-orange-600" />
-              <p className="font-bold text-orange-900 uppercase tracking-wide text-sm">Sudden Death Attempted</p>
+              <p className="font-bold text-orange-900 uppercase tracking-wide text-xl">Sudden Death Attempted</p>
               <Zap className="h-5 w-5 text-orange-600" />
             </div>
             <div className="flex items-center justify-center gap-2">
               <Award className="h-4 w-4 text-green-600" />
-              <p className="text-sm font-semibold text-green-700">Base Gift Secured ✓</p>
+              <p className="text-lg font-semibold text-green-700">Base Gift Secured ✓</p>
             </div>
-            <p className="mt-2 text-xs text-center text-neutral-600 font-medium">
+            <p className="mt-2 text-base text-center text-neutral-600 font-medium">
               You challenged yourself with the bonus round - respect!
             </p>
           </motion.div>

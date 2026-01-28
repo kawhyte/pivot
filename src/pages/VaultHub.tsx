@@ -170,12 +170,12 @@ const VaultHub = () => {
 
       {/* Header */}
       <header className="border-b-2 border-neutral-100 bg-white/80 backdrop-blur-md sticky top-0 z-30">
-  <div className="mx-auto max-w-md px-6 py-5">
+  <div className="mx-auto max-w-2xl px-6 py-5">
     {/* Top Row: Mission Branding & Identity */}
     <div className="flex items-center justify-between mb-6">
       <div className="flex items-center gap-3">
-        <div className="bg-neutral-50 p-2   shadow-sm">
-          <img className="h-16 w-16" src='/images/home.svg' alt="Home" />
+        <div className=" p-2   ">
+          <img className="h-24 w-24" src='/images/home.svg' alt="Home" />
         </div>
         <div>
           <h1 className="font-doodle text-5xl text-black leading-none">
@@ -204,17 +204,17 @@ const VaultHub = () => {
 
     {/* Bottom Row: Goal & Integrated Progress */}
     <div className="space-y-3">
-      <div className="flex items-end justify-between">
-        <p className="text-lg font-medium text-neutral-600 max-w-[200px] leading-tight">
+        <p className="text-lg font-medium text-neutral-600 max-w-full leading-tight">
           {/* Collect <span className="text-duolingo-green font-bold">3 keys</span> to unlock your surprise */}
         
         Tap any destination to start. No lines, no wait—just your favorite things!
         </p>
+      <div className="flex items-end justify-between">
         <div className="text-right leading-none">
           <span className="text-2xl font-black text-duolingo-green marker-highlight px-2 py-1 rounded">
             {keysCollected.length}
-            <span className="text-neutral-200 mx-0.5">/</span>
-            3
+            <span className="text-duolingo-green  mx-0.5"> of </span>
+            3 completed
           </span>
         </div>
       </div>

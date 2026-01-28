@@ -780,6 +780,29 @@ export const useQuestStore = create<QuestState>()(
             }
           });
 
+          // NEW: Reconstruct PathStats from quest_progress data
+          const pathStats: Partial<Record<PathId, PathStats>> = {};
+          questProgressData.forEach((progress) => {
+            if (progress.is_completed) {
+              pathStats[progress.path_id as PathId] = {
+                completionTime: progress.time_taken ?? 0,
+                accuracy: progress.accuracy ?? 100,
+                mistakes: (progress.mistakes ?? 0) / 10, // Convert from DB storage (×10)
+                themedTitle: progress.themed_title ?? 'Completed!',
+                completedAt: new Date(progress.completed_at!).getTime(),
+                totalQuestions: progress.total_questions ?? 0,
+                firstTryCount: progress.first_try_count ?? 0,
+                firstTryRate: progress.first_try_rate ?? 0,
+                skippedCount: progress.skipped_count ?? 0,
+                avgTimePerQuestion: progress.avg_time_per_question ?? 0,
+                perfectRunCompleted: progress.perfect_run_completed ?? false,
+                thresholdDecision: (progress.threshold_decision as '91%' | '100%' | 'abandoned') ?? '100%',
+                isKeyUnlocked: progress.is_key_unlocked ?? false,
+                isBonusUnlocked: progress.is_bonus_unlocked ?? false,
+              };
+            }
+          });
+
           // 3. Fetch active sessions for all paths
           const sessions: Record<PathId, any> = {};
           for (const pathId of [PATH_IDS.POP_CULTURE, PATH_IDS.RENAISSANCE, PATH_IDS.HEART]) {
@@ -888,6 +911,7 @@ export const useQuestStore = create<QuestState>()(
             unlockedPaths,
             pathProgress,
             pathUnlockStatus,
+            pathStats,
             _hasHydrated: true,
           });
 

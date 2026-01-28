@@ -15,7 +15,7 @@ export const SuddenDeathTransition = ({ show, onComplete }: SuddenDeathTransitio
       // Auto-complete transition after 2 seconds
       const timer = setTimeout(() => {
         onComplete();
-      }, 2000);
+      }, 4200);
 
       return () => clearTimeout(timer);
     }
