@@ -114,6 +114,29 @@ export const DetailedStatsScreen = ({
           {pathMeta.name} - {stats.themedTitle}
         </motion.p>
 
+        {/* Sudden Death Attempted Badge (if failed) */}
+        {stats.isBonusUnlocked === false && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4 }}
+            className="mb-6 rounded-xl bg-gradient-to-br from-orange-50 to-red-50 border-2 border-red-200 px-4 py-3"
+          >
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Zap className="h-5 w-5 text-orange-600" />
+              <p className="font-bold text-orange-900 uppercase tracking-wide text-sm">Sudden Death Attempted</p>
+              <Zap className="h-5 w-5 text-orange-600" />
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <Award className="h-4 w-4 text-green-600" />
+              <p className="text-sm font-semibold text-green-700">Base Gift Secured ✓</p>
+            </div>
+            <p className="mt-2 text-xs text-center text-neutral-600 font-medium">
+              You challenged yourself with the bonus round - respect!
+            </p>
+          </motion.div>
+        )}
+
         {/* Perfect Run Badge (if applicable) */}
         {showPerfectRunBadge && (
           <motion.div

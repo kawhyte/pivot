@@ -480,6 +480,22 @@ export const useQuestStore = create<QuestState>()(
               return puzzle && puzzle.isBonus === true;
             });
 
+            // Update bonus attempt tracking (for failure modal)
+            set((state) => {
+              const progress = { ...state.pathProgress[pathId] };
+              const currentCorrect = completedBonusIds.length;
+
+              progress.bonusAttemptDetails = {
+                questionsAttempted: currentCorrect,
+                correctCount: currentCorrect,
+                failedAt: currentCorrect, // Will be updated if they fail next question
+              };
+
+              return {
+                pathProgress: { ...state.pathProgress, [pathId]: progress },
+              };
+            });
+
             if (completedBonusIds.length === totalBonusPuzzles) {
               // SUDDEN DEATH SUCCESS! 🎉
               const stats = calculateStats(pathId, getLegendaryTitle(pathId), true, '100%');
@@ -504,6 +520,30 @@ export const useQuestStore = create<QuestState>()(
 
           // 6. SUDDEN DEATH FAILURE: If in bonus mode, end immediately and award key
           if (progress.isBonusMode) {
+            // Calculate which bonus question they failed (1-indexed for user display)
+            const completedBonusIds = progress.completedIds.filter(id => {
+              const puzzle = pathConfig.puzzles.find(p => p.id === id);
+              return puzzle && puzzle.isBonus === true;
+            });
+
+            const correctCount = completedBonusIds.length;
+            const failedAt = correctCount + 1; // They failed on the next question
+
+            // Store final bonus attempt details for failure modal
+            set((state) => {
+              const progress = { ...state.pathProgress[pathId] };
+
+              progress.bonusAttemptDetails = {
+                questionsAttempted: failedAt,
+                correctCount: correctCount,
+                failedAt: failedAt,
+              };
+
+              return {
+                pathProgress: { ...state.pathProgress, [pathId]: progress },
+              };
+            });
+
             // END BONUS MODE (failure) - but still award key since 100% base was achieved
             const stats = calculateStats(pathId, 'Mastery Complete', false, '100%');
 
@@ -990,6 +1030,11 @@ export const useQuestStore = create<QuestState>()(
             [pathId]: {
               ...state.pathProgress[pathId],
               isBonusMode: true,
+              bonusAttemptDetails: {
+                questionsAttempted: 0,
+                correctCount: 0,
+                failedAt: 0,
+              },
             },
           },
         }));

@@ -23,6 +23,7 @@ import { DetailedStatsScreen } from '@/components/quest/DetailedStatsScreen';
 import { QuestionSkippedToast } from '@/components/quest/QuestionSkippedToast';
 import { QuestSimulationToolbar } from '@/components/quest/QuestSimulationToolbar';
 import { SuddenDeathTransition } from '@/components/quest/SuddenDeathTransition';
+import { SuddenDeathFailureModal } from '@/components/quest/SuddenDeathFailureModal';
 import { cn } from '@/lib/utils';
 import type { ValidationResult } from '@/types/puzzle';
 
@@ -76,6 +77,7 @@ const QuestPage = () => {
   const [puzzleStartTime, setPuzzleStartTime] = useState<number>(Date.now());
   const [isTransitioningToBonus, setIsTransitioningToBonus] = useState(false);
   const [pendingKeyUnlock, setPendingKeyUnlock] = useState(false);
+  const [thresholdDecisionMade, setThresholdDecisionMade] = useState(false);
 
   const totalPuzzles = getTotalPuzzles(pathId);
   const totalNonBonus = getTotalNonBonusPuzzles(pathId);
@@ -145,6 +147,7 @@ const QuestPage = () => {
   }, [_hasHydrated, pathId, currentPuzzleId, getNextUnsolvedPuzzle, setCurrentPuzzle]);
 
   useEffect(() => {
+    setThresholdDecisionMade(false);
     startNewRun();
     return () => resetRun();
   }, [pathId, startNewRun, resetRun]);
@@ -155,7 +158,7 @@ const QuestPage = () => {
     const hasKeyInVault = keysCollected.includes(pathId);
 
     // Check if user just completed 100% base (but hasn't made decision yet)
-    if (baseComplete && !hasKeyInVault && !progress.isBonusMode && !showThresholdModal && totalBonus > 0) {
+    if (baseComplete && !hasKeyInVault && !progress.isBonusMode && !showThresholdModal && !isTransitioningToBonus && !thresholdDecisionMade && totalBonus > 0) {
       // Show decision modal (user chooses: claim key OR risk upgrade)
       setShowThresholdModal(true);
       setPendingKeyUnlock(true);
@@ -167,6 +170,8 @@ const QuestPage = () => {
     pathId,
     progress.isBonusMode,
     showThresholdModal,
+    isTransitioningToBonus,
+    thresholdDecisionMade,
     totalBonus,
   ]);
 
@@ -301,6 +306,7 @@ const handleManualSkip = async () => {
   // NEW: Modal decision handlers
   const handleClaimKey = async () => {
     setShowThresholdModal(false);
+    setThresholdDecisionMade(true);
 
     // Award key to vault with stats (is_key_unlocked: true, is_bonus_unlocked: false)
     const finalProgress = pathProgress[pathId];
@@ -332,6 +338,7 @@ const handleManualSkip = async () => {
 
   const handleRiskUpgrade = async () => {
     setShowThresholdModal(false);
+    setThresholdDecisionMade(true);
 
     // Start Sudden Death transition
     setIsTransitioningToBonus(true);
@@ -400,8 +407,20 @@ const handleManualSkip = async () => {
             }
           }}
           isTester={isTester}
+          open={showThresholdModal}
         />
       )}
+
+      {/* Sudden Death Failure Modal - NEW */}
+      <SuddenDeathFailureModal
+        show={showPerfectRunFailure}
+        onComplete={() => {
+          setShowPerfectRunFailure(false);
+          setShowStatsModal(true);
+        }}
+        bonusAttempt={progress.bonusAttemptDetails}
+        pathColor={PATH_METADATA[pathId].colors.primary}
+      />
 
       <motion.div 
         animate={progress.isBonusMode ? { filter: 'grayscale(20%) contrast(120%)' } : { filter: 'none' }}

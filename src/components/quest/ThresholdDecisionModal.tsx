@@ -21,6 +21,7 @@ interface ThresholdDecisionModalProps {
   remainingPuzzles: number;
   onDecision: (decision: 'claim' | 'perfect-run') => void;
   isTester?: boolean;
+  open?: boolean;
 }
 
 export const ThresholdDecisionModal = ({
@@ -30,6 +31,7 @@ export const ThresholdDecisionModal = ({
   remainingPuzzles,
   onDecision,
   isTester = false,
+  open = true,
 }: ThresholdDecisionModalProps) => {
   const pathMeta = PATH_METADATA[pathId];
 
@@ -46,7 +48,7 @@ export const ThresholdDecisionModal = ({
   }, [pathMeta.colors]);
 
   return (
-    <Dialog open={true} onOpenChange={() => {}}>
+    <Dialog open={open} onOpenChange={() => {}}>
       <DialogContent className={`max-w-md border-4 shadow-2xl p-8  ${isTester ? 'bg-zinc-900 border-cyan-600' : 'bg-white'}`}>
         <DialogHeader className="space-y-4 flex flex-col items-center text-center">
           {/* Celebration Icon */}

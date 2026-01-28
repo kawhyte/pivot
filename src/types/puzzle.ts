@@ -117,6 +117,13 @@ export interface PathProgress {
   // Bonus mode (Sudden Death) state (NEW)
   isBonusMode: boolean;            // True when user enters Sudden Death mode after 100%
 
+  // Bonus attempt tracking (for failure modal)
+  bonusAttemptDetails?: {
+    questionsAttempted: number;    // 1, 2, or 3
+    correctCount: number;          // How many they got right
+    failedAt: number;              // Which question # they failed (1-3)
+  };
+
   // Time tracking (NEW)
   totalTimeSpent: number;          // Milliseconds (paused time excluded)
   isPaused: boolean;
