@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Gift, Lock, AlertCircle, KeyRound } from 'lucide-react';
+import { Gift, Lock, AlertCircle, KeyRound, Mail } from 'lucide-react';
 import { verifyPasscode, type AgentProfile } from '@/lib/auth';
 import { useQuestStore } from '@/store/useQuestStore';
 import { useNavigate } from 'react-router-dom';
 import confetti from 'canvas-confetti';
 import { initializePathProgress } from '@/lib/supabase-sync';
+import { WelcomeMessageModal } from '@/components/WelcomeMessageModal';
 
 export const GiftBoxLogin = () => {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export const GiftBoxLogin = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [agentProfile, setAgentProfile] = useState<AgentProfile | null>(null);
   const [shakeTrigger, setShakeTrigger] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
   const { setAuthentication } = useQuestStore();
 
@@ -157,25 +159,39 @@ export const GiftBoxLogin = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.4 }}
-                  className="mb-12 text-lg text-neutral-600 max-w-xl mx-auto"
+                  className="mb-8 text-lg text-neutral-600 max-w-xl mx-auto"
                 >
                   Complete three themed quests to unlock your birthday vault. Each path is filled with puzzles crafted just for you.
                 </motion.p>
 
-                {/* CTA Button */}
-                <motion.button
+                {/* Buttons Container */}
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
-                  onClick={() => setShowLoginForm(true)}
-                  className="duo-button px-12 py-6 text-2xl font-black mx-auto"
-                  style={{
-                    backgroundColor: '#58CC02',
-                    color: '#FFFFFF',
-                  }}
+                  className="flex flex-col sm:flex-row items-center justify-center gap-4"
                 >
-                  GET STARTED
-                </motion.button>
+                  {/* Welcome Letter Button */}
+                  <button
+                    onClick={() => setShowWelcomeModal(true)}
+                    className="inline-flex items-center gap-2 px-6 py-4 text-base font-bold text-path-heart-pink hover:text-path-heart-pink/80 border-2 border-path-heart-pink/30 hover:border-path-heart-pink/50 rounded-full transition-all hover:scale-105"
+                  >
+                    <Mail className="h-5 w-5" strokeWidth={2.5} />
+                    Welcome Message
+                  </button>
+
+                  {/* GET STARTED Button */}
+                  <button
+                    onClick={() => setShowLoginForm(true)}
+                    className="duo-button px-12 py-6 text-2xl font-black"
+                    style={{
+                      backgroundColor: '#58CC02',
+                      color: '#FFFFFF',
+                    }}
+                  >
+                    GET STARTED
+                  </button>
+                </motion.div>
 
                 {/* Features */}
                 {/* <motion.div
@@ -318,6 +334,12 @@ export const GiftBoxLogin = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Welcome Message Modal */}
+      <WelcomeMessageModal
+        isOpen={showWelcomeModal}
+        onClose={() => setShowWelcomeModal(false)}
+      />
     </div>
   );
 };
