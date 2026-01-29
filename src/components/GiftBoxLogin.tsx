@@ -127,19 +127,28 @@ export const GiftBoxLogin = () => {
               /* Hero Section */
               <>
                 {/* Icon */}
-                <div
-                
-                  className="mb-8 flex justify-center"
-                > <img className=' w-60 ' src='/images/lady.svg'/>
-               
-                </div>
+            <div className="mb-8 flex justify-center">
+    <motion.img
+      src='/images/lady.svg'
+      alt="Welcome"
+      className='w-60'
+      animate={{
+        y: [0, -15, 0], // Moves up 15 pixels and back down
+      }}
+      transition={{
+        duration: 3, // Time for one full cycle (seconds)
+        repeat: Infinity, // Keeps the effect going forever
+        ease: "easeInOut", // Smooth start and stop
+      }}
+    />
+  </div>
 
                 {/* Title */}
                 <motion.h1
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="mb-6 text-6xl font-black text-neutral-900 leading-tight"
+                  className="mb-3 text-6xl font-black text-neutral-900 leading-tight"
                 >
                   Birthday Quest
                 </motion.h1>
@@ -149,7 +158,7 @@ export const GiftBoxLogin = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="mb-4 text-2xl font-bold text-neutral-700"
+                  className="mb-8 text-3xl font-bold text-neutral-700"
                 >
                   A Special Surprise Awaits
                 </motion.p>
@@ -159,9 +168,9 @@ export const GiftBoxLogin = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.4 }}
-                  className="mb-8 text-lg text-neutral-600 max-w-xl mx-auto"
+                  className="mb-8 text-2xl text-neutral-600 max-w-xl mx-auto"
                 >
-                  Complete three themed quests to unlock your birthday vault. Each path is filled with puzzles crafted just for you.
+                  Complete three themed quests to unlock your birthday message. Each path is filled with quizzes crafted just for you.
                 </motion.p>
 
                 {/* Buttons Container */}

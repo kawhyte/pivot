@@ -340,7 +340,7 @@ const VaultHub = () => {
       
       {/* Action Buttons */}
       <div className="flex items-center justify-center gap-3 w-full">
-        <Button
+        {/* <Button
           onClick={handleShareProgress}
           disabled={!userId}
           variant="doodle"
@@ -358,7 +358,7 @@ const VaultHub = () => {
               <span>Share Link</span>
             </>
           )}
-        </Button>
+        </Button> */}
 
         <Button
           onClick={handleLogout}
