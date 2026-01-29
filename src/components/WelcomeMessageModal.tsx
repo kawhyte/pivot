@@ -73,24 +73,7 @@ export const WelcomeMessageModal = ({ isOpen, onClose }: WelcomeMessageModalProp
               {/* Scrollable Content */}
               <div className="overflow-y-auto max-h-[90vh] p-8 sm:p-12">
                 {/* Photo Placeholder */}
-                <div className="mb-8 flex justify-center">
-                  <div className="w-full max-w-md aspect-video rounded-2xl bg-gradient-to-br from-path-pop-purple/20 via-path-renaissance-blue/20 to-path-heart-pink/20 flex items-center justify-center border-4 border-neutral-100 shadow-lg overflow-hidden">
-                    {/* Replace this img tag with your actual photo */}
-                    <img
-                      src="/images/placeholder-photo.jpg"
-                      alt="Birthday celebration"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        // Fallback if image doesn't exist yet
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                    {/* Fallback text (hidden when image loads) */}
-                    <div className="absolute inset-0 flex items-center justify-center text-neutral-400 font-semibold text-lg">
-                      [Your Photo Here]
-                    </div>
-                  </div>
-                </div>
+         
 
                 {/* Main Title */}
                 <motion.h1
@@ -100,7 +83,7 @@ export const WelcomeMessageModal = ({ isOpen, onClose }: WelcomeMessageModalProp
                   transition={{ delay: 0.1 }}
                   className="text-4xl sm:text-5xl font-black text-neutral-900 mb-6 text-center leading-tight"
                 >
-                  Welcome to your very own birthday... extravaganza!
+                  Welcome to your very own Birthday... Extravaganza!
                 </motion.h1>
 
                 {/* Message Content */}
@@ -110,29 +93,34 @@ export const WelcomeMessageModal = ({ isOpen, onClose }: WelcomeMessageModalProp
                   transition={{ delay: 0.2 }}
                   className="space-y-6 text-neutral-700"
                 >
-                  <p className="text-lg leading-relaxed">
-                    First, I want to say <span className="font-bold text-neutral-900">Happy Birthday from Husband 1-5</span>. We've all decided to create this personalized (and hopefully fun) experience for you to play.
-                  </p>
+                  <p className="text-2xl leading-relaxed">
+We (Husband 1 through 5) know you said "no gifts," so we’ve collectively decided to ignore that—but in a fun way! We’ve built you a completely personalized digital adventure to celebrate you.                  </p>
 
-                  <p className="text-lg leading-relaxed">
-                    This year, I made you a pick-your-own <span className="italic font-semibold text-path-heart-pink">"not a gift"</span>.
+                  <p className="text-2xl leading-relaxed">
+                    This year, you are the star of your very own  This year, You will have your  very own  <span className="italic font-semibold text-path-heart-pink">"Birthday Quiz Quest."</span>.
+                  
                   </p>
 
                   {/* How It Works Section */}
                   <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-2xl p-6 border-2 border-neutral-100">
-                    <h2 className="text-2xl font-black text-neutral-900 mb-4">Here's how it works:</h2>
+                    <h2 className="text-2xl font-black text-neutral-900 mb-4">Here’s the flight plan:</h2>
                     <p className="text-lg leading-relaxed mb-4">
-                      In <span className="font-bold text-duolingo-green">3 days</span>, I'll send you a unique code that will give you access to the birthday adventure.
+                      <span className="font-bold text-duolingo-green">The Transmission: </span> In 2–3 days, I’ll send you a secret access code to unlock the game hub.
                     </p>
+                    <p className="text-lg leading-relaxed mb-4">
+                      <span className="font-bold text-duolingo-green">The Objectives: </span> You'll face challenges ranging from TV trivia to deep dives into travel.
+                    </p>
+                    <p className="text-lg leading-relaxed mb-4">
+                      <span className="font-bold text-duolingo-green">The Guide: </span> Once you're in, look for the green button at the top right of the page for your full instructions.
+                    </p>
+                  
                     <p className="text-lg leading-relaxed">
-                      I know you'll want to see instructions for the game, so I made one just for you. You can find it at the <span className="font-semibold">top right of the page</span> when you enter the game hub (it will be a <span className="font-semibold text-duolingo-green">green button</span>).
-                    </p>
+That’s all for now. Grab a coffee (Lorelai-sized, obviously) and get ready. See you at the starting line!                    </p>
+                  
                   </div>
 
-                  {/* Closing */}
-                  <p className="text-2xl font-black text-center text-neutral-900 pt-4">
-                    Have fun!
-                  </p>
+     
+                
                 </motion.div>
               </div>
             </motion.div>

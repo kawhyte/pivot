@@ -177,7 +177,7 @@ export const GiftBoxLogin = () => {
                     className="inline-flex items-center gap-2 px-6 py-4 text-base font-bold text-path-heart-pink hover:text-path-heart-pink/80 border-2 border-path-heart-pink/30 hover:border-path-heart-pink/50 rounded-full transition-all hover:scale-105"
                   >
                     <Mail className="h-5 w-5" strokeWidth={2.5} />
-                    Welcome Message
+                    Welcome Note
                   </button>
 
                   {/* GET STARTED Button */}

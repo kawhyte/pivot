@@ -204,7 +204,7 @@ const VaultHub = () => {
 
     {/* Bottom Row: Goal & Integrated Progress */}
     <div className="space-y-3">
-        <p className="text-lg font-medium text-neutral-600 max-w-full leading-tight">
+        <p className="text-2xl font-medium text-neutral-600 max-w-full leading-tight">
           {/* Collect <span className="text-duolingo-green font-bold">3 keys</span> to unlock your surprise */}
         
         Tap any destination to start. No lines, no wait—just your favorite things!
