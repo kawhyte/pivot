@@ -170,7 +170,7 @@ export const GiftBoxLogin = () => {
                   transition={{ delay: 0.4 }}
                   className="mb-8 text-2xl text-neutral-600 max-w-xl mx-auto"
                 >
-                  Complete three themed quests to unlock your birthday message. Each path is filled with quizzes crafted just for you.
+                  Complete three themed quests to unlock your birthday message. Each path is filled with quizzes and fun crafted just for you.
                 </motion.p>
 
                 {/* Buttons Container */}
