@@ -91,7 +91,7 @@ export const WelcomeMessageModal = ({ isOpen, onClose }: WelcomeMessageModalProp
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="space-y-6 text-neutral-700"
+                  className="space-y-4 text-neutral-700"
                 >
                   <p className="text-2xl leading-relaxed">
 We (Husband 1 through 5) know you said "no gifts," so we’ve collectively decided to ignore that—but in a fun way! We’ve built you a completely personalized digital adventure to celebrate you.                  </p>
