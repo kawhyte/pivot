@@ -72,7 +72,7 @@ export const ThresholdDecisionModal = ({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className={`text-4xl mb-3 text-center font-bold ${
+              className={`text-4xl tracking-wide mb-3 text-center font-bold ${
                 isTester ? 'text-cyan-400' : 'text-neutral-900'
               }`}
             >
@@ -85,7 +85,7 @@ export const ThresholdDecisionModal = ({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className={`text-center pb-5 text-base ${
+            className={`text-center tracking-wide pb-5 text-base ${
               isTester ? 'text-zinc-600' : 'text-neutral-700'
             }`}
           >
@@ -103,8 +103,8 @@ export const ThresholdDecisionModal = ({
             isTester ? 'bg-zinc-100' : 'bg-neutral-100'
           }`}
         >
-          <p className={`text-lg font-bold ${isTester ? 'text-neutral-900' : 'text-neutral-900'}`}>
-         Now, you have a very important decision to make.   
+          <p className={`text-lg tracking-wide font-bold ${isTester ? 'text-neutral-900' : 'text-neutral-900'}`}>
+         Now, a very important decision awaits...  
           </p>
           {/* <p className={`text-base ${isTester ? 'text-zinc-400' : 'text-neutral-600'}`}>
             {remainingPuzzles} question{remainingPuzzles !== 1 ? 's' : ''} remaining
@@ -116,11 +116,11 @@ export const ThresholdDecisionModal = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className={`mb-4 text-center text-base font-semibold ${
+          className={`mb-4 text-center tracking-wide text-base font-semibold ${
             isTester ? 'text-zinc-400' : 'text-neutral-500'
           }`}
         >
-          Choose your path:
+         Choose your destiny:
         </motion.div>
 
         {/* Button Container with improved spacing */}
@@ -139,10 +139,10 @@ export const ThresholdDecisionModal = ({
   >
     <div className="flex items-center gap-3">
       <TrophyIcon className="h-7 w-7 text-white" />
-      <span className="text-xl font-black uppercase tracking-wide">Secure My Key & Quit</span>
+      <span className="text-xl font-black uppercase tracking-wide">Secure My Key</span>
     </div>
-    <p className="mt-1 text-xs font-bold text-white/90 uppercase tracking-widest">
-      Finish Quest & Keep Progress
+    <p className="mt-1 text-sm font-bold text-white/90 uppercase tracking-widest">
+      Collect Award & Keep Progress
     </p>
   </motion.button>
 
@@ -160,9 +160,9 @@ export const ThresholdDecisionModal = ({
   >
     <div className="flex items-center gap-3">
       <SparklesIcon className="h-7 w-7" />
-      <span className="text-xl font-black uppercase tracking-wide">Risk for the Bonus Upgraded Gift</span>
+      <span className="text-xl font-black uppercase tracking-wide">Risk for the Bonus!</span>
     </div>
-    <p className="mt-1 text-xs font-bold opacity-70 uppercase tracking-widest">
+    <p className="mt-1 text-sm font-bold opacity-70 uppercase tracking-widest">
       Sudden Death: {remainingPuzzles} Perfect Correct in a Row
     </p>
   </motion.button>
@@ -177,8 +177,7 @@ export const ThresholdDecisionModal = ({
         >
           <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-warning-orange" />
           <p className={`text-base ${isTester ? 'text-zinc-800' : 'text-neutral-700'}`}>
-            <span className="font-bold">Perfect Run rule:</span> ONE wrong answer ends the
-            attempt
+            <span className="font-bold">Perfect Run rule:</span> ONE wrong answer and you lose the bonus attempt!
           </p>
         </motion.div>
       </DialogContent>

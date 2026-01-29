@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { Gift, Heart, PartyPopper } from 'lucide-react';
+import { Heart} from 'lucide-react';
 import { TrophyIcon } from '@/components/icons/TrophyIcon';
-import { SparklesIcon } from '@/components/icons/SparklesIcon';
+// import { SparklesIcon } from '@/components/icons/SparklesIcon';
 import { KeyIcon } from '@/components/icons/KeyIcon';
 import { useQuestStore } from '@/store/useQuestStore';
 
@@ -88,11 +88,11 @@ export const VaultReveal = ({ onComplete }: VaultRevealProps) => {
     const timer1 = setTimeout(() => {
       setStage('opening');
       fireConfettiSequence();
-    }, 1500);
+    }, 1900);
 
     const timer2 = setTimeout(() => {
       setStage('revealing');
-    }, 4000);
+    }, 6000);
 
     const timer3 = setTimeout(() => {
       setStage('complete');
@@ -129,7 +129,8 @@ export const VaultReveal = ({ onComplete }: VaultRevealProps) => {
               className="mb-8 flex justify-center"
             >
               <div className="relative">
-                <Gift className="h-32 w-32 text-amber-400" strokeWidth={1.5} />
+                <img className="h-32 w-32 text-amber-400"  src='/images/lock.svg'/>
+                {/* <Gift className="h-32 w-32 text-amber-400" strokeWidth={1.5} /> */}
                 <motion.div
                   className="absolute inset-0 rounded-full bg-amber-400/20"
                   animate={{
@@ -175,14 +176,14 @@ export const VaultReveal = ({ onComplete }: VaultRevealProps) => {
             exit={{ opacity: 0, y: -50 }}
             className="text-center"
           >
-            <motion.div
+            {/* <motion.div
               initial={{ rotate: 0 }}
               animate={{ rotate: 360 }}
               transition={{ duration: 1, ease: 'easeOut' }}
               className="mb-8 flex justify-center"
             >
               <SparklesIcon className="h-32 w-32 text-yellow-400" />
-            </motion.div>
+            </motion.div> */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -260,7 +261,7 @@ export const VaultReveal = ({ onComplete }: VaultRevealProps) => {
               )}
             </motion.div>
 
-            <motion.div
+            {/* <motion.div
               animate={{
                 scale: [1, 1.05, 1],
               }}
@@ -271,15 +272,15 @@ export const VaultReveal = ({ onComplete }: VaultRevealProps) => {
               className="mb-8 flex justify-center"
             >
               <PartyPopper className="h-32 w-32 text-purple-500" strokeWidth={1.5} />
-            </motion.div>
+            </motion.div> */}
 
-            <motion.h1
+            {/* <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 mb-6"
             >
               {hasAnyBonus ? '🏆 Ultimate Achievement' : 'Happy Birthday! 🎉'}
-            </motion.h1>
+            </motion.h1> */}
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -287,7 +288,7 @@ export const VaultReveal = ({ onComplete }: VaultRevealProps) => {
               transition={{ delay: 0.3 }}
               className="bg-white/10 backdrop-blur-md rounded-2xl p-8 mb-8 border border-white/20"
             >
-              <p className="text-2xl text-white mb-4 leading-relaxed">
+              <p className="text-3xl text-white mb-4 leading-relaxed">
                 {hasAnyBonus
                   ? "You've mastered every challenge and earned the VIP experience!"
                   : "You've completed all three paths and collected every key!"}
@@ -297,25 +298,28 @@ export const VaultReveal = ({ onComplete }: VaultRevealProps) => {
                   ? "Your fearless pursuit of perfection unlocked the ultimate reward. You are absolutely incredible!"
                   : "This journey through pop culture, knowledge, and our precious memories was designed to celebrate the incredible person you are."}
               </p>
-              <div className="flex justify-center gap-4 mb-6">
+              <div className="flex justify-center gap-16 mb-3 mt-12">
                 <div className="text-center">
-                  <div className="text-4xl mb-2">🎬</div>
-                  <p className="text-sm text-zinc-400">Pop Culture</p>
+                  {/* <div className="text-4xl mb-2">🎬</div> */}
+                    <img className="text-4xl mb-2 h-20" src='/images/cup.png'/>
+                  <p className="text-lg text-zinc-400">Pop Culture</p>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl mb-2">🎨</div>
-                  <p className="text-sm text-zinc-400">Renaissance</p>
+                  {/* <div className="text-4xl mb-2">🎨</div> */}
+                  <img className="text-4xl mb-2 h-20" src='/images/green-shape.png'/>
+                  <p className="text-lg text-zinc-400">Renaissance</p>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl mb-2">❤️</div>
-                  <p className="text-sm text-zinc-400">Heart</p>
+                  {/* <div className="text-4xl mb-2">❤️</div> */}
+                  <img className="text-4xl mb-2 h-20" src='/images/heart.png'/>
+                  <p className="text-lg text-zinc-400">Heart</p>
                 </div>
               </div>
-              <p className="text-lg text-white font-medium">
+              {/* <p className="text-lg text-white font-medium">
                 {hasAnyBonus
                   ? '✨ Your exclusive VIP gift awaits... ✨'
                   : '🎁 Your gift is waiting for you... ✨'}
-              </p>
+              </p> */}
             </motion.div>
 
             {onComplete && (

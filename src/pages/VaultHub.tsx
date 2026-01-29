@@ -318,7 +318,7 @@ const VaultHub = () => {
                     Vault Unlocked!
                   </h2>
                   <p className="mb-6 text-base text-black/90">
-                    You've collected all 3 keys. Ready to see your Message?
+                    You've collected all 3 keys. Ready to see your Love Message?
                   </p>
                   <Button
                     onClick={() => navigate('/vault')}
