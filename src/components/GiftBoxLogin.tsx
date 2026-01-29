@@ -272,7 +272,7 @@ export const GiftBoxLogin = () => {
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       disabled={isProcessing}
-                      placeholder="MOONLIGHT-747"
+                      placeholder="ENTER CODE HERE Or ... Pivot!!"
                       className="duo-input w-full h-16 text-center text-lg font-semibold uppercase tracking-wider disabled:opacity-50"
                       autoComplete="off"
                       spellCheck="false"

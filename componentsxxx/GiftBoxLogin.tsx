@@ -237,7 +237,7 @@ export const GiftBoxLogin = () => {
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       disabled={isProcessing}
-                      placeholder="MOONLIGHT-747"
+                      placeholder="ENTER CODE HERE"
                       className="hand-drawn w-full px-6 py-4 text-center text-lg font-semibold text-festive-brown placeholder:text-festive-brown/30 bg-festive-cream border-3 border-festive-brown/20 focus:border-festive-coral focus:ring-4 focus:ring-festive-coral/20 transition-all disabled:opacity-50"
                       autoComplete="off"
                       spellCheck="false"

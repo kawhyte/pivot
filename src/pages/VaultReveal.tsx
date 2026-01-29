@@ -25,9 +25,8 @@ const VaultRevealPage = () => {
   }, [isVaultUnlocked, navigate]);
 
   const handleRevealComplete = () => {
-    // TODO: Navigate to final gift page or show modal
-    // For now, just go back to vault
-    navigate('/hub');
+    // Navigate to memory storybook (grand finale)
+    navigate('/vault/story');
   };
 
   if (!showReveal) {

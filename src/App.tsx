@@ -3,6 +3,7 @@ import LandingPage from './pages/LandingPage';
 import VaultHub from './pages/VaultHub';
 import QuestPage from './pages/QuestPage';
 import VaultRevealPage from './pages/VaultReveal';
+import MemoryStorybook from './pages/MemoryStorybook';
 import { QuestHydration } from './components/QuestHydration';
 import { TesterBadge } from './components/TesterBadge';
 
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/hub" element={<VaultHub />} />
         <Route path="/quest/:pathId" element={<QuestPage />} />
         <Route path="/vault" element={<VaultRevealPage />} />
+        <Route path="/vault/story" element={<MemoryStorybook />} />
       </Routes>
     </BrowserRouter>
   );
