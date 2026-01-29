@@ -103,15 +103,15 @@ We (Husband 1 through 5) know you said "no gifts," so we’ve collectively decid
 
                   {/* How It Works Section */}
                   <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-2xl p-6 border-2 border-neutral-100">
-                    <h2 className="text-2xl font-black text-neutral-900 mb-4">Here’s the flight plan:</h2>
+                    <h2 className="text-3xl font-black text-neutral-900 mb-4">Here’s the flight plan:</h2>
                     <p className="text-xl leading-relaxed mb-4">
-                      <span className="font-bold text-duolingo-green">The Transmission: </span> In 2–3 days, I’ll send you a secret access code to unlock the game hub.
+                      <span className="font-bold text-duolingo-green text-2xl ">The Transmission: </span> In 2–3 days, I’ll send you a secret access code to unlock the game hub.
                     </p>
                     <p className="text-xl leading-relaxed mb-4">
-                      <span className="font-bold text-duolingo-green">The Objectives: </span> You'll face challenges ranging from TV trivia to deep dives into travel.
+                      <span className="font-bold text-duolingo-green text-2xl">The Objectives: </span> You'll face challenges ranging from TV trivia to deep dives into travel.
                     </p>
                     <p className="text-xl leading-relaxed mb-4">
-                      <span className="font-bold text-duolingo-green">The Guide: </span> Once you're in, look for the green button at the top right of the page for your full instructions.
+                      <span className="font-bold text-duolingo-green text-2xl">The Guide: </span> Once you're in, look for the green button at the top right of the page for your full instructions.
                     </p>
                   
                     <p className="text-xl leading-relaxed">
