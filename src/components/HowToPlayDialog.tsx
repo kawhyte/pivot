@@ -112,7 +112,7 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
                   Perfect Run Bonus
                 </h3>
                 <p className="text-lg leading-relaxed text-neutral-700">
-                  The Lorelai Special: Get every question right on the first try for a legendary bonus!
+                  The Lorelai Special: Get every question right for a legendary bonus!
                 </p>
               </div>
             </div>
@@ -127,8 +127,8 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
           >
             <p className="font-bold text-neutral-800">Quick Tips:</p>
             <ul className="space-y-1 ml-4 list-disc">
-              <li>No time limit - take your time!</li>
-              {/* <li>Hints won't affect your score</li> */}
+              {/* <li>Cheating is allowed but strongl - take your time!</li> */}
+              <li>You can skip questions and come back to them later.</li>
               <li>Progress auto-saves</li>
             </ul>
           </motion.div>

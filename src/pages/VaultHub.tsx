@@ -312,12 +312,14 @@ const VaultHub = () => {
               <Card variant="doodle" className="bg-duolingo-green">
                 <CardContent className="p-8 text-center">
                   <div className="mb-4 flex justify-center">
-                    <SparklesIcon className="h-14 w-14 text-white" />
+                    {/* <SparklesIcon className="h-14 w-14 text-white" /> */}
+
+                    <img className='h-12 w-12' src='/images/smile-yellow.svg'/>
                   </div>
                   <h2 className="mb-2 text-3xl font-black text-black font-doodle">
                     Vault Unlocked!
                   </h2>
-                  <p className="mb-6 text-base text-black/90">
+                  <p className="mb-6 text-lg text-black/90">
                     You've collected all 3 keys. Ready to see your Love Message?
                   </p>
                   <Button
