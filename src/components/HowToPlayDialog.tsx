@@ -59,13 +59,13 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
           </motion.div>
 
           {/* Scoring */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="duo-card bg-white p-4 border-2 border-neutral-200"
-          >
-            <div className="flex items-start gap-3">
+          > */}
+            {/* <div className="flex items-start gap-3">
               <Target className="h-6 w-6 text-duolingo-green flex-shrink-0 mt-0.5" />
               <div className="flex-1">
                 <h3 className="text-2xl font-bold text-neutral-900 mb-2">
@@ -95,8 +95,8 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
                   Reach the target score to unlock each key!
                 </p>
               </div>
-            </div>
-          </motion.div>
+            </div> */}
+          {/* </motion.div> */}
 
           {/* Perfect Run */}
           <motion.div
@@ -128,7 +128,7 @@ export const HowToPlayDialog = ({ open, onOpenChange }: HowToPlayDialogProps) =>
             <p className="font-bold text-neutral-800">Quick Tips:</p>
             <ul className="space-y-1 ml-4 list-disc">
               <li>No time limit - take your time!</li>
-              <li>Hints won't affect your score</li>
+              {/* <li>Hints won't affect your score</li> */}
               <li>Progress auto-saves</li>
             </ul>
           </motion.div>
