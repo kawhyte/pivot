@@ -199,7 +199,7 @@ export const heartPath: PathConfig = {
     },
     // --- WRAPPING UP: FUTURE & FEELINGS ---
     {
-      id: 'heart-21',
+      id: 'heart-20',
       type: 'multiple-choice',
       question: 'Where was the "Dream Destination" for my 40th birthday?',
       options: ['Japan', 'Italy', 'Paris', 'The Maldives'],

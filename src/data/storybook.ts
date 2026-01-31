@@ -169,7 +169,7 @@ export const STORYBOOK_PAGES: StorybookPage[] = [
     tier: 'vip',
     type: 'photo',
     imageUrl: '/storybook/bts.png', // Keep the BTS aspect
-    caption: 'Behind the scenes: Secretly building this for my favorite person.',
+    caption: 'Behind the scenes: Secretly building this for my favorite person. You had no idea this was going on, did you?',
     pathOrigin: PATH_IDS.POP_CULTURE,
     stickerIcon: '/storybook/stickers/camera.svg',
   },
