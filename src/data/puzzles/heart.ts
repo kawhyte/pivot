@@ -57,7 +57,7 @@ export const heartPath: PathConfig = {
     {
       id: 'heart-9',
       type: 'multiple-choice',
-      question: 'What  is the name of the Friends episode that has the shoe Kenny likes? ',
+      question: 'What  is the name of the Friends episode that has the sneakers Kenny likes? ',
       options: [', "The One With Monica\'s Boots', 'The One With the Routine', 'The One About A Classic Horror', 'The One Where No One\'s Ready'],
       correctAnswer: 1, // Replace with your actual first movie genre/title
       hint: 'I remember we had popcorn and you fell asleep halfway through...',
@@ -80,7 +80,7 @@ export const heartPath: PathConfig = {
 {
       id: 'heart-11',
       type: 'multiple-choice',
-      question: 'What place did you say you wanted to visit when we were on our honeymoon? Hint: We were playing the group game in the pool at sandals?',
+      question: 'What place did you say you wanted to visit when we were on our honeymoon? Hint: We were playing the group game in the pool at Sandals, Jamaica (2008).?',
       options: ['Bora Bora', 'Japan', 'Alaska', 'The Maldives'],
       correctAnswer: 2, 
       successMessage: 'I remember that conversation like it was yesterday. One day we will make that trip happen! ',
@@ -93,7 +93,7 @@ export const heartPath: PathConfig = {
       type: 'multiple-choice',
       question: 'Where was I living in Jamaica when we first started dating?',
       options: ['Hanbury', 'Timber Trail', 'Greys Hill', 'Spanish Town'],
-      correctAnswer: 0, // Update this index (0=Kingston, 1=Portmore, etc.) to the correct city
+      correctAnswer: 1, // Update this index (0=Kingston, 1=Portmore, etc.) to the correct city
       successMessage: 'Correct! Those were the days of long drives and even longer phone calls. 🇯🇲❤️',
       points: 15,
       difficulty: 'easy',
@@ -250,7 +250,7 @@ export const heartPath: PathConfig = {
         'Play Wordle',
         'Plan our next trip to Japan'
       ],
-      correctAnswer: 1, // Index for "Say 'I love you to the moon and back'"
+      correctAnswer: 2, // Index for "Say 'I love you to the moon and back'"
       successMessage: 'And even further than that! Happy Birthday, my love! 🌙✨',
       points: 10,
       difficulty: 'easy',
