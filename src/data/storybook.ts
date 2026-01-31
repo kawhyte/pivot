@@ -24,7 +24,7 @@ export const STORYBOOK_PAGES: StorybookPage[] = [
     type: 'text',
     text: `Welcome to our journey together.\n\nEvery adventure has a beginning, and ours started with a simple conversation that turned into something extraordinary.\n\nThis is your story. Our story.`,
     pathOrigin: PATH_IDS.HEART,
-    stickerIcon: 'Heart',
+    stickerIcon: '/storybook/stickers/heart.svg',
   },
 
   {
@@ -34,7 +34,7 @@ export const STORYBOOK_PAGES: StorybookPage[] = [
     imageUrl: '/storybook/memory-1.jpg',
     caption: 'The moment everything changed - our first adventure together',
     pathOrigin: PATH_IDS.RENAISSANCE,
-    stickerIcon: 'Plane',
+    stickerIcon: '/storybook/stickers/plane.svg',
   },
 
   {
@@ -44,16 +44,16 @@ export const STORYBOOK_PAGES: StorybookPage[] = [
     imageUrl: '/storybook/memory-2.jpg',
     caption: 'Coffee dates and endless conversations about our favorite shows',
     pathOrigin: PATH_IDS.POP_CULTURE,
-    stickerIcon: 'Coffee',
+    stickerIcon: '/storybook/stickers/coffee.svg',
   },
 
   {
     id: 'text-story-1',
     tier: 'base',
     type: 'text',
-    text: `Remember that time we stayed up until 3 AM debating whether Ross and Rachel were really "on a break"?\n\nOr when we binge-watched all seven seasons of Gilmore Girls in two weeks?\n\nThose weren't just TV shows. They were our language, our inside jokes, our shared world.`,
+    text: `Rememberx that time we stayed up until 3 AM debating whether Ross and Rachel were really "on a break"?\n\nOr when we binge-watched all seven seasons of Gilmore Girls in two weeks?\n\nThose weren't just TV shows. They were our language, our inside jokes, our shared world.`,
     pathOrigin: PATH_IDS.POP_CULTURE,
-    stickerIcon: 'Star',
+    stickerIcon: '/storybook/stickers/star.svg',
   },
 
   {
@@ -63,7 +63,7 @@ export const STORYBOOK_PAGES: StorybookPage[] = [
     imageUrl: '/storybook/memory-3.jpg',
     caption: 'Jetsetter life - exploring new places, creating new memories',
     pathOrigin: PATH_IDS.RENAISSANCE,
-    stickerIcon: 'Sparkles',
+    stickerIcon: '/storybook/stickers/sparkles.svg',
   },
 
   {
@@ -73,7 +73,7 @@ export const STORYBOOK_PAGES: StorybookPage[] = [
     imageUrl: '/storybook/memory-4.jpg',
     caption: 'The little moments that mean everything',
     pathOrigin: PATH_IDS.HEART,
-    stickerIcon: 'Camera',
+    stickerIcon: '/storybook/stickers/camera.svg',
   },
 
   {
@@ -82,7 +82,7 @@ export const STORYBOOK_PAGES: StorybookPage[] = [
     type: 'text',
     text: `You are extraordinary.\n\nNot because of grand gestures or epic moments (though we've had plenty of those).\n\nBut because of the way you laugh at my terrible jokes, the way you remember every detail of our favorite episodes, the way you make every day an adventure.`,
     pathOrigin: PATH_IDS.HEART,
-    stickerIcon: 'Heart',
+    stickerIcon: '/storybook/stickers/heart.svg',
   },
 
   {
@@ -92,7 +92,7 @@ export const STORYBOOK_PAGES: StorybookPage[] = [
     imageUrl: '/storybook/memory-5.jpg',
     caption: 'Building our story, one memory at a time',
     pathOrigin: PATH_IDS.HEART,
-    stickerIcon: 'Heart',
+    stickerIcon: '/storybook/stickers/heart.svg',
   },
 
   // === VIP TIER EXCLUSIVE PAGES (9-12) ===
@@ -103,7 +103,7 @@ export const STORYBOOK_PAGES: StorybookPage[] = [
     type: 'text',
     text: `You didn't just complete the game.\n\nYou conquered EVERY challenge.\n\nYou risked it all in Sudden Death mode.\n\nYou proved once again that you're absolutely fearless.\n\nThis next chapter is just for you...`,
     pathOrigin: PATH_IDS.HEART,
-    stickerIcon: 'Trophy',
+    stickerIcon: '/storybook/stickers/trophy.svg',
   },
 
   {
@@ -113,7 +113,7 @@ export const STORYBOOK_PAGES: StorybookPage[] = [
     imageUrl: '/storybook/vip-memory-1.jpg',
     caption: 'This one is just for you - a moment only we understand',
     pathOrigin: PATH_IDS.HEART,
-    stickerIcon: 'Sparkles',
+    stickerIcon: '/storybook/stickers/sparkles.svg',
   },
 
   {
@@ -123,7 +123,7 @@ export const STORYBOOK_PAGES: StorybookPage[] = [
     imageUrl: '/storybook/vip-memory-2.jpg',
     caption: 'Behind the scenes: crafting this adventure for you',
     pathOrigin: PATH_IDS.POP_CULTURE,
-    stickerIcon: 'Star',
+    stickerIcon: '/storybook/stickers/star.svg',
   },
 
   {
@@ -133,7 +133,7 @@ export const STORYBOOK_PAGES: StorybookPage[] = [
     videoUrl: '/storybook/vip-message.mp4',
     caption: 'A special message for the VIP champion',
     pathOrigin: PATH_IDS.RENAISSANCE,
-    stickerIcon: 'Trophy',
+    stickerIcon: '/storybook/stickers/trophy.svg',
   },
 
   // === DEVELOPER MESSAGES (Final Pages) ===

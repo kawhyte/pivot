@@ -1,34 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import {
-  Heart,
-  Star,
-  Coffee,
-  Plane,
-  Trophy,
-  Sparkles,
-  Camera,
-  Music,
-  type LucideIcon,
-} from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PATH_METADATA } from '@/lib/paths';
 import type { StorybookPage } from '@/types/storybook';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router';
 import { useQuestStore } from '@/store/useQuestStore';
-
-// Lucide icon mapping
-const STICKER_ICONS: Record<string, LucideIcon> = {
-  Heart,
-  Star,
-  Coffee,
-  Plane,
-  Trophy,
-  Sparkles,
-  Camera,
-  Music,
-};
 
 // Sticker animation variants (spring bounce)
 const stickerVariants = {
@@ -57,19 +35,14 @@ export function StoryContentRenderer({ page }: StoryContentRendererProps) {
     return PATH_METADATA[page.pathOrigin].colors.primary;
   };
 
-  // Get sticker icon component
-  const StickerIcon = page.stickerIcon
-    ? STICKER_ICONS[page.stickerIcon] || Heart
-    : Heart;
-
   // Render based on content type
   switch (page.type) {
     case 'photo':
-      return <PhotoContent page={page} StickerIcon={StickerIcon} pathColor={getPathColor()} />;
+      return <PhotoContent page={page} pathColor={getPathColor()} />;
     case 'text':
-      return <TextContent page={page} StickerIcon={StickerIcon} pathColor={getPathColor()} />;
+      return <TextContent page={page} pathColor={getPathColor()} />;
     case 'video':
-      return <VideoContent page={page} StickerIcon={StickerIcon} pathColor={getPathColor()} />;
+      return <VideoContent page={page} pathColor={getPathColor()} />;
     case 'message':
       return <MessageContent page={page} />;
     default:
@@ -80,11 +53,9 @@ export function StoryContentRenderer({ page }: StoryContentRendererProps) {
 // Photo content with skeleton loading
 function PhotoContent({
   page,
-  StickerIcon,
   pathColor,
 }: {
   page: StorybookPage;
-  StickerIcon: LucideIcon;
   pathColor: string;
 }) {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -124,7 +95,11 @@ function PhotoContent({
             className="absolute -top-4 -right-4 bg-white rounded-full p-3 border-3 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
             style={{ backgroundColor: pathColor }}
           >
-            <StickerIcon className="h-8 w-8 text-white" strokeWidth={2.5} />
+            <img
+              src={page.stickerIcon}
+              alt="sticker"
+              className="h-8 w-8 brightness-0 invert"
+            />
           </motion.div>
         )}
       </div>
@@ -147,11 +122,9 @@ function PhotoContent({
 // Text content (story/narrative)
 function TextContent({
   page,
-  StickerIcon,
   pathColor,
 }: {
   page: StorybookPage;
-  StickerIcon: LucideIcon;
   pathColor: string;
 }) {
   return (
@@ -169,7 +142,11 @@ function TextContent({
             className="absolute -top-4 -right-4 bg-white rounded-full p-3 border-3 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
             style={{ backgroundColor: pathColor }}
           >
-            <StickerIcon className="h-8 w-8 text-white" strokeWidth={2.5} />
+            <img
+              src={page.stickerIcon}
+              alt="sticker"
+              className="h-8 w-8 brightness-0 invert"
+            />
           </motion.div>
         )}
 
@@ -197,11 +174,9 @@ function TextContent({
 // Video content
 function VideoContent({
   page,
-  StickerIcon,
   pathColor,
 }: {
   page: StorybookPage;
-  StickerIcon: LucideIcon;
   pathColor: string;
 }) {
   return (
@@ -231,7 +206,11 @@ function VideoContent({
             className="absolute -top-4 -right-4 bg-white rounded-full p-3 border-3 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
             style={{ backgroundColor: pathColor }}
           >
-            <StickerIcon className="h-8 w-8 text-white" strokeWidth={2.5} />
+            <img
+              src={page.stickerIcon}
+              alt="sticker"
+              className="h-8 w-8 brightness-0 invert"
+            />
           </motion.div>
         )}
       </div>

@@ -17,5 +17,5 @@ export interface StorybookPage {
 
   // Theming
   pathOrigin?: PathId; // For path-specific border colors
-  stickerIcon?: string; // Lucide icon name (e.g., 'Heart', 'Star', 'Coffee', 'Plane')
+  stickerIcon?: string; // SVG file path from /public/storybook/stickers/ (e.g., '/storybook/stickers/heart.svg')
 }
