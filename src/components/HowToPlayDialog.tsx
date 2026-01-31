@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Target } from 'lucide-react';
+// import { Target } from 'lucide-react';
 import { TrophyIcon } from '@/components/icons/TrophyIcon';
 import { SparklesIcon } from '@/components/icons/SparklesIcon';
 
