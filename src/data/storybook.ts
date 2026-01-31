@@ -178,7 +178,7 @@ export const STORYBOOK_PAGES: StorybookPage[] = [
     id: 'vip-video-message',
     tier: 'vip',
     type: 'video',
-    videoUrl: '/storybook/vip-message.mp4',
+    videoUrl: '/storybook/vip-message.mov',
     caption: 'A special birthday message for the legend herself.',
     pathOrigin: PATH_IDS.HEART,
     stickerIcon: '/storybook/stickers/heart.svg',
