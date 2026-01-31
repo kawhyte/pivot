@@ -19,124 +19,181 @@ export const STORYBOOK_PAGES: StorybookPage[] = [
   // === BASE TIER PAGES (1-8) ===
 
   {
-    id: 'intro-text',
+    id: 'intro-2025',
     tier: 'base',
     type: 'text',
-    text: `Welcome to our journey together.\n\nEvery adventure has a beginning, and ours started with a simple conversation that turned into something extraordinary.\n\nThis is your story. Our story.`,
+    text: `2025: A Journey of Strength and Heart.\n\nThis past year wasn't just about the days passing by; it was about the way you filled every single one of them with purpose, laughter, and adventure.\n\nThis is your story—the year you conquered everything.`,
     pathOrigin: PATH_IDS.HEART,
-    stickerIcon: '/storybook/stickers/heart.svg',
+     stickerIcon: '/storybook/stickers/heart.svg',
   },
 
   {
-    id: 'photo-1',
+    id: 'career-growth',
     tier: 'base',
     type: 'photo',
-    imageUrl: '/storybook/memory-1.jpg',
-    caption: 'The moment everything changed - our first adventure together',
+    imageUrl: '/storybook/work.jpg',
+    caption: 'January: Kicking off the year by crushing it in your new job!',
+    pathOrigin: PATH_IDS.HEART,
+    stickerIcon: '/storybook/stickers/sparkles.svg',
+  },
+
+  {
+    id: 'the-planner',
+    tier: 'base',
+    type: 'text',
+    text: `You are the master of the "Master Plan."\n\nWhether it was coordinating travel to NBA and WNBA arenas or finding the perfect hotels for every stop, your logistics game is unmatched.\n\nYou turn every idea into an incredible reality.`,
+    pathOrigin: PATH_IDS.RENAISSANCE,
+    stickerIcon: '/storybook/stickers/trophy.svg',
+  },
+
+  {
+    id: 'arena-tour-photo',
+    tier: 'base',
+    type: 'photo',
+    imageUrl: '/storybook/arena.jpg',
+    caption: 'Court-side memories: Checking off arenas on our epic tour.',
+    pathOrigin: PATH_IDS.POP_CULTURE,
+    stickerIcon: '/storybook/stickers/star.svg',
+  },
+
+  {
+    id: 'cruise-start',
+    tier: 'base',
+    type: 'photo',
+    imageUrl: '/storybook/pore.jpg',
+    caption: 'Setting sail from Singapore: The start of 15 nights on the Millennium.',
     pathOrigin: PATH_IDS.RENAISSANCE,
     stickerIcon: '/storybook/stickers/plane.svg',
   },
 
   {
-    id: 'photo-2',
-    tier: 'base',
-    type: 'photo',
-    imageUrl: '/storybook/memory-2.jpg',
-    caption: 'Coffee dates and endless conversations about our favorite shows',
-    pathOrigin: PATH_IDS.POP_CULTURE,
-    stickerIcon: '/storybook/stickers/coffee.svg',
-  },
-
-  {
-    id: 'text-story-1',
+    id: 'asia-adventures',
     tier: 'base',
     type: 'text',
-    text: `Rememberx that time we stayed up until 3 AM debating whether Ross and Rachel were really "on a break"?\n\nOr when we binge-watched all seven seasons of Gilmore Girls in two weeks?\n\nThose weren't just TV shows. They were our language, our inside jokes, our shared world.`,
-    pathOrigin: PATH_IDS.POP_CULTURE,
-    stickerIcon: '/storybook/stickers/star.svg',
+    text: `From the bustling streets of Hong Kong and the beauty of Vietnam to the magic of Japan, you navigated us through it all.\n\nYou aren't just a traveler; you're a true explorer with a gift for finding the soul of every city.`,
+    pathOrigin: PATH_IDS.RENAISSANCE,
+    stickerIcon: '/storybook/stickers/plane.svg',
   },
 
   {
-    id: 'photo-3',
+    id: 'asia-highlights-photo',
     tier: 'base',
     type: 'photo',
-    imageUrl: '/storybook/memory-3.jpg',
-    caption: 'Jetsetter life - exploring new places, creating new memories',
+    imageUrl: '/storybook/kong.jpg',
+    caption: 'Unforgettable views and even better company in Asia.',
     pathOrigin: PATH_IDS.RENAISSANCE,
     stickerIcon: '/storybook/stickers/sparkles.svg',
   },
 
   {
-    id: 'photo-4',
+    id: 'weightlifting-power',
     tier: 'base',
     type: 'photo',
-    imageUrl: '/storybook/memory-4.jpg',
-    caption: 'The little moments that mean everything',
+    imageUrl: '/storybook/lift.png',
+    caption: 'Powerhouse: Reaching new heights in your weightlifting journey.',
     pathOrigin: PATH_IDS.HEART,
+    stickerIcon: '/storybook/stickers/trophy.svg',
+  },
+
+  {
+    id: 'fitness-inspiration',
+    tier: 'base',
+    type: 'text',
+    text: `It's not just the personal records you set.\n\nIt's the way you push me to be better every time we hit the gym. Whether it's perfecting your form or running that 5k, your discipline is a constant inspiration.`,
+    pathOrigin: PATH_IDS.HEART,
+    stickerIcon: '/storybook/stickers/heart.svg',
+  },
+
+  {
+    id: 'community-heart-photo',
+    tier: 'base',
+    type: 'photo',
+    imageUrl: '/storybook/pull.png',
+    caption: 'Pulling for Little Heroes: Showing your strength for a great cause.',
+    pathOrigin: PATH_IDS.HEART,
+    stickerIcon: '/storybook/stickers/heart.svg',
+  },
+
+  {
+    id: 'volunteering-story',
+    tier: 'base',
+    type: 'text',
+    text: `Your heart is as big as your lift.\n\nVolunteering for the kids with cancer fundraiser showed everyone what I already knew: you lead with kindness and use your strength to lift others up.`,
+    pathOrigin: PATH_IDS.HEART,
+        stickerIcon: '/storybook/stickers/sparkles.svg',
+  },
+
+  {
+    id: 'yardie-ev-photo',
+    tier: 'base',
+    type: 'photo',
+    imageUrl: '/storybook/ev.jpg',
+    caption: 'Meet "Yardie"! Your brand new EV and our favorite ride.',
+    pathOrigin: PATH_IDS.HEART,
+    stickerIcon: '/storybook/stickers/heart.svg',
+  },
+
+  // === VIP TIER EXCLUSIVE PAGES (13-18) ===
+
+  {
+    id: 'vip-exclusive-intro',
+    tier: 'vip',
+    type: 'text',
+    text: `You didn't just play the game; you dominated it.\n\nYou faced Sudden Death and came out a champion—just like you did every single day of 2025.\n\nThese final pages are for the VIP only...`,
+    pathOrigin: PATH_IDS.HEART,
+    stickerIcon: '/storybook/stickers/trophy.svg',
+  },
+
+  {
+    id: 'jamaica-trip-photo',
+    tier: 'vip',
+    type: 'photo',
+    imageUrl: '/storybook/jam.jpg',
+    caption: 'Jamaica: The most meaningful birthday trip to see family.',
+    pathOrigin: PATH_IDS.HEART,
+    stickerIcon: '/storybook/stickers/heart.svg',
+  },
+
+  {
+    id: 'special-memory-photo',
+    tier: 'vip',
+    type: 'photo',
+    imageUrl: '/storybook/duo.png',
+    caption: 'A moment just for us—the quiet magic of 2025.',
+    pathOrigin: PATH_IDS.HEART,
+    stickerIcon: '/storybook/stickers/heart.svg',
+  },
+
+  {
+    id: 'bts-crafting-app',
+    tier: 'vip',
+    type: 'photo',
+    imageUrl: '/storybook/bts.png', // Keep the BTS aspect
+    caption: 'Behind the scenes: Secretly building this for my favorite person.',
+    pathOrigin: PATH_IDS.POP_CULTURE,
     stickerIcon: '/storybook/stickers/camera.svg',
   },
 
   {
-    id: 'text-story-2',
-    tier: 'base',
-    type: 'text',
-    text: `You are extraordinary.\n\nNot because of grand gestures or epic moments (though we've had plenty of those).\n\nBut because of the way you laugh at my terrible jokes, the way you remember every detail of our favorite episodes, the way you make every day an adventure.`,
-    pathOrigin: PATH_IDS.HEART,
-    stickerIcon: '/storybook/stickers/heart.svg',
-  },
-
-  {
-    id: 'photo-5',
-    tier: 'base',
-    type: 'photo',
-    imageUrl: '/storybook/memory-5.jpg',
-    caption: 'Building our story, one memory at a time',
-    pathOrigin: PATH_IDS.HEART,
-    stickerIcon: '/storybook/stickers/heart.svg',
-  },
-
-  // === VIP TIER EXCLUSIVE PAGES (9-12) ===
-
-  {
-    id: 'vip-exclusive-1',
-    tier: 'vip',
-    type: 'text',
-    text: `You didn't just complete the game.\n\nYou conquered EVERY challenge.\n\nYou risked it all in Sudden Death mode.\n\nYou proved once again that you're absolutely fearless.\n\nThis next chapter is just for you...`,
-    pathOrigin: PATH_IDS.HEART,
-    stickerIcon: '/storybook/stickers/trophy.svg',
-  },
-
-  {
-    id: 'vip-photo-1',
-    tier: 'vip',
-    type: 'photo',
-    imageUrl: '/storybook/vip-memory-1.jpg',
-    caption: 'This one is just for you - a moment only we understand',
-    pathOrigin: PATH_IDS.HEART,
-    stickerIcon: '/storybook/stickers/sparkles.svg',
-  },
-
-  {
-    id: 'vip-photo-2',
-    tier: 'vip',
-    type: 'photo',
-    imageUrl: '/storybook/vip-memory-2.jpg',
-    caption: 'Behind the scenes: crafting this adventure for you',
-    pathOrigin: PATH_IDS.POP_CULTURE,
-    stickerIcon: '/storybook/stickers/star.svg',
-  },
-
-  {
-    id: 'vip-video-1',
+    id: 'vip-video-message',
     tier: 'vip',
     type: 'video',
     videoUrl: '/storybook/vip-message.mp4',
-    caption: 'A special message for the VIP champion',
-    pathOrigin: PATH_IDS.RENAISSANCE,
-    stickerIcon: '/storybook/stickers/trophy.svg',
+    caption: 'A special birthday message for the legend herself.',
+    pathOrigin: PATH_IDS.HEART,
+    stickerIcon: '/storybook/stickers/heart.svg',
   },
 
-  // === DEVELOPER MESSAGES (Final Pages) ===
+  {
+    id: 'final-vip-text',
+    tier: 'vip',
+    type: 'text',
+    text: `You are unstoppable, brilliant, and beautiful.\n\n2025 was incredible because of you. I can't wait to see what we conquer in 2026.\n\nHappy Birthday, my love!`,
+    pathOrigin: PATH_IDS.HEART,
+    stickerIcon: '/storybook/stickers/heart.svg',
+  },
+
+  // === DEVELOPER MESSAGES ===
 
   {
     id: 'message-base',
@@ -144,31 +201,27 @@ export const STORYBOOK_PAGES: StorybookPage[] = [
     type: 'message',
     text: `Happy Birthday!
 
-You just completed an adventure crafted with love. Every question, every photo, every memory was chosen because you are extraordinary.
+Every page of this adventure was crafted to celebrate the amazing woman you are. From your new job to your heart for the community, you've made 2025 a year for the history books.
 
-This isn't just a gift—it's a love letter disguised as a game.
-
-Thank you for being you. Thank you for every laugh, every adventure, every moment that made this worth creating.
+Thank you for every adventure.
 
 With all my heart,
-Kenny`,
+Allalu`,
   },
 
-  {
-    id: 'message-vip',
-    tier: 'vip',
-    type: 'message',
-    text: `You absolute legend!
+//   {
+//     id: 'message-vip',
+//     tier: 'vip',
+//     type: 'message',
+//     text: `You Absolute Legend!
 
-You didn't just complete the game—you conquered EVERY challenge, risked Sudden Death, and earned the VIP experience.
+// You conquered the puzzles, survived Sudden Death, and proved once again that you're in a league of your own.
 
-This final reward is yours because you're fearless, brilliant, and unstoppable.
+// Your birthday present awaits below...
 
-Your birthday present awaits below...
-
-With awe and admiration,
-Kenny`,
-  },
+// With awe and admiration,
+// Kenny`,
+//   },
 ];
 
 /**

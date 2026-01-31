@@ -110,7 +110,7 @@ function PhotoContent({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="text-center text-lg sm:text-xl text-neutral-700 font-medium px-4"
+          className="text-center text-xl sm:text-2xl text-neutral-700 font-medium px-4"
         >
           {page.caption}
         </motion.p>
@@ -160,7 +160,7 @@ function TextContent({
           {page.text?.split('\n\n').map((paragraph, index) => (
             <p
               key={index}
-              className="text-lg sm:text-xl text-neutral-800 leading-relaxed whitespace-pre-line"
+              className="text-xl sm:text-2xl text-neutral-800 leading-relaxed whitespace-pre-line"
             >
               {paragraph}
             </p>
