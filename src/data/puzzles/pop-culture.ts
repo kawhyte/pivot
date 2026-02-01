@@ -335,7 +335,7 @@ export const popCulturePath: PathConfig = {
       id: 'pop-27',
       type: 'multiple-choice',
       question: 'Which of these was NOT one of Lorelai\'s boyfriends?',
-      options: ['Jason', 'Max', 'Christopher', 'Digger'],
+      options: ['Jason L.', 'Max', 'Christopher', 'Digger'],
       correctAnswer: 3,
       hint: 'Think about the nicknames...',
       successMessage: 'Tricky! Digger was actually Jason\'s nickname.',
