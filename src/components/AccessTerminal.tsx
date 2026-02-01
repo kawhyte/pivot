@@ -4,7 +4,7 @@ import { useState } from 'react';
   import { useQuestStore } from '@/store/useQuestStore';
   import { initializePathProgress } from '@/lib/supabase-sync';
 
-  const VALID_CODES = ['BIRTHDAY2026', 'KENNY2026', 'TEST2026'];
+  const VALID_CODES = ['BIRTHDAY2026', 'KENNY2026', 'TEST2026', 'OMAR2026'];
 
   export const AccessTerminal = () => {
     const navigate = useNavigate();
