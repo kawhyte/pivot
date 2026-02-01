@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { DebugPanel } from '@/components/debug/DebugPanel';
+import { getPathPuzzles } from '@/data/puzzles';
 import { cn } from '@/lib/utils';
 
 const VaultHub = () => {
@@ -53,6 +54,17 @@ const VaultHub = () => {
     // NEW: Completion-based unlock system
     completedPathsData,
   } = useQuestStore();
+
+  // Filter out bonus puzzle IDs so the hub percentage never exceeds 100%
+  const getNonBonusCompletedCount = (pathId: number): number => {
+    const ids = pathProgress[pathId]?.completedIds;
+    if (!ids) return 0;
+    const puzzles = getPathPuzzles(pathId)?.puzzles || [];
+    return ids.filter(id => {
+      const p = puzzles.find(item => item.id === id);
+      return p && !p.isBonus;
+    }).length;
+  };
 
   // Redirect if not authenticated (only after hydration to prevent loops)
   useEffect(() => {
@@ -274,7 +286,7 @@ const VaultHub = () => {
                 stats={getPathStats(PATH_IDS.POP_CULTURE)}
                 isTester={isTester}
                 currentScore={getPathScore(PATH_IDS.POP_CULTURE)}
-                completedCount={pathProgress[PATH_IDS.POP_CULTURE]?.completedIds?.length || 0}
+                completedCount={getNonBonusCompletedCount(PATH_IDS.POP_CULTURE)}
                 completedPathsData={completedPathsData || []}
               />
             </div>
@@ -287,7 +299,7 @@ const VaultHub = () => {
                 stats={getPathStats(PATH_IDS.RENAISSANCE)}
                 isTester={isTester}
                 currentScore={getPathScore(PATH_IDS.RENAISSANCE)}
-                completedCount={pathProgress[PATH_IDS.RENAISSANCE]?.completedIds?.length || 0}
+                completedCount={getNonBonusCompletedCount(PATH_IDS.RENAISSANCE)}
                 completedPathsData={completedPathsData || []}
               />
             </div>
@@ -300,7 +312,7 @@ const VaultHub = () => {
                 stats={getPathStats(PATH_IDS.HEART)}
                 isTester={isTester}
                 currentScore={getPathScore(PATH_IDS.HEART)}
-                completedCount={pathProgress[PATH_IDS.HEART]?.completedIds?.length || 0}
+                completedCount={getNonBonusCompletedCount(PATH_IDS.HEART)}
                 completedPathsData={completedPathsData || []}
               />
             </div>

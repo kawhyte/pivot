@@ -58,7 +58,7 @@ export const heartPath: PathConfig = {
       id: 'heart-9',
       type: 'multiple-choice',
       question: 'What  is the name of the Friends episode that has the sneakers Kenny likes? ',
-      options: [', "The One With Monica\'s Boots', 'The One With the Routine', 'The One About A Classic Horror', 'The One Where No One\'s Ready'],
+      options: ['The One With Monica\'s Boots', 'The One With the Routine', 'The One About A Classic Horror', 'The One Where No One\'s Ready'],
       correctAnswer: 1, // Replace with your actual first movie genre/title
       hint: 'I remember we had popcorn and you fell asleep halfway through...',
       successMessage: 'Perfect memory! Even if we didn\'t finish it, it was the best night. 🍿🎬',

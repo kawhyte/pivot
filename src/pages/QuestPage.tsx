@@ -89,6 +89,7 @@ const QuestPage = () => {
   const currentScore = getPathScore(pathId);
   const targetScore = TARGET_SCORES[pathId];
   const currentPathUnlockStatus = pathUnlockStatus[pathId];
+  const existingStats = getPathStats(pathId);
 
   const allPuzzles = getPathPuzzles(pathId)?.puzzles || [];
   const remainingPuzzles = allPuzzles.filter(
@@ -109,6 +110,7 @@ const QuestPage = () => {
     : Math.round((completedNonBonusIds.length / totalNonBonus) * 100);
 
   // Navigation Bouncer: Redirect to hub if path is already completed (prevents URL hacking)
+  // Exception: if stats exist, allow the DetailedStatsScreen (line 379) to render instead
   useEffect(() => {
     if (
       _hasHydrated &&
@@ -117,7 +119,8 @@ const QuestPage = () => {
       !showThresholdModal &&          // Block redirect during decision modal
       !showCompletion &&               // Block redirect during stats view
       !isTransitioningToBonus &&       // Block redirect during Sudden Death transition
-      !isTester                        // Allow testers to replay completed paths
+      !isTester &&                     // Allow testers to replay completed paths
+      !existingStats                   // Allow stats screen to render for completed paths
     ) {
       navigate('/hub');
     }
@@ -127,10 +130,11 @@ const QuestPage = () => {
     pathId,
     navigate,
     progress.isBonusMode,
-    showThresholdModal,                // Add dependency
-    showCompletion,                    // Add dependency
-    isTransitioningToBonus,            // Add dependency
-    isTester                           // Add dependency
+    showThresholdModal,
+    showCompletion,
+    isTransitioningToBonus,
+    isTester,
+    existingStats,
   ]);
 
   // THE FIX: Force initialization if puzzle is missing or mismatched
@@ -432,8 +436,8 @@ const handleManualSkip = async () => {
               <ArrowLeft className="mr-2 h-5 w-5" /> Exit
             </Button>
             <div className="flex flex-col items-center w-40">
-              <span className={cn("text-xs font-black", progress.isBonusMode ? "text-red-400" : "text-duolingo-green")}>{scoreProgress}%</span>
-              <Progress value={scoreProgress} className="h-2" indicatorClassName={progress.isBonusMode ? "bg-red-500" : "bg-duolingo-green"} />
+              <span className={cn("text-base font-black", progress.isBonusMode ? "text-red-400" : "text-duolingo-green")}>{scoreProgress}%</span>
+              <Progress value={scoreProgress} className="h-3" indicatorClassName={progress.isBonusMode ? "bg-red-500" : "bg-duolingo-green"} />
             </div>
             <div className="flex items-center gap-2">
               {isTester && (

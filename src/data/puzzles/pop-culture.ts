@@ -394,7 +394,7 @@ export const popCulturePath: PathConfig = {
       correctAnswer: 1, // Index for 'A scavenging vulture'
       successMessage: 'Spot on! "Is there any other kind?" It really did look like a giant bird of prey. 🎓🦅',
       points: 50,
-      difficulty: 'very-hard',
+      difficulty: 'hard',
       isReserved: true,
       metadata: { show: 'gilmore' },
     },
