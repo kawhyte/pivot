@@ -364,6 +364,11 @@ const handleManualSkip = async () => {
     }
   };
 
+  if (_hasHydrated && (showCompletion || isPathCompleted) && !progress.isBonusMode && !isTransitioningToBonus) {
+    const stats = getPathStats(pathId);
+    if (stats) return <DetailedStatsScreen pathId={pathId} stats={stats} onReturnToHub={handleBackToVault} showPerfectRunBadge={stats.perfectRunCompleted} isTester={isTester} />;
+  }
+
   // Show loader while hydrating or initializing puzzle
   if (!_hasHydrated || !puzzle) {
     return (
@@ -377,11 +382,6 @@ const handleManualSkip = async () => {
         <p className="mt-4 font-bold text-neutral-500">Preparing your quest...</p>
       </div>
     );
-  }
-
-  if ((showCompletion || isPathCompleted) && !progress.isBonusMode && !isTransitioningToBonus) {
-    const stats = getPathStats(pathId);
-    if (stats) return <DetailedStatsScreen pathId={pathId} stats={stats} onReturnToHub={handleBackToVault} showPerfectRunBadge={stats.perfectRunCompleted} isTester={isTester} />;
   }
 
   return (
